@@ -16,7 +16,7 @@ export default class Touchables extends Component {
       <View style={styles.container}>
         <TouchableHighlight onPress={this._onPressButton} underlayColor="white">
           <View style={styles.button}>
-            <Text style={styles.buttonText}>h TouchableHighlight</Text>
+            <Text style={styles.buttonText}>ha TouchableHighlight</Text>
           </View>
         </TouchableHighlight>
         <TouchableOpacity onPress={this._onPressButton}>

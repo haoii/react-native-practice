@@ -8,26 +8,28 @@ import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import { createStackNavigator, createBottomTabNavigator, createAppContainer } from 'react-navigation';
 
 import PlayList from './PlayList';
+import Detail from './Detail';
 
-const HotStack = createStackNavigator(
+const MainBottomTab = createBottomTabNavigator(
   {
-    Hot: { screen: PlayList }
-  },
-  {
-    initialRouteName: 'Hot',
-
-    headerMode: 'none',
-    defaultNavigationOptions: {
-      headerVisible: false,
-    }
-  }
-);
-
-export default createAppContainer(createBottomTabNavigator(
-  {
-    Hot: { screen: HotStack },
-    Search: { screen: HotStack },
-    Me: { screen: HotStack }
+    Hot: {
+      screen: PlayList,
+      navigationOptions: {
+        header: null
+      },
+    },
+    Search: {
+      screen: PlayList,
+      navigationOptions: {
+        header: null
+      },
+    },
+    Me: {
+      screen: PlayList,
+      navigationOptions: {
+        header: null
+      },
+    } 
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({
@@ -68,5 +70,18 @@ export default createAppContainer(createBottomTabNavigator(
         backgroundColor:'#fff'
       },
     }
+  }
+);
+
+
+export default createAppContainer(createStackNavigator(
+  {
+    MainBottomTab: MainBottomTab,
+    Detail: Detail
+  },
+  {
+    initialRouteName: 'MainBottomTab',
+
+    // headerMode: 'screen',
   }
 ));

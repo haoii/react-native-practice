@@ -10,9 +10,7 @@ const { width, height } = Dimensions.get('window');
 
 export default class Playlist extends Component {
   // static navigationOptions = {
-  //   header:{
-  //     visible: false,
-  //   }
+  //   header: null
   // };
   
   render() {

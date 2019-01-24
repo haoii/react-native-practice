@@ -14,21 +14,12 @@ const MainBottomTab = createBottomTabNavigator(
   {
     Hot: {
       screen: PlayList,
-      navigationOptions: {
-        header: null
-      },
     },
     Search: {
       screen: PlayList,
-      navigationOptions: {
-        header: null
-      },
     },
     Me: {
       screen: PlayList,
-      navigationOptions: {
-        header: null
-      },
     } 
   },
   {
@@ -76,7 +67,12 @@ const MainBottomTab = createBottomTabNavigator(
 
 export default createAppContainer(createStackNavigator(
   {
-    MainBottomTab: MainBottomTab,
+    MainBottomTab: {
+      screen: MainBottomTab,
+      navigationOptions: {
+        header: null
+      },
+    },
     Detail: Detail
   },
   {

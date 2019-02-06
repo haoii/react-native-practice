@@ -9,50 +9,39 @@ import { createStackNavigator, createBottomTabNavigator, createAppContainer } fr
 
 import PlayList from './PlayList';
 import Detail from './Detail';
+import Me from './Me';
 
 const MainBottomTab = createBottomTabNavigator(
   {
-    Hot: {
+    热映: {
       screen: PlayList,
     },
-    Search: {
+    找片: {
       screen: PlayList,
     },
-    Me: {
-      screen: PlayList,
+    我的: {
+      screen: Me,
     } 
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused, tintColor }) => {
         const { routeName } = navigation.state;
-        if (routeName === 'Hot') {
+        if (routeName === '热映') {
           return <IconAwesome name="tv" size={20} color={tintColor}/>;
-        } else if (routeName === 'Search') {
+        } else if (routeName === '找片') {
           return <IconAwesome name="eye" size={20} color={tintColor}/>;
-        } else if (routeName === 'Me') {
+        } else if (routeName === '我的') {
           return <IconAwesome name="user" size={20} color={tintColor}/>;
         }
       },
-      tabBarLabel: ({ focused, tintColor }) => {
-        const { routeName } = navigation.state;
-        let label;
-        if (routeName === 'Hot') {
-          label = '热映';
-        } else if (routeName === 'Search') {
-          label = '找片';
-        } else if (routeName === 'Me') {
-          label = '我的';
-        }
-        return <Text>{label}</Text>;
-      }
     }),
     tabBarOptions: {
       activeTintColor: '#494949',
       inactiveTintColor: '#999999',
       labelStyle: {
         fontSize: 12,
-        marginBottom: 5,
+        marginBottom: 5,        
       },
       style: {
         borderTopWidth: 1,

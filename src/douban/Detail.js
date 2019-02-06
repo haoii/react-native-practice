@@ -212,7 +212,9 @@ export default class Detail extends Component {
                 tabBarInactiveTextColor='#959595' 
                 tabBarTextStyle={{ fontSize: 14 }}
                 locked={false}
+                style={{height:800}}
               >
+
                 <View tabLabel='评论' style={{marginBottom:50,paddingLeft:15,paddingRight:15}}>
                   <View style={{flexDirection:'row',paddingTop:20,justifyContent:'space-between'}}>
                     <Text>短评</Text>
@@ -224,8 +226,8 @@ export default class Detail extends Component {
                     {popular_comments.map((v,i)=>{
                       return(
                           <View 
-                            style={{marginTop:18,flexDirection:'row',paddingRight:20}}
-                            key={i}>
+                          style={{marginTop:18,flexDirection:'row',paddingRight:20}}
+                          key={i}>
                             <View>
                               <Image source={{uri:v.author.avatar}} style={{width:40,height:40,borderRadius:20}} />
                             </View>

@@ -11,6 +11,8 @@ import ChatScreen from './ChatScreen';
 import ActivityScreen from './ActivityScreen';
 import MeScreen from './MeScreen';
 
+import PublishPostScreen from './PublishPostSreen';
+
 const MainBottomTab = createBottomTabNavigator(
   {
     广场: {
@@ -73,7 +75,13 @@ export default createAppContainer(createStackNavigator(
       navigationOptions: {
         header: null
       },
-    }
+    },
+    PublishPostScreen: {
+      screen: PublishPostScreen,
+      navigationOptions: {
+        header: null
+      },
+    },
   },
   {
     initialRouteName: 'MainBottomTab',

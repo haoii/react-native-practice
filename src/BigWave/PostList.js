@@ -48,9 +48,23 @@ export default class PostList extends Component {
     this._fetchData();
   }
 
+  _postImages = (urls) => {
+    const urlList = urls.split(';');
+    var images = [];
+    urlList.map(v => {
+      v = v.trim();
+      if (v) {
+        images.push(<Image source={{uri:v}} style={{width:120,height:120,borderRadius:6,marginRight:6}} />)
+      }
+    })
+
+    return images;
+  }
+
   _renderItem = ({item}) => {
     return (
-      <View style={{marginTop:18,flexDirection:'row',paddingRight:20}}>
+      <View style={{marginTop:18,flexDirection:'row',paddingRight:20, paddingLeft:10,
+      borderBottomWidth: 1, borderBottomColor: '#EFEFEF'}}>
         <View>
           <Image source={{uri:item.value.user.portrait_url}} style={{width:40,height:40,borderRadius:20}} />
         </View>
@@ -60,12 +74,15 @@ export default class PostList extends Component {
             <Text style={{lineHeight:25}}>{item.value.user.name}</Text>
           </View>
           <Text style={{marginBottom:8,color:'#3B3B3B'}}>{item.value.text}</Text>
+          <View style={{flexDirection:'row'}}>
+            {this._postImages(item.value.image_url)}
+          </View>
           <Text style={styles.smallFont}>
             {item.value.pub_date}
           </Text>
         </View>
 
-        <View style={{position:'absolute',right:0,top:0}}>
+        <View style={{position:'absolute',right:20,top:0}}>
           <Text style={{color:'#9B9B9B'}}>👍{item.value.votes}</Text>
         </View>
       </View>

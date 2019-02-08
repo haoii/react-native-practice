@@ -13,7 +13,7 @@ export default class HomeScreen extends Component {
     return (
       <View style={{width:width,height:height,paddingTop:25,paddingBottom:100,backgroundColor:'#fff'}}>
         <SquareHeader navigation={this.props.navigation}/>
-        <PostList url='http://10.0.2.2:8000/square' navigation={this.props.navigation}/>
+        <PostList navigation={this.props.navigation}/>
       </View>
     );
   }

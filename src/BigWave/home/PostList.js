@@ -10,6 +10,8 @@ import {
   ActivityIndicator
 } from 'react-native';
 
+import URL from '../Config';
+
 export default class PostList extends Component {
   constructor(props) {
     super(props);
@@ -25,7 +27,7 @@ export default class PostList extends Component {
   }
 
   _fetchData = () => {
-    fetch(this.props.url)
+    fetch(URL.square)
       .then(response => response.json())
       .then(responseJson => {
         let arrData = responseJson.latest_posts;
@@ -54,7 +56,7 @@ export default class PostList extends Component {
     urlList.map(v => {
       v = v.trim();
       if (v) {
-        images.push(<Image source={{uri:v}} style={{width:120,height:120,borderRadius:6,marginRight:6}} />)
+        images.push(<Image source={{uri:URL.post_image + v}} style={{width:120,height:120,borderRadius:6,marginRight:6}} />)
       }
     })
 
@@ -66,7 +68,7 @@ export default class PostList extends Component {
       <View style={{marginTop:18,flexDirection:'row',paddingRight:20, paddingLeft:10,
       borderBottomWidth: 1, borderBottomColor: '#EFEFEF'}}>
         <View>
-          <Image source={{uri:item.value.user.portrait_url}} style={{width:40,height:40,borderRadius:20}} />
+          <Image source={{uri:URL.portrait + item.value.user.portrait_url}} style={{width:40,height:40,borderRadius:20}} />
         </View>
 
         <View style={{marginLeft:10,flex:1}}>

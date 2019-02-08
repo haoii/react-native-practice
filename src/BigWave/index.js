@@ -6,10 +6,10 @@ import IconAnt from 'react-native-vector-icons/AntDesign';
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import { createStackNavigator, createBottomTabNavigator, createAppContainer } from 'react-navigation';
 
-import HomeScreen from './HomeScreen';
-import ChatScreen from './ChatScreen';
-import ActivityScreen from './ActivityScreen';
-import MeScreen from './MeScreen';
+import HomeScreen from './home/HomeScreen';
+import ChatScreen from './chat/ChatScreen';
+import ActivityScreen from './activity/ActivityScreen';
+import MeScreen from './me/MeScreen';
 
 import PublishPostScreen from './PublishPostSreen';
 

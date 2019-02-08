@@ -5024,6 +5024,11 @@ react-native-gesture-handler@^1.0.0, react-native-gesture-handler@^1.0.12:
     invariant "^2.2.2"
     prop-types "^15.5.10"
 
+react-native-image-crop-picker@^0.22.0:
+  version "0.22.0"
+  resolved "http://registry.npm.taobao.org/react-native-image-crop-picker/download/react-native-image-crop-picker-0.22.0.tgz#8f7f657dcde45cc366ac529a624205155571c03f"
+  integrity sha1-j39lfc3kXMNmrFKaYkIFFVVxwD8=
+
 react-native-image-picker@^0.28.0:
   version "0.28.0"
   resolved "http://registry.npm.taobao.org/react-native-image-picker/download/react-native-image-picker-0.28.0.tgz#e3f26df170ea932e9c0404624fbced2f59a300e3"

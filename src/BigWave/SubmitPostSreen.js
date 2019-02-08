@@ -2,7 +2,8 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight, CameraRoll, Image, KeyboardAvoidingView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import ImagePicker from 'react-native-image-picker';
+// import ImagePicker from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 
 import URL from './Config';
 
@@ -17,40 +18,61 @@ export default class PublishPostScreen extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      img_url: '',
+      img_url: [],
       post_text: '',
     };
   }
 
   _pickImage = () => {
-    const options = {
-      title: '选择照片',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
+    // const options = {
+    //   title: '选择照片',
+    //   storageOptions: {
+    //     skipBackup: true,
+    //     path: 'images',
+    //   },
+    // };
 
-    ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response = ', response);
+    // ImagePicker.showImagePicker(options, (response) => {
+    //   console.log('Response = ', response);
     
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {    
-        this.setState({
-          img_url: response.uri
-        });
-      }
-    });
+    //   if (response.didCancel) {
+    //     console.log('User cancelled image picker');
+    //   } else if (response.error) {
+    //     console.log('ImagePicker Error: ', response.error);
+    //   } else if (response.customButton) {
+    //     console.log('User tapped custom button: ', response.customButton);
+    //   } else {    
+    //     this.setState({
+    //       img_url: response.uri
+    //     });
+    //   }
+    // });
+
+    // ImagePicker.openPicker({
+    //   width: 300,
+    //   height: 400,
+    //   cropping: true
+    // }).then(image => {
+    //   this.setState({
+    //     img_url: image.path
+    //   });
+    // });
+
+    ImagePicker.openPicker({
+      multiple: true,
+      waitAnimationEnd: false,
+      includeExif: true,
+      forceJpg: true,
+    }).then(images => {
+      this.setState({
+        img_url: images.slice(0,3).map(i => i.path)
+      });
+    }).catch(e => alert(e));
   }
 
   _submitPost = () => {
 
-    if (!this.state.post_text && !this.state.img_url) {
+    if (!this.state.post_text && !this.state.img_url.length) {
       alert('内容不能为空');
       return;
     }
@@ -58,8 +80,13 @@ export default class PublishPostScreen extends Component {
     let formData = new FormData();
     formData.append("post_text", this.state.post_text);
     if (this.state.img_url) {
-      let file = {uri: this.state.img_url, type: 'multipart/form-data', name: 'image.png'};   
-      formData.append("files", file);   
+      // let file = {uri: this.state.img_url, type: 'multipart/form-data', name: 'image.png'};   
+      // formData.append("files", file);   
+
+      for(let i = 0; i < this.state.img_url.length; i++){
+        let file = {uri: this.state.img_url[i], type: 'multipart/form-data', name: 'image.png'};   
+        formData.append('image-'+i, file);  
+      }
     }
     
     fetch(URL.submit_post,{
@@ -76,6 +103,17 @@ export default class PublishPostScreen extends Component {
       this.props.navigation.goBack();
     })
     .catch((error)=>{console.error(error)});
+  }
+
+  _postImages = (urls) => {
+    var images = [];
+    urls.map(v => {
+      v = v.trim();
+      if (v) {
+        images.push(<Image source={{uri:v}} style={{width:120,height:120,borderRadius:6,marginRight:6}} />)
+      }
+    })
+    return images;
   }
 
   render() {
@@ -101,7 +139,10 @@ export default class PublishPostScreen extends Component {
             placeholderTextColor="#ced8de"
             onChangeText={(post_text) => this.setState({post_text})}
           ></TextInput>
-          <Image source={{uri:this.state.img_url}} style={{width:120,height:120,borderRadius:10, marginLeft:30}} />
+          {/* <Image source={{uri:this.state.img_url}} style={{width:120,height:120,borderRadius:10, marginLeft:30}} /> */}
+          <View style={{flexDirection:'row', marginLeft:30}}>
+            {this._postImages(this.state.img_url)}
+          </View>
         </View>
 
         {/* <FunctionView numOfText={140}></FunctionView> */}

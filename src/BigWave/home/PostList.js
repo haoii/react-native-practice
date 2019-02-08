@@ -75,7 +75,7 @@ export default class PostList extends Component {
           <View style={{flexDirection:'row'}}>
             <Text style={{lineHeight:25}}>{item.value.user.name}</Text>
           </View>
-          <Text style={{marginBottom:8,color:'#3B3B3B'}}>{item.value.text}</Text>
+          {item.value.text?<Text style={{marginBottom:8,color:'#3B3B3B'}}>{item.value.text}</Text>:null}
           <View style={{flexDirection:'row'}}>
             {this._postImages(item.value.image_url)}
           </View>

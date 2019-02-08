@@ -11,7 +11,7 @@ import ChatScreen from './chat/ChatScreen';
 import ActivityScreen from './activity/ActivityScreen';
 import MeScreen from './me/MeScreen';
 
-import PublishPostScreen from './PublishPostSreen';
+import SubmitPostSreen from './SubmitPostSreen';
 
 const MainBottomTab = createBottomTabNavigator(
   {
@@ -76,8 +76,8 @@ export default createAppContainer(createStackNavigator(
         header: null
       },
     },
-    PublishPostScreen: {
-      screen: PublishPostScreen,
+    SubmitPostSreen: {
+      screen: SubmitPostSreen,
       navigationOptions: {
         header: null
       },

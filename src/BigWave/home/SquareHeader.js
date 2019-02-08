@@ -10,7 +10,7 @@ export default class SquareHeader extends Component {
     return (
       <View style={styles.header}>
         <TouchableOpacity style={styles.city} 
-          onPress={() => this.props.navigation.navigate('PublishPostScreen')}>
+          onPress={() => this.props.navigation.navigate('SubmitPostSreen')}>
           <IconIonicons name="ios-camera" size={30} color="#222222" />
         </TouchableOpacity>
         

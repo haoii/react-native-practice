@@ -4,6 +4,8 @@ import { View, Text, StyleSheet, TextInput, TouchableHighlight, CameraRoll, Imag
 import Icon from 'react-native-vector-icons/Ionicons';
 import ImagePicker from 'react-native-image-picker';
 
+import URL from './Config';
+
 import Dimensions from 'Dimensions';
 
 const size = {
@@ -15,7 +17,9 @@ export default class PublishPostScreen extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      img_url: '' };
+      img_url: '',
+      post_text: '',
+    };
   }
 
   _pickImage = () => {
@@ -44,6 +48,36 @@ export default class PublishPostScreen extends Component {
     });
   }
 
+  _submitPost = () => {
+
+    if (!this.state.post_text && !this.state.img_url) {
+      alert('内容不能为空');
+      return;
+    }
+
+    let formData = new FormData();
+    formData.append("post_text", this.state.post_text);
+    if (this.state.img_url) {
+      let file = {uri: this.state.img_url, type: 'multipart/form-data', name: 'image.png'};   
+      formData.append("files", file);   
+    }
+    
+    fetch(URL.submit_post,{
+      method:'POST',
+      headers:{
+          'Content-Type':'multipart/form-data',
+      },
+      body:formData,
+    })
+    .then((response) => response.json())
+    .then((ret)=>{
+      let submit_status = ret.submit_status;
+      console.log(submit_status);
+      this.props.navigation.goBack();
+    })
+    .catch((error)=>{console.error(error)});
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -53,7 +87,7 @@ export default class PublishPostScreen extends Component {
               <Text style={styles.cancelText}>取消</Text>
             </TouchableHighlight>
 
-            <TouchableHighlight style={false?styles.btn:styles.activeBtn}>
+            <TouchableHighlight style={false?styles.btn:styles.activeBtn} onPress={this._submitPost}>
               <Text style={false?styles.btnText:styles.activeBtnText}>发布</Text>
             </TouchableHighlight>
           </View>
@@ -65,7 +99,7 @@ export default class PublishPostScreen extends Component {
             placeholder="有什么新鲜事？"
             selectionColor="#2aa2ef"
             placeholderTextColor="#ced8de"
-            // onChangeText={(text) => this._updateTextNum(text)}
+            onChangeText={(post_text) => this.setState({post_text})}
           ></TextInput>
           <Image source={{uri:this.state.img_url}} style={{width:120,height:120,borderRadius:10, marginLeft:30}} />
         </View>

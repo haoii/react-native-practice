@@ -1,6 +1,6 @@
 
 
-const host_url = 'http://10.0.2.2:8000/';
+const host_url = 'http://47.100.252.211:80/';
 const square_url = host_url + 'square/';
 const static_url = host_url + 'static/';
 const portrait_url = static_url + 'user/portrait/';

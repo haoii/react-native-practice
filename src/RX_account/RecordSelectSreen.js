@@ -1,9 +1,10 @@
 
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableHighlight, CameraRoll, Image, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableHighlight, CameraRoll, 
+    Image, KeyboardAvoidingView, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-// import ImagePicker from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
+import { Input } from 'react-native-elements';
 
 import URL from './Config';
 
@@ -14,26 +15,18 @@ const size = {
   height: Dimensions.get('window').height
 };
 
-export default class PublishPostScreen extends Component {
+export default class RecordSelectSreen extends Component {
   constructor(props) {
     super(props);
     this.state = { 
       img_url: [],
       post_text: '',
-    };
-  }
 
-  _pickImage = () => {
-    ImagePicker.openPicker({
-      multiple: true,
-      waitAnimationEnd: false,
-      includeExif: true,
-      forceJpg: true,
-    }).then(images => {
-      this.setState({
-        img_url: images.slice(0,3).map(i => i.path)
-      });
-    }).catch(e => alert(e));
+      price_hint_text: '',
+      price_hint_level: 'info',
+      price_input_text: '',
+      price_input_comFlag: 0,
+    };
   }
 
   _submitPost = () => {
@@ -71,123 +64,141 @@ export default class PublishPostScreen extends Component {
     .catch((error)=>{console.error(error)});
   }
 
-  _postImages = (urls) => {
-    var images = [];
-    urls.map(v => {
-      v = v.trim();
-      if (v) {
-        images.push(<Image source={{uri:v}} style={{width:120,height:120,borderRadius:6,marginRight:6}} />)
-      }
-    })
-    return images;
+  _onPriceInputEnd = () => {
+
+    input = this.state.price_input_text;
+    if (isNaN(input) || Number(input) > 1000 || Number(input) < 0)
+      this.setState({
+        price_hint_text:'请输入有效的值',
+        price_hint_level:'warnning',
+        price_input_comFlag: 0,
+      });
+    else 
+      this.setState({
+        price_hint_text:'',
+        price_hint_level:'info',
+        price_input_comFlag: 1,
+      });
+  }
+
+  _getHintColor = (level) => {
+    if (level === 'info')
+      return {color:'black'};
+    else if (level === 'warnning')
+      return {color:'red'};
+  }
+
+  _renderFloatInputItem = (label, placeholder, unit, hint_state, hint_level_state,
+                           input_state, onEndEditingCallback) => {
+    return (
+      <View style={styles.inputItemOutterView}>
+        <View style={styles.inputItemInnerView}>
+          <View style={styles.inputItemLabelView}>
+            <Text style={styles.fontMain}>{label}</Text>
+          </View>
+          <View style={styles.inputItemcontentView}>
+            <TextInput 
+              placeholder={placeholder} 
+              value={this.state[input_state]}
+              onChangeText={(text) => {
+                tmp_state={};
+                tmp_state[input_state] = text;
+                this.setState(tmp_state);}}
+              onEndEditing={onEndEditingCallback}/>
+            <Text style={styles.fontMain}>{unit}</Text>
+          </View>
+        </View>
+        {this.state[hint_state]
+          ? <Text style={[styles.fontMinor, this._getHintColor(this.state[hint_level_state])]}>
+              {this.state[hint_state]}
+            </Text>
+          : null}
+      </View>);
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <View>
-          <View style={styles.iconContainer}>
-            <TouchableHighlight style={styles.cancelBtn}>
-              <Text style={styles.cancelText}>取消</Text>
-            </TouchableHighlight>
+        <View style={styles.headerContainer}>
+          <TouchableHighlight style={styles.cancelBtn}>
+            <Text style={styles.cancelText}>取消</Text>
+          </TouchableHighlight>
 
-            <TouchableHighlight style={false?styles.btn:styles.activeBtn} onPress={this._submitPost}>
-              <Text style={false?styles.btnText:styles.activeBtnText}>发布</Text>
-            </TouchableHighlight>
-          </View>
-          <TextInput 
-            ref="textarea"
-            style={styles.textArea}
-            maxLength={140}
-            multiline={true}
-            placeholder="有什么新鲜事？"
-            selectionColor="#2aa2ef"
-            placeholderTextColor="#ced8de"
-            onChangeText={(post_text) => this.setState({post_text})}
-          ></TextInput>
-          {/* <Image source={{uri:this.state.img_url}} style={{width:120,height:120,borderRadius:10, marginLeft:30}} /> */}
-          <View style={{flexDirection:'row', marginLeft:30}}>
-            {this._postImages(this.state.img_url)}
-          </View>
+          <TouchableHighlight style={!this.state.price_input_comFlag?styles.btn:styles.activeBtn} onPress={this._submitPost}>
+            <Text style={!this.state.price_input_comFlag?styles.btnText:styles.activeBtnText}>发布</Text>
+          </TouchableHighlight>
         </View>
 
-        {/* <FunctionView numOfText={140}></FunctionView> */}
+        <ScrollView contentContainerStyle={styles.content}>
 
-        <KeyboardAvoidingView behavior="padding" enabled>
-          <View style={styles.functionIconContainer}>
-            <Icon name="ios-pin" size={35} color="#8899a5" style={styles.functionIcon}></Icon>
-            <Icon name="md-camera" size={35} color="#8899a5" style={styles.functionIcon}></Icon>
-            <TouchableHighlight onPress={this._pickImage}>
-              <Icon name="md-image" size={35} color="#8899a5" style={styles.functionIcon}></Icon>
-            </TouchableHighlight>
-            <Icon name="md-pie" size={35} color="#8899a5" style={styles.functionIcon}></Icon>
+          {this._renderFloatInputItem('金额', '0.00', '元', 'price_hint_text', 'price_hint_level', 
+                                      'price_input_text', this._onPriceInputEnd)}
+
+          <View style={styles.inputItemOutterView}>
+            <View style={styles.inputItemInnerView}>
+            </View>
+            <Text style={styles.fontMinor}>
+              提示：
+            </Text>
           </View>
-        </KeyboardAvoidingView>
 
-
-
+        </ScrollView>
+          
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container:{
-    paddingTop:30,
-    height:size.height,
-    backgroundColor: "#ffffff",
-    justifyContent:'space-between'
-  },
-  icon:{
-    width:30,
-    height:30,
-    borderRadius:5,
-  },
-  iconContainer:{
+
+  content: {
     paddingLeft:15,
     paddingRight:15,
+  },
+  inputItemOutterView: {
+    paddingBottom:15,
+    alignItems:'stretch',
+  },
+  inputItemInnerView: {
+    backgroundColor:'white',
+    borderRadius:5,
+    height:50,
+    marginBottom:5,
+    flexDirection:'row',
+    paddingLeft:10,
+    paddingRight:10,
+    justifyContent:'space-between',
+    alignItems:'center',
+  },
+  inputItemLabelView: {
+    flexDirection:'row'
+  },
+  inputItemcontentView: {
+    flexDirection:'row',
+    alignItems:'center'
+  },
+  fontMain: {
+    fontSize:16,
+  },
+  fontMinor: {
+    fontSize:12,
+  },
+
+  container:{
+    padding:15,
+    height:size.height,
+    backgroundColor: '#d3d3d3',//"#ffffff",
+    justifyContent:'flex-start'
+  },
+  headerContainer:{
+    paddingBottom:30,
     flexDirection:"row",
     justifyContent:"space-between",
-  },
-  textArea:{
-    height:120,
-    padding:30,
-    fontSize:20,
-    textAlignVertical: 'top'
-  },
-  functionContainer:{
-    height:275,
-    width:375,
-    position:"absolute",
-    bottom:0,
-    left:0,
-    borderTopWidth:1,
-    borderTopColor:"#a0adb7"
-  },
-  functionIconContainer:{
-    height:50,
-    paddingLeft:30,
-    paddingRight:30,
-    paddingBottom:40,
-    alignItems:"center",
-    justifyContent:"flex-start",
-    flexDirection:"row",
-    borderBottomWidth:1,
-    borderBottomColor:"#ccd6dd"
-  },
-  functionIcon:{
-    paddingRight:20
-  },
-  functionBtn:{
-    width:110,
-    flexDirection:"row",
-    justifyContent:"space-around",
-    alignItems:"center",
   },
   cancelBtn:{
     height:35,
     width:60,
-    alignItems:"center",
+    alignItems:'flex-start',
     justifyContent:"center",
     borderRadius:6,
   },
@@ -198,6 +209,7 @@ const styles = StyleSheet.create({
     justifyContent:"center",
     borderRadius:6,
     borderColor:"#ccd6dd",
+    backgroundColor:'#6699cc',
     borderWidth:1
   },
   activeBtn:{
@@ -223,23 +235,5 @@ const styles = StyleSheet.create({
   activeBtnText:{
     color:"#fff",
     fontSize:14
-  },
-  imageGrid:{
-    flexDirection:"row",
-    flexWrap:"wrap"
-  },
-  imageIcon:{
-    width: size.width/3,
-    height:113,
-    alignItems:"center",
-    justifyContent:"center",
-    borderRightColor:"#ddd",
-    borderBottomColor:"#ddd",
-    borderRightWidth:1,
-    borderBottomWidth:1
-  },
-  image:{
-    width: size.width/3,
-    height:113,
   },
 });

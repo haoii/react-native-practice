@@ -11,7 +11,7 @@ const { width, height } = Dimensions.get('window');
 export default class RecordScreen extends Component {
   render() {
     return (
-      <View style={{width:width,height:height,paddingTop:25,paddingBottom:100,backgroundColor:'#fff'}}>
+      <View style={{width:width,height:height,paddingTop:10,paddingBottom:100,backgroundColor:'#fff'}}>
         <RecordHeader navigation={this.props.navigation}/>
         {/* <PostList navigation={this.props.navigation}/> */}
       </View>

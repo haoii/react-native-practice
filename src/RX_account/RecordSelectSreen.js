@@ -8,6 +8,7 @@ import { Input } from 'react-native-elements';
 
 import URL from './Config';
 import GeneralInput from './forms/GeneralInput';
+import DateInput from './forms/DateInput';
 
 import Dimensions from 'Dimensions';
 
@@ -40,7 +41,17 @@ export default class RecordSelectSreen extends Component {
 
       discount_value: '',
       discount_comFlag: false,
+
+      area_value: '',
+      area_comFlag: true,
+
+      sign_date: this._getCurDate(),
     };
+  }
+
+  _getCurDate = () => {
+    let t = new Date();
+    return '' + t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
   }
 
   _submitPost = () => {
@@ -100,58 +111,74 @@ export default class RecordSelectSreen extends Component {
           </TouchableHighlight>
         </View>
 
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView contentContainerStyle={styles.ScrollViewStyle}>
 
-          <GeneralInput 
-            label='客户名' max_length={64} 
-            onEndEditing={(isValid, value) => {
-              this.setState({
-                customer_name_comFlag: isValid,
-                customer_name_value: value,
-              });}} />
-          <GeneralInput 
-            label='地址' max_length={256} 
-            onEndEditing={(isValid, value) => {
-              this.setState({
-                address_comFlag: isValid,
-                address_value: value,
-              });}} />
-          <GeneralInput 
-            label='电话' max_length={16} 
-            allow_empty={true} 
-            content_type='phone'
-            onEndEditing={(isValid, value) => {
-              this.setState({
-                phone_comFlag: isValid,
-                phone_value: value,
-              });}} />
-          <GeneralInput 
-            label='工期' placeholder='60' unit='天'
-            allow_empty={true} default_value_when_empty='60'
-            content_type='integer' value_min={1}
-            onEndEditing={(isValid, value) => {
-              this.setState({
-                duration_comFlag: isValid,
-                duration_value: value,
-              });}} />
-          <GeneralInput 
-            label='总报价' placeholder='0.00' unit='元' 
-            content_type='float' value_min={0}
-            onEndEditing={(isValid, num) => {
-              this.setState({
-                price_comFlag: isValid,
-                price_value: num,
-              });}} />
-          <GeneralInput 
-            label='折扣' placeholder='0.0' unit='' hint='提示：1到10之间' 
-            content_type='float' value_min={1} value_max={10}
-            onEndEditing={(isValid, num) => {
-              this.setState({
-                discount_comFlag: isValid,
-                discount_value: num,
-              });}} />
-          <GeneralInput />
-
+          <View style={styles.Canvas}>
+            <GeneralInput 
+              label='客户名' max_length={64} 
+              onEndEditing={(isValid, value) => {
+                this.setState({
+                  customer_name_comFlag: isValid,
+                  customer_name_value: value,
+                });}} />
+            <GeneralInput 
+              label='地址' max_length={256} 
+              onEndEditing={(isValid, value) => {
+                this.setState({
+                  address_comFlag: isValid,
+                  address_value: value,
+                });}} />
+            <GeneralInput 
+              label='电话' max_length={16} 
+              allow_empty={true} 
+              content_type='phone'
+              onEndEditing={(isValid, value) => {
+                this.setState({
+                  phone_comFlag: isValid,
+                  phone_value: value,
+                });}} />
+            <DateInput 
+              label='签单日期' init_date={this.state.sign_date}
+              onEndEditing={(date) => {
+                this.setState({
+                  sign_date: date,
+                })}}/>      
+            <GeneralInput 
+              label='工期' placeholder='60' unit='天'
+              allow_empty={true} default_value_when_empty='60'
+              content_type='integer' value_min={1}
+              onEndEditing={(isValid, value) => {
+                this.setState({
+                  duration_comFlag: isValid,
+                  duration_value: value,
+                });}} />
+            <GeneralInput 
+              label='总报价' placeholder='0.00' unit='元' 
+              content_type='float' value_min={0}
+              onEndEditing={(isValid, num) => {
+                this.setState({
+                  price_comFlag: isValid,
+                  price_value: num,
+                });}} />
+            <GeneralInput 
+              label='折扣' placeholder='0.0' unit='' hint='提示：1到10之间' 
+              content_type='float' value_min={1} value_max={10}
+              onEndEditing={(isValid, num) => {
+                this.setState({
+                  discount_comFlag: isValid,
+                  discount_value: num,
+                });}} />
+            <GeneralInput 
+              label='面积' unit='平方'
+              allow_empty={true}
+              content_type='float' value_min={0}
+              onEndEditing={(isValid, value) => {
+                this.setState({
+                  area_comFlag: isValid,
+                  area_value: value,
+                });}} />
+          
+          </View>
 
         </ScrollView>
           
@@ -162,9 +189,13 @@ export default class RecordSelectSreen extends Component {
 
 const styles = StyleSheet.create({
 
-  content: {
+  ScrollViewStyle: {
     paddingLeft:15,
     paddingRight:15,
+  },
+  Canvas: {
+    paddingTop:15,
+    paddingBottom:50
   },
 
   container:{
@@ -174,7 +205,7 @@ const styles = StyleSheet.create({
     justifyContent:'flex-start'
   },
   headerContainer:{
-    paddingBottom:30,
+    paddingBottom:15,
     flexDirection:"row",
     justifyContent:"space-between",
   },

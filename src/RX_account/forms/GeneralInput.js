@@ -40,7 +40,7 @@ export default class GeneralInput extends Component {
   _isNormalInteger = (str) => {
     var n = Math.floor(Number(str));
     return n !== Infinity && String(n) === str && n >= 0;
-}
+  }
 
   _validCheck = (value) => {
     if (this.props.content_type === 'float')
@@ -101,6 +101,11 @@ export default class GeneralInput extends Component {
       return {color:'red'};
   }
 
+  _getFontColor = () => {
+    if (this.props.allow_empty)
+      return {color: 'gray'};
+  }
+
   render() {
     return (
       <View style={styles.inputItemOutterView}>
@@ -111,7 +116,7 @@ export default class GeneralInput extends Component {
           : null}
         <View style={styles.inputItemInnerView}>
           <View style={styles.inputItemLabelView}>
-            <Text style={styles.fontMain}>{this.props.label}</Text>
+            <Text style={[styles.fontMain, this._getFontColor()]}>{this.props.label}</Text>
           </View>
           <View style={styles.inputItemcontentView}>
             <TextInput 
@@ -121,7 +126,7 @@ export default class GeneralInput extends Component {
               maxLength={this.props.max_length}
               onChangeText={(text) => this.setState({input_value: text})}
               onEndEditing={this._innerOnEndEditing}/>
-            <Text style={styles.fontMain}>{this.props.unit}</Text>
+            <Text style={[styles.fontMain, this._getFontColor()]}>{this.props.unit}</Text>
           </View>
         </View>
         {this.props.hint

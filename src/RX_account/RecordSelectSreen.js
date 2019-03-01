@@ -7,6 +7,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { Input } from 'react-native-elements';
 
 import URL from './Config';
+import GeneralInput from './forms/GeneralInput';
 
 import Dimensions from 'Dimensions';
 
@@ -22,10 +23,23 @@ export default class RecordSelectSreen extends Component {
       img_url: [],
       post_text: '',
 
-      price_hint_text: '',
-      price_hint_level: 'info',
-      price_input_text: '',
-      price_input_comFlag: 0,
+      customer_name_value: '',
+      customer_name_comFlag: false,
+
+      address_value: '',
+      address_comFlag: false,
+
+      phone_value: '',
+      phone_comFlag: true,
+
+      duration_value: '60',
+      duration_comFlag: true,
+
+      price_value: '',
+      price_comFlag: false,
+
+      discount_value: '',
+      discount_comFlag: false,
     };
   }
 
@@ -64,56 +78,13 @@ export default class RecordSelectSreen extends Component {
     .catch((error)=>{console.error(error)});
   }
 
-  _onPriceInputEnd = () => {
-
-    input = this.state.price_input_text;
-    if (isNaN(input) || Number(input) > 1000 || Number(input) < 0)
-      this.setState({
-        price_hint_text:'请输入有效的值',
-        price_hint_level:'warnning',
-        price_input_comFlag: 0,
-      });
-    else 
-      this.setState({
-        price_hint_text:'',
-        price_hint_level:'info',
-        price_input_comFlag: 1,
-      });
-  }
-
-  _getHintColor = (level) => {
-    if (level === 'info')
-      return {color:'black'};
-    else if (level === 'warnning')
-      return {color:'red'};
-  }
-
-  _renderFloatInputItem = (label, placeholder, unit, hint_state, hint_level_state,
-                           input_state, onEndEditingCallback) => {
-    return (
-      <View style={styles.inputItemOutterView}>
-        <View style={styles.inputItemInnerView}>
-          <View style={styles.inputItemLabelView}>
-            <Text style={styles.fontMain}>{label}</Text>
-          </View>
-          <View style={styles.inputItemcontentView}>
-            <TextInput 
-              placeholder={placeholder} 
-              value={this.state[input_state]}
-              onChangeText={(text) => {
-                tmp_state={};
-                tmp_state[input_state] = text;
-                this.setState(tmp_state);}}
-              onEndEditing={onEndEditingCallback}/>
-            <Text style={styles.fontMain}>{unit}</Text>
-          </View>
-        </View>
-        {this.state[hint_state]
-          ? <Text style={[styles.fontMinor, this._getHintColor(this.state[hint_level_state])]}>
-              {this.state[hint_state]}
-            </Text>
-          : null}
-      </View>);
+  _checkComplete = () => {
+    keys = Object.keys(this.state);
+    for (let i = 0; i < keys.length; i++) 
+      if (keys[i].length > 7 && keys[i].slice(-7) === 'comFlag') 
+        if (!this.state[keys[i]]) 
+          return false;
+    return true;
   }
 
   render() {
@@ -124,23 +95,63 @@ export default class RecordSelectSreen extends Component {
             <Text style={styles.cancelText}>取消</Text>
           </TouchableHighlight>
 
-          <TouchableHighlight style={!this.state.price_input_comFlag?styles.btn:styles.activeBtn} onPress={this._submitPost}>
-            <Text style={!this.state.price_input_comFlag?styles.btnText:styles.activeBtnText}>发布</Text>
+          <TouchableHighlight style={!this._checkComplete()?styles.btn:styles.activeBtn} onPress={this._submitPost}>
+            <Text style={!this._checkComplete()?styles.btnText:styles.activeBtnText}>发布</Text>
           </TouchableHighlight>
         </View>
 
         <ScrollView contentContainerStyle={styles.content}>
 
-          {this._renderFloatInputItem('金额', '0.00', '元', 'price_hint_text', 'price_hint_level', 
-                                      'price_input_text', this._onPriceInputEnd)}
+          <GeneralInput 
+            label='客户名' max_length={64} 
+            onEndEditing={(isValid, value) => {
+              this.setState({
+                customer_name_comFlag: isValid,
+                customer_name_value: value,
+              });}} />
+          <GeneralInput 
+            label='地址' max_length={256} 
+            onEndEditing={(isValid, value) => {
+              this.setState({
+                address_comFlag: isValid,
+                address_value: value,
+              });}} />
+          <GeneralInput 
+            label='电话' max_length={16} 
+            allow_empty={true} 
+            content_type='phone'
+            onEndEditing={(isValid, value) => {
+              this.setState({
+                phone_comFlag: isValid,
+                phone_value: value,
+              });}} />
+          <GeneralInput 
+            label='工期' placeholder='60' unit='天'
+            allow_empty={true} default_value_when_empty='60'
+            content_type='integer' value_min={1}
+            onEndEditing={(isValid, value) => {
+              this.setState({
+                duration_comFlag: isValid,
+                duration_value: value,
+              });}} />
+          <GeneralInput 
+            label='总报价' placeholder='0.00' unit='元' 
+            content_type='float' value_min={0}
+            onEndEditing={(isValid, num) => {
+              this.setState({
+                price_comFlag: isValid,
+                price_value: num,
+              });}} />
+          <GeneralInput 
+            label='折扣' placeholder='0.0' unit='' hint='提示：1到10之间' 
+            content_type='float' value_min={1} value_max={10}
+            onEndEditing={(isValid, num) => {
+              this.setState({
+                discount_comFlag: isValid,
+                discount_value: num,
+              });}} />
+          <GeneralInput />
 
-          <View style={styles.inputItemOutterView}>
-            <View style={styles.inputItemInnerView}>
-            </View>
-            <Text style={styles.fontMinor}>
-              提示：
-            </Text>
-          </View>
 
         </ScrollView>
           
@@ -154,34 +165,6 @@ const styles = StyleSheet.create({
   content: {
     paddingLeft:15,
     paddingRight:15,
-  },
-  inputItemOutterView: {
-    paddingBottom:15,
-    alignItems:'stretch',
-  },
-  inputItemInnerView: {
-    backgroundColor:'white',
-    borderRadius:5,
-    height:50,
-    marginBottom:5,
-    flexDirection:'row',
-    paddingLeft:10,
-    paddingRight:10,
-    justifyContent:'space-between',
-    alignItems:'center',
-  },
-  inputItemLabelView: {
-    flexDirection:'row'
-  },
-  inputItemcontentView: {
-    flexDirection:'row',
-    alignItems:'center'
-  },
-  fontMain: {
-    fontSize:16,
-  },
-  fontMinor: {
-    fontSize:12,
   },
 
   container:{

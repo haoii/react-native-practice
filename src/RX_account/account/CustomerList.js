@@ -63,7 +63,7 @@ export default class CustomerList extends Component {
 
   _renderItem = ({item}) => {
     let total_price_pixel = size.width - 20;
-    let actual_price = item.value.total_price * item.value.price_discount;
+    let actual_price = item.value.total_price * item.value.price_discount / 10;
     let received_price_pixel = (item.value.price_received / actual_price) * total_price_pixel;
     let expense_pixel = (item.value.total_expense / actual_price) * total_price_pixel;
     let expense_paid_pixel = (item.value.expense_paid / actual_price) * total_price_pixel;

@@ -10,8 +10,6 @@ import {
   FlatList,
   ActivityIndicator
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { Input } from 'react-native-elements';
 
 import URL from '../Config';
 
@@ -43,7 +41,8 @@ export default class CustomerList extends Component {
         let arrData = responseJson.latest_customers;
         let i = 0;
         let arrList = [];
-        /* 直接赋值的话没有 key 键,就会发出警告,所以为了避免出现警告,应主动在每个项目中添加 key 键 */
+        // 直接赋值的话没有 key 键,就会发出警告,
+        // 所以为了避免出现警告,应主动在每个项目中添加 key 键
         arrData.map(item => {
           arrList.push({key: i, value: item});
           i++;
@@ -60,6 +59,13 @@ export default class CustomerList extends Component {
     this._fetchData();
   }
 
+  _renderProgressBar = (items) => {
+    items.sort((v1,v2) => v1[0] < v2[0]? 1:-1);
+    return items.map((item) => {
+      return (
+        <View style={[styles.progressBar, {width:item[0], backgroundColor:item[1]}]}></View>
+      )});
+  }
 
   _renderItem = ({item}) => {
     let total_price_pixel = size.width - 20;
@@ -68,34 +74,31 @@ export default class CustomerList extends Component {
     let expense_pixel = (item.value.total_expense / actual_price) * total_price_pixel;
     let expense_paid_pixel = (item.value.expense_paid / actual_price) * total_price_pixel;
     return (
-      <View style={{padding:10, paddingTop:18, height:95, borderBottomWidth: 1, borderBottomColor: '#EFEFEF'}}>
-        <View style={{flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between'}}>
-          <View style={{flexDirection:'row', alignItems:'flex-end'}}>
-            <Text style={{fontSize:16, fontWeight:'bold'}}>{item.value.name}    </Text>
-            <Text style={{fontSize:14}}>{item.value.address}   </Text>
+      <View style={styles.itemContainer}>
+        <View style={styles.itemTitleView}>
+          <View style={styles.itemTitleLeftView}>
+            <Text style={styles.mainBoldText}>{item.value.name}    </Text>
+            <Text style={styles.minorText}>{item.value.address}   </Text>
           </View>
-          <Text style={{fontSize:14}}>工期：{item.value.remained_duration}/{item.value.duration}</Text>
+          <Text style={styles.minorText}>工期：{item.value.remained_duration}/{item.value.duration}</Text>
         </View>
 
-        <View style={{width:total_price_pixel, height:10, backgroundColor:'gray', borderRadius:5, 
-            position:'absolute', left:10, top:48}}></View>
-        <View style={{width:received_price_pixel, height:10, backgroundColor:'green', borderTopLeftRadius:5, 
-            borderBottomLeftRadius:5, position:'absolute', left:10, top:48}}></View>
-        <View style={{width:expense_pixel, height:10, backgroundColor:'red', borderTopLeftRadius:5, 
-            borderBottomLeftRadius:5, position:'absolute', left:10, top:48}}></View>
-        <View style={{width:expense_paid_pixel, height:10, backgroundColor:'blue', borderTopLeftRadius:5, 
-            borderBottomLeftRadius:5, position:'absolute', left:10, top:48}}></View>
+        <View style={[styles.progressBarBase, {width:total_price_pixel, backgroundColor:'gray'}]}></View>
 
-        <View style={{flexDirection:'row', alignItems:'flex-end', position:'absolute', left:10, top:65}}>
-          <View style={{flexDirection:'row', alignItems:'flex-end', position:'absolute', left:0, top:0}}>
-            <Text style={{fontSize:14}}>已支付/开销：</Text>
-            <Text style={{fontSize:14}}>
+        {this._renderProgressBar([[received_price_pixel, 'green'],
+                                  [expense_pixel, 'red'],
+                                  [expense_paid_pixel, 'blue']])}
+
+        <View style={styles.detailView}>
+          <View style={styles.detailLeftView}>
+            <Text style={styles.minorText}>已支付/开销：</Text>
+            <Text style={styles.minorText}>
               {Math.floor(item.value.expense_paid)}/{Math.floor(item.value.total_expense)}
             </Text>
           </View>
-          <View style={{flexDirection:'row', alignItems:'flex-end', position:'absolute', left:size.width/2-10, top:0}}>
-            <Text style={{fontSize:14}}>已到账/报价：</Text>
-            <Text style={{fontSize:14}}>
+          <View style={styles.detailRightView}>
+            <Text style={styles.minorText}>已到账/报价：</Text>
+            <Text style={styles.minorText}>
               {Math.floor(item.value.price_received)}/{Math.floor(actual_price)}
             </Text>
           </View>
@@ -121,43 +124,67 @@ export default class CustomerList extends Component {
 }
 
 const styles = StyleSheet.create({
-  smallFont: {
-    lineHeight: 20,
-    color: '#A6A6A6',
-    fontSize: 12
+  itemContainer: {
+    padding:10, 
+    paddingTop:18, 
+    height:95, 
+    borderBottomWidth: 1, 
+    borderBottomColor: '#EFEFEF',
   },
+  itemTitleView: {
+    flexDirection:'row', 
+    alignItems:'flex-end', 
+    justifyContent:'space-between',
+  },
+  itemTitleLeftView: {
+    flexDirection:'row', 
+    alignItems:'flex-end',
+  },
+  mainBoldText: {
+    fontSize:16, 
+    fontWeight:'bold',
+  },
+  minorText: {
+    fontSize:14,
+  },
+  progressBarBase: {
+    height:10, 
+    borderRadius:5, 
+    position:'absolute', 
+    left:10, 
+    top:48,
+  },
+  progressBar: {
+    height:10, 
+    borderTopLeftRadius:5, 
+    borderBottomLeftRadius:5,
+    position:'absolute', 
+    left:10, 
+    top:48,
+  },
+  detailView: {
+    flexDirection:'row', 
+    alignItems:'flex-end', 
+    position:'absolute', 
+    left:10, 
+    top:65,
+  },
+  detailLeftView: {
+    flexDirection:'row', 
+    alignItems:'flex-end', 
+    position:'absolute', 
+    left:0, 
+    top:0,
+  },
+  detailRightView: {
+    flexDirection:'row', 
+    alignItems:'flex-end', 
+    position:'absolute', 
+    left:size.width/2-10, 
+    top:0
+  },
+
   loadding: {
     marginTop: 100
   },
-  star: {
-    width: 12,
-    height: 12,
-    marginRight: 2
-  },
-  hotList: {
-    height: 130,
-    paddingLeft: 18,
-    paddingRight: 18,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#EFEFEF'
-  },
-  lastList: {
-    borderBottomWidth: 0
-  },
-  title: {
-    fontWeight: '900',
-    fontSize: 15
-  },
-  pay: {
-    width: 50,
-    height: 25,
-    marginLeft: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth:1,
-    borderColor:'#FF4E65',
-    borderRadius:5,
-  }
 })

@@ -120,6 +120,7 @@ export default class GeneralInput extends Component {
           </View>
           <View style={styles.inputItemcontentView}>
             <TextInput 
+              style={styles.textInput}
               placeholder={this.props.placeholder} 
               value={this.state.input_value}
               keyboardType={this._getKeyboardType()}
@@ -168,6 +169,10 @@ const styles = StyleSheet.create({
   },
   fontMinor: {
     fontSize:12,
+  },
+  textInput: {
+    width:100, 
+    textAlign:'right',
   },
 
 });

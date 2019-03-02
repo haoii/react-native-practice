@@ -11,7 +11,7 @@ export default class AccountScreen extends Component {
 
   render() {
     return (
-      <View style={{width:width,height:height,paddingTop:10,backgroundColor:'#fff'}}>
+      <View style={{width:width,height:height-60,paddingTop:10,backgroundColor:'#fff'}}>
 
         <ScrollableTabView 
           renderTabBar={() => <ScrollableTabBar/> } 

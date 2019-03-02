@@ -38,8 +38,6 @@ export default class GeneralInput extends Component {
             date={this.state.date}
             mode="date"
             format="YYYY-MM-DD"
-            minDate="2018-05-01"
-            maxDate="2019-06-01"
             confirmBtnText="确认"
             cancelBtnText="取消"
             customStyles={{

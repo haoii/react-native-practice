@@ -9,7 +9,7 @@ export default class RecordHeader extends Component {
     // const {navigate} = this.props.navigation;
     return (
       <View style={styles.header}>
-        <TouchableOpacity style={styles.city} 
+        <TouchableOpacity style={styles.addButton} 
           onPress={() => this.props.navigation.navigate('RecordSelectSreen')}>
           <IconIonicons name="ios-add" size={30} color="#222222" />
         </TouchableOpacity>
@@ -27,10 +27,13 @@ export default class RecordHeader extends Component {
 }
 const styles = StyleSheet.create({
   header: {
-    height: 35,
+    height: 45,
     flexDirection:'row',
     paddingLeft:10,
     paddingRight:10,
+    paddingBottom:15,
+    borderBottomWidth: 6, 
+    borderBottomColor: '#F5F5F5'
   },
   search: {
     backgroundColor: '#F5F5F5',
@@ -40,7 +43,7 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignItems:'center',
   },
-  city: {
+  addButton: {
     flex:1,
     height:30,
     marginRight:8,

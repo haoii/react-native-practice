@@ -14,6 +14,7 @@ import MeScreen from './me/MeScreen';
 
 import RecordSelectSreen from './record/record_modals/RecordSelectSreen';
 import AddCustomerForm from './record/record_modals/AddCustomerForm';
+import CollectionFromCustomerForm from './record/record_modals/CollectionFromCustomerForm';
 
 
 const MainBottomTab = createBottomTabNavigator(
@@ -87,6 +88,12 @@ export default createAppContainer(createStackNavigator(
     },
     AddCustomerForm: {
       screen: AddCustomerForm,
+      navigationOptions: {
+        header: null
+      },
+    },
+    CollectionFromCustomerForm: {
+      screen: CollectionFromCustomerForm,
       navigationOptions: {
         header: null
       },

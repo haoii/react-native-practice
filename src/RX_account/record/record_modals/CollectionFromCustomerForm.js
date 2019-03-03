@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight, CameraRoll, 
-    Image, KeyboardAvoidingView, ScrollView } from 'react-native';
+    Image, KeyboardAvoidingView, ScrollView, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ImagePicker from 'react-native-image-crop-picker';
 import { Input } from 'react-native-elements';
@@ -9,6 +9,9 @@ import { Input } from 'react-native-elements';
 import URL from '../../Config';
 import GeneralInput from '../../forms/GeneralInput';
 import DateInput from '../../forms/DateInput';
+import ChooseOneInput from '../../forms/ChooseOneInput';
+import InputPlaceholder from '../../forms/InputPlaceholder';
+import ParagraphInput from '../../forms/ParagraphInput';
 
 import Dimensions from 'Dimensions';
 
@@ -17,11 +20,13 @@ const size = {
   height: Dimensions.get('window').height
 };
 
-export default class AddCustomerForm extends Component {
+export default class CollectionFromCustomerForm extends Component {
   constructor(props) {
     super(props);
 
     this.ready_to_commit = false;
+    this.customers_data = [];
+    this._initCustomerNameData();
 
     this.state = { 
       img_url: [],
@@ -30,31 +35,34 @@ export default class AddCustomerForm extends Component {
       customer_name_value: '',
       customer_name_comFlag: false,
 
-      address_value: '',
-      address_comFlag: false,
+      amount_value: '',
+      amount_comFlag: false,
 
-      phone_value: '',
-      phone_comFlag: true,
+      remark_value: '',
+      remark_comFlag: true,
 
-      duration_value: '60',
-      duration_comFlag: true,
+      collect_date: this._getCurDate(),
 
-      total_price_value: '',
-      total_price_comFlag: false,
-
-      discount_value: '',
-      discount_comFlag: false,
-
-      area_value: '',
-      area_comFlag: true,
-
-      sign_date: this._getCurDate(),
+      customers_data_ready: false,
     };
   }
 
   _getCurDate = () => {
     let t = new Date();
     return '' + t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
+  }
+
+  _initCustomerNameData = () => {
+    fetch(URL.customers)
+      .then(response => response.json())
+      .then(responseJson => {
+        let arrData = responseJson.latest_customers;
+        this.customers_data = arrData.map(item => item.name + '(' + item.address + ')')
+        this.setState({customers_data_ready:true});
+
+      }).catch(error => {
+        alert(error);
+      });
   }
 
   _submitPost = () => {
@@ -64,15 +72,11 @@ export default class AddCustomerForm extends Component {
 
     let formData = new FormData();
     formData.append("name", this.state.customer_name_value);
-    formData.append("address", this.state.address_value);
-    formData.append("sign_date", this.state.sign_date);
-    formData.append("duration", this.state.duration_value);
-    formData.append("phone", this.state.phone_value);
-    formData.append("area", this.state.area_value);
-    formData.append("total_price", this.state.total_price_value);
-    formData.append("price_discount", this.state.discount_value);
+    formData.append("collect_date", this.state.collect_date);
+    formData.append("amount", this.state.amount_value);
+    formData.append("remark", this.state.remark_value);
     
-    fetch(URL.submit_add_customer,{
+    fetch(URL.submit_collect_from_customer,{
       method:'POST',
       body:formData,
     })
@@ -115,84 +119,57 @@ export default class AddCustomerForm extends Component {
 
         <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={30} style={styles.keyboardAvoiding} enabled>
           <ScrollView contentContainerStyle={styles.ScrollViewStyle}>
-
             <View style={styles.Canvas}>
+
+            {!this.state.customers_data_ready
+              ? <InputPlaceholder label='客户名' message='正在获取客户列表...' />
+              : <ChooseOneInput 
+                  label='客户名' 
+                  data={this.customers_data}
+                  onEndEditing={(num) => {
+                    this.setState({
+                      customer_name_comFlag: true,
+                      customer_name_value: num,
+                    });}}/>}
+              
               <GeneralInput 
-                label='客户名' max_length={64} 
-                exclude_str=')('
-                onEndEditing={(isValid, value) => {
+                label='金额' placeholder='0.00' unit='元' 
+                content_type='float' value_min={0}
+                onEndEditing={(isValid, num) => {
                   this.setState({
-                    customer_name_comFlag: isValid,
-                    customer_name_value: value,
+                    amount_comFlag: isValid,
+                    amount_value: num,
                   });}} />
-              <GeneralInput 
-                label='地址' max_length={256} hint='注意：地址提交后不可更改！'
-                onEndEditing={(isValid, value) => {
-                  this.setState({
-                    address_comFlag: isValid,
-                    address_value: value,
-                  });}} />
-              <GeneralInput 
-                label='电话' max_length={16} 
-                allow_empty={true} 
-                content_type='phone'
-                onEndEditing={(isValid, value) => {
-                  this.setState({
-                    phone_comFlag: isValid,
-                    phone_value: value,
-                  });}} />
+
               <DateInput 
-                label='签单日期' init_date={this.state.sign_date}
+                label='收款日期' init_date={this.state.collect_date}
                 onEndEditing={(date) => {
                   this.setState({
-                    sign_date: date,
-                  })}}/>      
-              <GeneralInput 
-                label='工期' placeholder='60' unit='天'
-                allow_empty={true} default_value_when_empty='60'
-                content_type='integer' value_min={1}
-                onEndEditing={(isValid, value) => {
-                  this.setState({
-                    duration_comFlag: isValid,
-                    duration_value: value,
-                  });}} />
-              <GeneralInput 
-                label='总报价' placeholder='0.00' unit='元' 
-                content_type='float' value_min={0}
-                onEndEditing={(isValid, num) => {
-                  this.setState({
-                    total_price_comFlag: isValid,
-                    total_price_value: num,
-                  });}} />
-              <GeneralInput 
-                label='折扣' placeholder='0.0' unit='' hint='提示：1到10之间' 
-                content_type='float' value_min={1} value_max={10}
-                onEndEditing={(isValid, num) => {
-                  this.setState({
-                    discount_comFlag: isValid,
-                    discount_value: num,
-                  });}} />
-              <GeneralInput 
-                label='面积' unit='平方'
-                allow_empty={true}
-                content_type='float' value_min={0}
-                onEndEditing={(isValid, value) => {
-                  this.setState({
-                    area_comFlag: isValid,
-                    area_value: value,
-                  });}} />
-            
-            </View>
+                    collect_date: date,
+                  })}}/> 
 
+              <ParagraphInput 
+                label='备注' allow_empty={true}
+                onEndEditing={(isValid, num) => {
+                  this.setState({
+                    remark_comFlag: isValid,
+                    remark_value: num,
+                  });}} />     
+
+            </View>
           </ScrollView>
         </KeyboardAvoidingView>
-          
+
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+
+  loadding: {
+    marginTop: 100
+  },
 
   ScrollViewStyle: {
     paddingLeft:15,

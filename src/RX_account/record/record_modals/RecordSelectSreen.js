@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TextInput, TouchableHighlight, CameraRoll,
     Image, KeyboardAvoidingView, ScrollView } from 'react-native';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import IconEntypo from 'react-native-vector-icons/Entypo';
+import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ImagePicker from 'react-native-image-crop-picker';
 import { Input } from 'react-native-elements';
 
@@ -71,6 +72,28 @@ export default class RecordSelectSreen extends Component {
             </View>
           </View>
         </View>
+
+        <View style={styles.classContainer}>
+          <Text style={styles.classTitleText}>收付款</Text>
+          <View style={styles.classContentContainer}>
+            <View style={styles.classLineContainer}>
+              <TouchableHighlight 
+                onPress={() => this.props.navigation.navigate('CollectionFromCustomerForm')}>
+                <View style={styles.itemTouchable}>
+                  <IconMaterialIcons name='attach-money' size={40} />
+                  <Text>收客户款</Text>
+                </View>
+              </TouchableHighlight>
+              <TouchableHighlight >
+                <View style={styles.itemTouchable}>
+                  <IconMaterialIcons name='payment' size={40} />
+                  <Text>支付材料商</Text>
+                </View>
+              </TouchableHighlight>
+              
+            </View>
+          </View>
+        </View>
           
       </View>
     );
@@ -103,6 +126,8 @@ const styles = StyleSheet.create({
   classContainer: {
     backgroundColor: 'white',
     padding: 15,
+    borderBottomWidth: 6, 
+    borderBottomColor: '#F5F5F5'
   },
   classTitleText: {
     fontSize:16,

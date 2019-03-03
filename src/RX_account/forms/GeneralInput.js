@@ -17,6 +17,8 @@ export default class GeneralInput extends Component {
 
     value_min: -10000000000,  // valid when conten_type is 'float' or 'integer'
     value_max: 10000000000,  // valid when conten_type is 'float' or 'integer'
+
+    exclude_str: '',
   }
 
   constructor(props) {
@@ -44,17 +46,22 @@ export default class GeneralInput extends Component {
 
   _validCheck = (value) => {
     if (this.props.content_type === 'float')
-      return (!isNaN(value) 
+      return [(!isNaN(value) 
             && Number(value) < this.props.value_max 
-            && Number(value) > this.props.value_min); 
-    else if (this.props.content_type === 'string')
-      return true;
+            && Number(value) > this.props.value_min), '']; 
+    else if (this.props.content_type === 'string') {
+      for (let i=0, ex_str=this.props.exclude_str; i<ex_str.length; i++) {
+        if (value.includes(ex_str[i]))
+          return [false, '不能含有:'+ex_str];
+      }
+      return [true, ''];
+    }
     else if (this.props.content_type === 'phone')
-      return this._isNormalInteger(value);
+      return [this._isNormalInteger(value), ''];
     else if (this.props.content_type === 'integer')
-      return (this._isNormalInteger(value) 
+      return [(this._isNormalInteger(value) 
            && Number(value) < this.props.value_max 
-           && Number(value) > this.props.value_min);      
+           && Number(value) > this.props.value_min), ''];      
   }
 
   _innerOnEndEditing = () => {
@@ -76,7 +83,8 @@ export default class GeneralInput extends Component {
           this.props.onEndEditing(false, '');
       }
     } else {
-      if (this._validCheck(input)) {
+      let check_ret = this._validCheck(input);
+      if (check_ret[0]) {
         this.setState({
           message:'',
           message_level:'info',
@@ -85,7 +93,7 @@ export default class GeneralInput extends Component {
           this.props.onEndEditing(true, input);
       } else {
         this.setState({
-          message:'请输入有效的值',
+          message:check_ret[1] || '请输入有效的值',
           message_level:'warnning',
         });
         if (this.props.onEndEditing)
@@ -171,7 +179,7 @@ const styles = StyleSheet.create({
     fontSize:12,
   },
   textInput: {
-    width:100, 
+    minWidth:100, 
     textAlign:'right',
   },
 

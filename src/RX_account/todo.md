@@ -4,4 +4,24 @@
 
 1. KeyboardAvoidingView不完全避免遮挡问题，用keyboardVerticalOffset似乎可以解决。
 2. 地址输入大段文字问题。
+3. fetch之后提示提交是否成功。
 
+[
+  {
+    '河北':
+    [
+      {
+        '石家庄':
+        [
+          
+        ]
+      },
+      {
+
+      },
+    ]
+  },
+  {
+
+  },
+]

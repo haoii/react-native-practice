@@ -5107,6 +5107,11 @@ react-native-image-picker@^0.28.0:
   resolved "http://registry.npm.taobao.org/react-native-image-picker/download/react-native-image-picker-0.28.0.tgz#e3f26df170ea932e9c0404624fbced2f59a300e3"
   integrity sha1-4/Jt8XDqky6cBARiT7ztL1mjAOM=
 
+react-native-picker@^4.3.7:
+  version "4.3.7"
+  resolved "http://registry.npm.taobao.org/react-native-picker/download/react-native-picker-4.3.7.tgz#9842e8c62ff0d8b676e9514d9f9172413c0518a8"
+  integrity sha1-mELoxi/w2LZ26VFNn5FyQTwFGKg=
+
 react-native-ratings@^6.3.0:
   version "6.3.0"
   resolved "http://registry.npm.taobao.org/react-native-ratings/download/react-native-ratings-6.3.0.tgz#becda9379616776a81d9d90bfc95ea40b76286fb"

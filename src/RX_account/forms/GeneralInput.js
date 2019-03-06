@@ -181,6 +181,8 @@ const styles = StyleSheet.create({
   textInput: {
     minWidth:100, 
     textAlign:'right',
+    // backgroundColor:'red',
+    
   },
 
 });

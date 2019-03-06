@@ -11,7 +11,7 @@ const size = {
   height: Dimensions.get('window').height
 };
 
-export default class GeneralInput extends Component {
+export default class ChooseOneInput extends Component {
   static defaultProps = {
     label: '',
     hint: '',

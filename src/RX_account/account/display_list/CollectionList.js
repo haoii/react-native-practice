@@ -116,11 +116,11 @@ const styles = StyleSheet.create({
 
   customerText: {
     fontSize:14,
-    minWidth:180,
+    minWidth:150,
   },
   amountText: {
     fontSize:14,
-    minWidth:80,
+    minWidth:70,
     textAlign:'right',
   },
 

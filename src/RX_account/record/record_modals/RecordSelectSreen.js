@@ -47,9 +47,10 @@ export default class RecordSelectSreen extends Component {
                   <Text>添加客户</Text>
                 </View>
               </TouchableHighlight>
-              <TouchableHighlight >
+              <TouchableHighlight 
+                onPress={() => this.props.navigation.navigate('AddSupplierForm')}>
                 <View style={styles.itemTouchable}>
-                  <IconEntypo name='shop' size={40} />
+                  <IconEntypo name='shop' size={40} color='#2aa2ef' />
                   <Text>添加材料商</Text>
                 </View>
               </TouchableHighlight>
@@ -80,7 +81,7 @@ export default class RecordSelectSreen extends Component {
               <TouchableHighlight 
                 onPress={() => this.props.navigation.navigate('CollectionFromCustomerForm')}>
                 <View style={styles.itemTouchable}>
-                  <IconMaterialIcons name='attach-money' size={40} />
+                  <IconMaterialIcons name='attach-money' size={40} color='#2aa2ef' />
                   <Text>收客户款</Text>
                 </View>
               </TouchableHighlight>

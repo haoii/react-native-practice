@@ -14,6 +14,7 @@ import MeScreen from './me/MeScreen';
 
 import RecordSelectSreen from './record/record_modals/RecordSelectSreen';
 import AddCustomerForm from './record/record_modals/AddCustomerForm';
+import AddSupplierForm from './record/record_modals/AddSupplierForm';
 import CollectionFromCustomerForm from './record/record_modals/CollectionFromCustomerForm';
 
 
@@ -88,6 +89,12 @@ export default createAppContainer(createStackNavigator(
     },
     AddCustomerForm: {
       screen: AddCustomerForm,
+      navigationOptions: {
+        header: null
+      },
+    },
+    AddSupplierForm: {
+      screen: AddSupplierForm,
       navigationOptions: {
         header: null
       },

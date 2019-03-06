@@ -17,7 +17,7 @@ const size = {
   height: Dimensions.get('window').height
 };
 
-export default class AddCustomerForm extends Component {
+export default class AddSupplierForm extends Component {
   constructor(props) {
     super(props);
 
@@ -34,25 +34,7 @@ export default class AddCustomerForm extends Component {
       phone_value: '',
       phone_comFlag: true,
 
-      duration_value: '60',
-      duration_comFlag: true,
-
-      total_price_value: '',
-      total_price_comFlag: false,
-
-      discount_value: '',
-      discount_comFlag: false,
-
-      area_value: '',
-      area_comFlag: true,
-
-      sign_date: this._getCurDate(),
     };
-  }
-
-  _getCurDate = () => {
-    let t = new Date();
-    return '' + t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
   }
 
   _submitPost = () => {
@@ -63,14 +45,9 @@ export default class AddCustomerForm extends Component {
     let formData = new FormData();
     formData.append("name", this.state.name_value);
     formData.append("address", this.state.address_value);
-    formData.append("sign_date", this.state.sign_date);
-    formData.append("duration", this.state.duration_value);
     formData.append("phone", this.state.phone_value);
-    formData.append("area", this.state.area_value);
-    formData.append("total_price", this.state.total_price_value);
-    formData.append("price_discount", this.state.discount_value);
     
-    fetch(URL.submit_add_customer,{
+    fetch(URL.submit_add_supplier,{
       method:'POST',
       body:formData,
     })
@@ -116,7 +93,7 @@ export default class AddCustomerForm extends Component {
 
             <View style={styles.Canvas}>
               <GeneralInput 
-                label='客户名' max_length={64} 
+                label='材料商名' max_length={64} 
                 exclude_str=')('
                 onEndEditing={(isValid, value) => {
                   this.setState({
@@ -124,7 +101,7 @@ export default class AddCustomerForm extends Component {
                     name_value: value,
                   });}} />
               <GeneralInput 
-                label='地址' max_length={256} hint='注意：地址提交后不可更改！'
+                label='地址' max_length={256} 
                 onEndEditing={(isValid, value) => {
                   this.setState({
                     address_comFlag: isValid,
@@ -139,46 +116,7 @@ export default class AddCustomerForm extends Component {
                     phone_comFlag: isValid,
                     phone_value: value,
                   });}} />
-              <DateInput 
-                label='签单日期' init_date={this.state.sign_date}
-                onEndEditing={(date) => {
-                  this.setState({
-                    sign_date: date,
-                  })}}/>      
-              <GeneralInput 
-                label='工期' placeholder='60' unit='天'
-                allow_empty={true} default_value_when_empty='60'
-                content_type='integer' value_min={1}
-                onEndEditing={(isValid, value) => {
-                  this.setState({
-                    duration_comFlag: isValid,
-                    duration_value: value,
-                  });}} />
-              <GeneralInput 
-                label='总报价' placeholder='0.00' unit='元' 
-                content_type='float' value_min={0}
-                onEndEditing={(isValid, num) => {
-                  this.setState({
-                    total_price_comFlag: isValid,
-                    total_price_value: num,
-                  });}} />
-              <GeneralInput 
-                label='折扣' placeholder='0.0' unit='' hint='提示：1到10之间' 
-                content_type='float' value_min={1} value_max={10}
-                onEndEditing={(isValid, num) => {
-                  this.setState({
-                    discount_comFlag: isValid,
-                    discount_value: num,
-                  });}} />
-              <GeneralInput 
-                label='面积' unit='平方'
-                allow_empty={true}
-                content_type='float' value_min={0}
-                onEndEditing={(isValid, value) => {
-                  this.setState({
-                    area_comFlag: isValid,
-                    area_value: value,
-                  });}} />
+             
             
             </View>
 

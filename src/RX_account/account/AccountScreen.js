@@ -6,12 +6,14 @@ import ScrollableTabView, { ScrollableTabBar } from 'react-native-scrollable-tab
 const { width, height } = Dimensions.get('window');
 
 import CustomerList from './CustomerList';
+import SupplierList from './SupplierList';
+import MaterialList from './MaterialList';
 
 export default class AccountScreen extends Component {
 
   render() {
     return (
-      <View style={{width:width,height:height-60,paddingTop:10,backgroundColor:'#fff'}}>
+      <View style={{width:width,height:height-30,paddingTop:10,backgroundColor:'#fff'}}>
 
         <ScrollableTabView 
           renderTabBar={() => <ScrollableTabBar/> } 
@@ -29,7 +31,10 @@ export default class AccountScreen extends Component {
             <CustomerList />
           </View>
           <View tabLabel='材料商' style={{marginBottom:50}}>
-            <Text>hhh</Text>
+            <SupplierList />
+          </View>
+          <View tabLabel='材料' style={{marginBottom:50}}>
+            <MaterialList />
           </View>
           <View tabLabel='工人' style={{marginBottom:50}}>
             <Text>hhh</Text>

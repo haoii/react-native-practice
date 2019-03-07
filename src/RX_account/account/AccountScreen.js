@@ -5,9 +5,9 @@ import ScrollableTabView, { ScrollableTabBar } from 'react-native-scrollable-tab
 
 const { width, height } = Dimensions.get('window');
 
-import CustomerList from './CustomerList';
-import SupplierList from './SupplierList';
-import MaterialList from './MaterialList';
+import CustomerList from './display_list/CustomerList';
+import SupplierList from './display_list/SupplierList';
+import MaterialList from './display_list/MaterialList';
 
 export default class AccountScreen extends Component {
 

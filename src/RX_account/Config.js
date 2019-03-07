@@ -9,6 +9,8 @@ const submit_add_customer_url = account_url + 'add_customer/';
 const submit_add_supplier_url = account_url + 'add_supplier/';
 const submit_collect_from_customer_url = account_url + 'collect_from_customer/';
 const collections_from_customer_url = account_url + 'collections_from_customer/';
+const material_classes_url = account_url + 'material_classes/';
+const materials_url = account_url + 'materials/';
 
 export default URL = {
   customers: customers_url,
@@ -17,6 +19,8 @@ export default URL = {
   submit_add_supplier: submit_add_supplier_url,
   submit_collect_from_customer: submit_collect_from_customer_url,
   collections_from_customer: collections_from_customer_url,
+  material_classes: material_classes_url,
+  materials: materials_url,
 };
 
 

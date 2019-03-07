@@ -14,6 +14,7 @@ const size = {
 
 export default class MaterialScopeSelector extends Component {
   static defaultProps = {
+    onEndEditing: null,
   }
 
   constructor(props) {
@@ -23,16 +24,16 @@ export default class MaterialScopeSelector extends Component {
     this._initMaterialClassData();
 
     this.state = { 
+      material_class_data_ready: false,
     };
   }
 
   _initMaterialClassData = () => {
-    fetch(URL.customers)
+    fetch(URL.material_classes)
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.latest_customers;
-        this.customers_data = arrData.map(item => item.name + '(' + item.address + ')')
-        this.setState({customers_data_ready:true});
+        this.material_class_data = responseJson.material_classes;
+        this.setState({material_class_data_ready: true});
 
       }).catch(error => {
         alert(error);
@@ -42,8 +43,11 @@ export default class MaterialScopeSelector extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <ChooseOneInput label='类别' 
-          data={[{'瓦工主材': [{'砖类': ['瓷砖', '大理石']}]}, {'木工主材': [{'板材': ['密度板', '胶合板', '细木工板', '刨花板', '颗粒板', '石膏板']}, {'型材': ['木方']}, {'线材': ['指甲线', '外角线', '内角线', '踢脚线', '雕花线']}]}, {'油工主材': [{'无': ['无']}]}, {'水电主材': [{'电线': ['无']}]}, {'瓦工辅材': [{'黏合': ['水泥', '沙子', '石灰']}, {'涂料': ['防水涂料']}]}]} />
+        {!this.state.material_class_data_ready
+          ? <Text>正在获取材料类别列表...</Text>
+          : <ChooseOneInput label='类别' 
+              data={this.material_class_data} 
+              onEndEditing={this.props.onEndEditing} />}
 
         <View style={styles.timeSelectView}>
           <Text style={styles.mainFont}>2019年2月1日 - 至今 </Text>

@@ -11,7 +11,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 
-import URL from '../Config';
+import URL from '../../Config';
 
 import Dimensions from 'Dimensions';
 
@@ -20,13 +20,13 @@ const size = {
   height: Dimensions.get('window').height
 };
 
-export default class SupplierList extends Component {
+export default class CustomerList extends Component {
   constructor(props) {
     super(props);
     this.state = {
       ready: true,
       refreshing: false,
-      suppliers: []
+      customers: []
     }
   }
 
@@ -35,17 +35,19 @@ export default class SupplierList extends Component {
   }
 
   _fetchData = () => {
-    fetch(URL.suppliers)
+    fetch(URL.customers)
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.latest_suppliers;
+        let arrData = responseJson.latest_customers;
         let i = 0;
         let arrList = [];
+        // 直接赋值的话没有 key 键,就会发出警告,
+        // 所以为了避免出现警告,应主动在每个项目中添加 key 键
         arrData.map(item => {
           arrList.push({key: i, value: item});
           i++;
         })
-        this.setState({suppliers: arrList, ready: false, refreshing: false});
+        this.setState({customers: arrList, ready: false, refreshing: false});
 
       }).catch((error) => {
         alert(error);
@@ -66,8 +68,11 @@ export default class SupplierList extends Component {
   }
 
   _renderItem = ({item}) => {
-    let total_expense_pixel = size.width - 20;
-    let expense_paid_pixel = (item.value.expense_paid / item.value.total_expense) * total_expense_pixel;
+    let total_price_pixel = size.width - 20;
+    let actual_price = item.value.total_price * item.value.price_discount / 10;
+    let received_price_pixel = (item.value.price_received / actual_price) * total_price_pixel;
+    let expense_pixel = (item.value.total_expense / actual_price) * total_price_pixel;
+    let expense_paid_pixel = (item.value.expense_paid / actual_price) * total_price_pixel;
     return (
       <View style={styles.itemContainer}>
         <View style={styles.itemTitleView}>
@@ -75,17 +80,26 @@ export default class SupplierList extends Component {
             <Text style={styles.mainBoldText}>{item.value.name}    </Text>
             <Text style={styles.minorText}>{item.value.address}   </Text>
           </View>
-          <Text style={styles.minorText}>编号：{item.value.id}</Text>
+          <Text style={styles.minorText}>工期：{item.value.remained_duration}/{item.value.duration}</Text>
         </View>
 
-        <View style={[styles.progressBarBase, {width:total_expense_pixel, backgroundColor:'red'}]}></View>
-        <View style={[styles.progressBar, {width:expense_paid_pixel, backgroundColor:'blue'}]}></View>
+        <View style={[styles.progressBarBase, {width:total_price_pixel, backgroundColor:'gray'}]}></View>
+
+        {this._renderProgressBar([[received_price_pixel, 'green'],
+                                  [expense_pixel, 'red'],
+                                  [expense_paid_pixel, 'blue']])}
 
         <View style={styles.detailView}>
           <View style={styles.detailLeftView}>
             <Text style={styles.minorText}>已支付/开销：</Text>
             <Text style={styles.minorText}>
               {Math.floor(item.value.expense_paid)}/{Math.floor(item.value.total_expense)}
+            </Text>
+          </View>
+          <View style={styles.detailRightView}>
+            <Text style={styles.minorText}>已到账/报价：</Text>
+            <Text style={styles.minorText}>
+              {Math.floor(item.value.price_received)}/{Math.floor(actual_price)}
             </Text>
           </View>
         </View>
@@ -99,7 +113,7 @@ export default class SupplierList extends Component {
         {this.state.ready
           ? <ActivityIndicator size="large" style={styles.loadding}/>
           : <FlatList
-            data={this.state.suppliers}
+            data={this.state.customers}
             onRefresh={this._refreshDate}
             refreshing={this.state.refreshing}
             renderItem={this._renderItem}/>}

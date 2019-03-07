@@ -36,7 +36,7 @@ export default class ChooseOneInput extends Component {
           chosen_data:data
         });
         if (this.props.onEndEditing)
-          this.props.onEndEditing(data[0])
+          this.props.onEndEditing(data)
       },
       pickerFontSize: 14,
       pickerTextEllipsisLen: 10,

@@ -6,6 +6,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  TouchableHighlight,
   Image,
   FlatList,
   ActivityIndicator
@@ -68,41 +69,56 @@ export default class CustomerList extends Component {
   }
 
   _renderItem = ({item}) => {
-    let total_price_pixel = size.width - 20;
+    let total_price_pixel = size.width - 36;
     let actual_price = item.value.total_price * item.value.price_discount / 10;
     let received_price_pixel = (item.value.price_received / actual_price) * total_price_pixel;
     let expense_pixel = (item.value.total_expense / actual_price) * total_price_pixel;
     let expense_paid_pixel = (item.value.expense_paid / actual_price) * total_price_pixel;
     return (
-      <View style={styles.itemContainer}>
-        <View style={styles.itemTitleView}>
-          <View style={styles.itemTitleLeftView}>
-            <Text style={styles.mainBoldText}>{item.value.name}    </Text>
-            <Text style={styles.minorText}>{item.value.address}   </Text>
-          </View>
-          <Text style={styles.minorText}>工期：{item.value.remained_duration}/{item.value.duration}</Text>
-        </View>
+      <View>
+        <TouchableHighlight
+          style={styles.itemContainer}>
 
-        <View style={[styles.progressBarBase, {width:total_price_pixel, backgroundColor:'gray'}]}></View>
+          <View>
 
-        {this._renderProgressBar([[received_price_pixel, 'green'],
-                                  [expense_pixel, 'red'],
-                                  [expense_paid_pixel, 'blue']])}
+            <View style={styles.itemTitleView}>
+              <View style={styles.itemTitleLeftView}>
+                <Text style={styles.mainBoldText}>{item.value.name}    </Text>
+                <Text style={styles.minorText}>{item.value.address}   </Text>
+              </View>
+              <Text style={[styles.minorText, {color:'#E4572E'}]}>工期：{item.value.remained_duration}/{item.value.duration}</Text>
+            </View>
 
-        <View style={styles.detailView}>
-          <View style={styles.detailLeftView}>
-            <Text style={styles.minorText}>已支付/开销：</Text>
-            <Text style={styles.minorText}>
-              {Math.floor(item.value.expense_paid)}/{Math.floor(item.value.total_expense)}
-            </Text>
+            <View style={styles.progressBarContainer}>
+              <View style={[styles.progressBarBase, {width:total_price_pixel, backgroundColor:'#9E9E9E'}]}></View>
+
+              {this._renderProgressBar([[received_price_pixel, '#4CAF50'],
+                                        [expense_pixel, '#F44336'],
+                                        [expense_paid_pixel, '#3F51B5']])}
+
+              {/* {this._renderProgressBar([[received_price_pixel, '#8ac926'],
+                                        [expense_pixel, '#ff595e'],
+                                        [expense_paid_pixel, '#039be5']])} */}
+
+            </View>
+
+            <View style={styles.detailView}>
+              <View style={styles.detailLeftView}>
+                <Text style={styles.minorText}>支/开：</Text>
+                <Text style={styles.minorText}>
+                  {Math.floor(item.value.expense_paid)}/{Math.floor(item.value.total_expense)}
+                </Text>
+              </View>
+              <View style={styles.detailRightView}>
+                <Text style={styles.minorText}>收/报：</Text>
+                <Text style={styles.minorText}>
+                  {Math.floor(item.value.price_received)}/{Math.floor(actual_price)}
+                </Text>
+              </View>
+            </View>
+      
           </View>
-          <View style={styles.detailRightView}>
-            <Text style={styles.minorText}>已到账/报价：</Text>
-            <Text style={styles.minorText}>
-              {Math.floor(item.value.price_received)}/{Math.floor(actual_price)}
-            </Text>
-          </View>
-        </View>
+        </TouchableHighlight>
       </View>
     )
   }
@@ -116,7 +132,10 @@ export default class CustomerList extends Component {
             data={this.state.customers}
             onRefresh={this._refreshDate}
             refreshing={this.state.refreshing}
-            renderItem={this._renderItem}/>}
+            renderItem={this._renderItem}
+            ListHeaderComponent={
+              <View style={{height:5}}></View>
+            }/>}
 
       </View>
     );
@@ -124,13 +143,17 @@ export default class CustomerList extends Component {
 }
 
 const styles = StyleSheet.create({
+
   itemContainer: {
     padding:10, 
-    paddingTop:18, 
-    height:95, 
-    borderBottomWidth: 1, 
-    borderBottomColor: '#EFEFEF',
+    marginHorizontal:8,
+    marginTop:3,
+    marginBottom: 5,
+    backgroundColor:'white',
+    borderRadius:8,
+    elevation: 2,
   },
+
   itemTitleView: {
     flexDirection:'row', 
     alignItems:'flex-end', 
@@ -147,41 +170,41 @@ const styles = StyleSheet.create({
   minorText: {
     fontSize:14,
   },
+
+  progressBarContainer: {
+    height: 25,
+  },
   progressBarBase: {
     height:10, 
     borderRadius:5, 
     position:'absolute', 
-    left:10, 
-    top:48,
+    left:0, 
+    top:10,
   },
   progressBar: {
     height:10, 
     borderTopLeftRadius:5, 
     borderBottomLeftRadius:5,
     position:'absolute', 
-    left:10, 
-    top:48,
+    left:0, 
+    top:10,
   },
+
   detailView: {
     flexDirection:'row', 
     alignItems:'flex-end', 
-    position:'absolute', 
-    left:10, 
-    top:65,
+
   },
   detailLeftView: {
     flexDirection:'row', 
     alignItems:'flex-end', 
-    position:'absolute', 
-    left:0, 
-    top:0,
+    width: size.width/2-18,
+
   },
   detailRightView: {
     flexDirection:'row', 
     alignItems:'flex-end', 
-    position:'absolute', 
-    left:size.width/2-10, 
-    top:0
+    width: size.width/2-18,
   },
 
   loadding: {

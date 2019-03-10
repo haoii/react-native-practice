@@ -16,6 +16,10 @@ import RecordSelectSreen from './record/record_modals/RecordSelectSreen';
 import AddCustomerForm from './record/record_modals/AddCustomerForm';
 import AddSupplierForm from './record/record_modals/AddSupplierForm';
 import CollectionFromCustomerForm from './record/record_modals/CollectionFromCustomerForm';
+import SupplierDetail from './account/detail_modals/SupplierDetail';
+import MaterialOrderDetail from './account/detail_modals/MaterialOrderDetail';
+import PlaceOrderForm from './record/record_modals/PlaceOrderForm';
+import AddOrderItemForm from './record/record_modals/AddOrderItemForm';
 
 
 const MainBottomTab = createBottomTabNavigator(
@@ -38,35 +42,35 @@ const MainBottomTab = createBottomTabNavigator(
       tabBarIcon: ({ focused, tintColor }) => {
         const { routeName } = navigation.state;
         if (routeName === '记录') {
-          const iconName = `watch-later${focused ? '' : ''}`;
-          return <IconMaterialIcons name={iconName} size={25} color={tintColor} />;
+          const iconName = `chart-donut${focused ? '' : ''}`;
+          return <IconMaterialCommunity name={iconName} size={25} color={tintColor} />;
         }
         if (routeName === '账单') {
           const iconName = `list${focused ? '' : ''}`;
-          return <IconEntypo name={iconName} size={25} color={tintColor} />;
+          return <IconEntypo name={iconName} size={28} color={tintColor} />;
         }
         if (routeName === '统计') {
-          const iconName = `chart-line${focused ? '' : ''}`;
-          return <IconMaterialCommunity name={iconName} size={25} color={tintColor} />;
+          const iconName = `barschart${focused ? '' : ''}`;
+          return <IconAnt name={iconName} size={26} color={tintColor} />;
         }
         if (routeName === '我') {
-          const iconName = `account-outline${focused ? '' : ''}`;
-          return <IconMaterialCommunity name={iconName} size={25} color={tintColor} />;
+          const iconName = `user${focused ? '' : ''}`;
+          return <IconAnt name={iconName} size={25} color={tintColor} />;
         }
       },
     }),
     tabBarOptions: {
-      activeTintColor: '#494949',
-      inactiveTintColor: '#999999',
+      activeTintColor: '#039BE5',
+      inactiveTintColor: '#000',
       labelStyle: {
         fontSize: 12,
-        marginBottom: 5,
       },
       style: {
-        borderTopWidth: 1,
+        borderTopWidth: 0.5,
         borderTopColor: '#c3c3c3',
-        height: 50,
-        backgroundColor: '#fff',
+        height: 55,
+        backgroundColor: '#f8f8f8',
+        paddingVertical:4,
       },
     },
   },
@@ -105,8 +109,41 @@ export default createAppContainer(createStackNavigator(
         header: null
       },
     },
+    PlaceOrderForm: {
+      screen: PlaceOrderForm,
+      navigationOptions: {
+        header: null
+      },
+    },
+    AddOrderItemForm: {
+      screen: AddOrderItemForm,
+      navigationOptions: {
+        header: null
+      },
+    },
+    
+    SupplierDetail: {
+      screen: SupplierDetail,
+      // navigationOptions: {
+      //   header: null
+      // },
+    },
+    MaterialOrderDetail: {
+      screen: MaterialOrderDetail,
+      // navigationOptions: {
+      //   header: null
+      // },
+    },
   },
   {
     initialRouteName: 'MainBottomTab',
+    defaultNavigationOptions: {
+      headerStyle: {
+        height: 45,
+      },
+      headerTitleStyle: {
+        fontSize: 16,
+      },
+    },
   }
 ));

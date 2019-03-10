@@ -59,9 +59,7 @@ export default class MaterialScopeSelector extends Component {
 const styles = StyleSheet.create({
   container: {
     height:50,
-    padding:10,
-    borderBottomWidth: 0.5, 
-    borderBottomColor: '#888888',
+    paddingHorizontal:10,
     flexDirection:'row',
     alignItems:'center',
     justifyContent:"space-between",

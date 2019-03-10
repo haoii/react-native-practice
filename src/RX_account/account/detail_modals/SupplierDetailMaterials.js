@@ -6,14 +6,12 @@ import {
   TextInput,
   View,
   TouchableOpacity,
-  TouchableHighlight,
   Image,
   FlatList,
   ActivityIndicator
 } from 'react-native';
 
 import URL from '../../Config';
-import MaterialScopeSelector from '../MaterialScopeSelector';
 
 import Dimensions from 'Dimensions';
 
@@ -22,11 +20,9 @@ const size = {
   height: Dimensions.get('window').height
 };
 
-export default class MaterialList extends Component {
+export default class SupplierDetailMaterials extends Component {
   constructor(props) {
     super(props);
-
-    this.material_class = null;
 
     this.state = {
       refreshing: false,
@@ -40,15 +36,7 @@ export default class MaterialList extends Component {
 
   _fetchData = () => {
 
-    let formData = new FormData();
-    formData.append("first_class", this.material_class[0]);
-    formData.append("second_class", this.material_class[1]);
-    formData.append("third_class", this.material_class[2]);
-
-    fetch(URL.materials, {
-      method:'POST',
-      body:formData,
-    })
+    fetch(URL.supplier_detail + this.props.supplier_id + '/')
       .then(response => response.json())
       .then(responseJson => {
         let arrData = responseJson.all_materials;
@@ -66,14 +54,6 @@ export default class MaterialList extends Component {
   }
 
   _refreshDate = () => {
-    if (!this.material_class 
-      || this.material_class[0] === '无' 
-      || this.material_class[1] === '无'
-      || this.material_class[2] === '无') {
-        this.setState({materials: []});
-        return;
-      }
-      
 
     this.setState({refreshing: true});
     this._fetchData();
@@ -82,52 +62,36 @@ export default class MaterialList extends Component {
   _renderItem = ({item}) => {
     
     return (
-      <View>
-        <TouchableHighlight
-          style={styles.itemContainer}>
+      <View style={styles.itemContainer}>
+        <View style={styles.itemTitleView}>
+          <View style={styles.itemTitleLeftView}>
+            <Text style={styles.mainBoldText}>{item.value.name}    </Text>
+          </View>
+          <Text style={styles.minorText}>参考价：{item.value.price}元/{item.value.unit}</Text>
+        </View>
 
-          <View>
-
-            <View style={styles.itemTitleView}>
-              <View style={styles.itemTitleLeftView}>
-                <Text style={styles.mainBoldText}>{item.value.name}    </Text>
-                <Text style={styles.minorText}>{item.value.description}   </Text>
-              </View>
-              <Text style={styles.minorText}>编号：{item.value.id}</Text>
-            </View>
-
-            <View style={styles.detailView}>
-              <Text style={styles.minorText}>总用量：{item.value.total_used_amount}{item.value.unit}   </Text>
-              <Text style={styles.minorText}>总花费：{item.value.total_expense}元   </Text>
+        {item.value.total_used_amount
+          ? <View style={styles.detailView}>
+              <Text style={styles.minorText}>已购：{item.value.total_used_amount}{item.value.unit}</Text>
+              <Text style={styles.minorText}>花费：{item.value.total_expense}元</Text>
               <Text style={styles.minorText}>
                 平均价：{Math.floor(item.value.total_expense/item.value.total_used_amount)}元/{item.value.unit}
               </Text>
-
             </View>
-          </View>
-        </TouchableHighlight>
+          : null}
+        
       </View>
     )
-  }
-
-  _chooseMaterialClass = (data) => {
-    this.material_class = data;
-    this._refreshDate();
   }
 
   render() {
     return (
       <View>
-        
         <FlatList
           data={this.state.materials}
           onRefresh={this._refreshDate}
           refreshing={this.state.refreshing}
-          renderItem={this._renderItem}
-          ListHeaderComponent={
-            <MaterialScopeSelector 
-              onEndEditing={this._chooseMaterialClass} />
-          }/>
+          renderItem={this._renderItem}/>
 
       </View>
     );
@@ -136,13 +100,9 @@ export default class MaterialList extends Component {
 
 const styles = StyleSheet.create({
   itemContainer: {
-    padding:10, 
-    marginHorizontal:8,
-    marginTop:3,
-    marginBottom: 5,
-    backgroundColor:'white',
-    borderRadius:8,
-    elevation: 2,
+    paddingRight:15, 
+    paddingLeft:25,
+    paddingVertical:6, 
   },
   itemTitleView: {
     flexDirection:'row', 
@@ -154,7 +114,7 @@ const styles = StyleSheet.create({
     alignItems:'flex-end',
   },
   mainBoldText: {
-    fontSize:16, 
+    fontSize:14, 
     fontWeight:'bold',
   },
   minorText: {
@@ -166,7 +126,5 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
   },
 
-  loadding: {
-    marginTop: 100
-  },
+
 })

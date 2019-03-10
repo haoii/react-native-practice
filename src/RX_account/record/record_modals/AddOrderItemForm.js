@@ -20,45 +20,75 @@ const size = {
   height: Dimensions.get('window').height
 };
 
-export default class CollectionFromCustomerForm extends Component {
+export default class AddOrderItemForm extends Component {
   constructor(props) {
     super(props);
 
     this.ready_to_commit = false;
-    this.customers_data = [];
-    this._initCustomerNameData();
+    this.material_class_data = [];
+    this._initMaterialClassData();
+
+    this.material_data = [];
 
     this.state = { 
 
-      customer_name_value: '',
-      customer_name_comFlag: false,
+      material_class_value: '',
+      material_class_comFlag: false,
 
-      amount_value: '',
-      amount_comFlag: false,
+      material_value: '',
+      material_comFlag: false,
 
       remark_value: '',
       remark_comFlag: true,
 
-      collect_date: this._getCurDate(),
-
-      customers_data_ready: false,
+      material_class_data_ready: false,
+      material_data_ready: false,
     };
   }
 
-  _getCurDate = () => {
-    let t = new Date();
-    return '' + t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
-  }
-
-  _initCustomerNameData = () => {
-    fetch(URL.customers)
+  _initMaterialClassData = () => {
+    fetch(URL.material_classes)
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.latest_customers;
-        this.customers_data = arrData.map(item => item.name + '(' + item.address + ')')
-        this.setState({customers_data_ready:true});
+        this.material_class_data = responseJson.material_classes;
+        this.setState({material_class_data_ready: true});
 
       }).catch(error => {
+        alert(error);
+      });
+  }
+
+  _getMaterialClasData = (material_class) => {
+    if (!material_class 
+      || material_class[0] === '无' 
+      || material_class[1] === '无'
+      || material_class[2] === '无') {
+        this.setState({
+          material_class_comFlag: false,
+        });
+        return;
+      }
+
+    let formData = new FormData();
+    formData.append("first_class", material_class[0]);
+    formData.append("second_class", material_class[1]);
+    formData.append("third_class", material_class[2]);
+
+    fetch(URL.materials, {
+      method:'POST',
+      body:formData,
+    })
+      .then(response => response.json())
+      .then(responseJson => {
+        let arrData = responseJson.all_materials;
+        let arrList = [];
+        arrData.map(item => {
+          arrList.push(item.name);
+        })
+        this.material_data = arrList;
+        this.setState({material_data_ready: true});
+
+      }).catch((error) => {
         alert(error);
       });
   }
@@ -68,24 +98,18 @@ export default class CollectionFromCustomerForm extends Component {
     if (!this.ready_to_commit)
       return;
 
-    let formData = new FormData();
-    formData.append("name", this.state.customer_name_value);
-    formData.append("collect_date", this.state.collect_date);
-    formData.append("amount", this.state.amount_value);
-    formData.append("remark", this.state.remark_value);
+    // order_item = {"item_num": 1, "material": "\u8bfa\u8d1d\u5c14-4129", "material_unit": "\u5757", "supplier": "\u8bfa\u8d1d\u5c14\u74f7\u7816\u4e13\u5356\u5e97", "customer_name": "WangLiu", "customer_address": customer_address, "quantity": 25.0, "price": 250.0, "is_paid": false, "remark": null};
     
-    fetch(URL.submit_collect_from_customer,{
-      method:'POST',
-      body:formData,
-    })
-    .then((response) => response.text())
-    .then((ret)=>{
-      if (ret !== 'success')
-        alert(ret);
-      else
-        this.props.navigation.goBack();
-    })
-    .catch((error)=>{alert(error)});
+    order_item = {
+      material: this.state.material_value,
+      material_unit: '个',
+      customer_address: this.props.navigation.getParam('customer_address'),
+      quantity: 10,
+    };
+    
+    this.props.navigation.navigate('PlaceOrderForm', {
+      order_item: order_item,
+    });
   }
 
   _checkComplete = () => {
@@ -101,12 +125,16 @@ export default class CollectionFromCustomerForm extends Component {
   }
 
   render() {
+
+    const { navigation } = this.props;
+    const customer_address = navigation.getParam('customer_address');
+
     return (
       <View style={styles.container}>
 
         <View style={styles.headerContainer}>
           <TouchableHighlight style={styles.cancelBtn}
-            onPress={() => this.props.navigation.navigate('MainBottomTab')}>
+            onPress={() => this.props.navigation.navigate('PlaceOrderForm')}>
             <Text style={styles.cancelText}>取消</Text>
           </TouchableHighlight>
 
@@ -119,32 +147,33 @@ export default class CollectionFromCustomerForm extends Component {
           <ScrollView contentContainerStyle={styles.ScrollViewStyle}>
             <View style={styles.Canvas}>
 
-            {!this.state.customers_data_ready
-              ? <InputPlaceholder label='客户名' message='正在获取客户列表...' />
-              : <ChooseOneInput 
-                  label='客户名' 
-                  data={this.customers_data}
-                  onEndEditing={(num) => {
-                    this.setState({
-                      customer_name_comFlag: true,
-                      customer_name_value: num[0],
-                    });}}/>}
+              {!this.state.material_class_data_ready
+                ? <InputPlaceholder label='材料类别' message='正在获取材料类别列表...' />
+                : <ChooseOneInput 
+                    label='材料类别' 
+                    data={this.material_class_data}
+                    onEndEditing={(num) => {
+                      this.setState({
+                        material_class_comFlag: true,
+                        material_class_value: num,
+                        material_data_ready: false,
+                        material_comFlag: false,
+                      });
+                      this._getMaterialClasData(num);
+                    }}/>}
               
-              <GeneralInput 
-                label='金额' placeholder='0.00' unit='元' 
-                content_type='float' value_min={0}
-                onEndEditing={(isValid, num) => {
-                  this.setState({
-                    amount_comFlag: isValid,
-                    amount_value: num,
-                  });}} />
-
-              <DateInput 
-                label='收款日期' init_date={this.state.collect_date}
-                onEndEditing={(date) => {
-                  this.setState({
-                    collect_date: date,
-                  })}}/> 
+              {!this.state.material_class_comFlag
+                ? null
+                : (!this.state.material_data_ready
+                    ? <InputPlaceholder label='材料' message='正在获取材料列表...' />
+                    : <ChooseOneInput 
+                        label='材料' 
+                        data={this.material_data}
+                        onEndEditing={(num) => {
+                          this.setState({
+                            material_comFlag: true,
+                            material_value: num,
+                          });}}/>)}
 
               <ParagraphInput 
                 label='备注' allow_empty={true}

@@ -6,6 +6,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  TouchableHighlight,
   Image,
   FlatList,
   ActivityIndicator
@@ -57,42 +58,47 @@ export default class SupplierList extends Component {
     this._fetchData();
   }
 
-  _renderProgressBar = (items) => {
-    items.sort((v1,v2) => v1[0] < v2[0]? 1:-1);
-    return items.map((item) => {
-      return (
-        <View style={[styles.progressBar, {width:item[0], backgroundColor:item[1]}]}></View>
-      )});
-  }
-
   _renderItem = ({item}) => {
-    let total_expense_pixel = size.width - 20;
+    let total_expense_pixel = size.width - 36;
     let expense_paid_pixel = (item.value.expense_paid / item.value.total_expense) * total_expense_pixel;
     return (
-      <TouchableOpacity
-        onPress={() => {}}>
-        <View style={styles.itemContainer}>
-          <View style={styles.itemTitleView}>
-            <View style={styles.itemTitleLeftView}>
-              <Text style={styles.mainBoldText}>{item.value.name}    </Text>
-              <Text style={styles.minorText}>{item.value.address}   </Text>
-            </View>
-            <Text style={styles.minorText}>编号：{item.value.id}</Text>
-          </View>
+      <View>
+        <TouchableHighlight
+          onPress={() =>
+            this.props.navigation.push('SupplierDetail', {
+              supplier: item.value,
+            })}
+          style={styles.itemContainer}>
 
-          <View style={[styles.progressBarBase, {width:total_expense_pixel, backgroundColor:'red'}]}></View>
-          <View style={[styles.progressBar, {width:expense_paid_pixel, backgroundColor:'blue'}]}></View>
-
-          <View style={styles.detailView}>
-            <View style={styles.detailLeftView}>
-              <Text style={styles.minorText}>已支付/开销：</Text>
-              <Text style={styles.minorText}>
-                {Math.floor(item.value.expense_paid)}/{Math.floor(item.value.total_expense)}
-              </Text>
+          <View>
+        
+            <View style={styles.itemTitleView}>
+              <View style={styles.itemTitleLeftView}>
+                <Text style={styles.mainBoldText}>{item.value.name}    </Text>
+                <Text style={styles.minorText}>{item.value.address}   </Text>
+              </View>
+              <Text style={styles.minorText}>编号：{item.value.id}</Text>
             </View>
+
+            <View style={styles.progressBarContainer}>
+
+              <View style={[styles.progressBarBase, {width:total_expense_pixel, backgroundColor:'#F44336'}]}></View>
+              <View style={[styles.progressBar, {width:expense_paid_pixel, backgroundColor:'#3F51B5'}]}></View>
+
+            </View>
+
+            <View style={styles.detailView}>
+              <View style={styles.detailLeftView}>
+                <Text style={styles.minorText}>已支付/开销：</Text>
+                <Text style={styles.minorText}>
+                  {Math.floor(item.value.expense_paid)}/{Math.floor(item.value.total_expense)}
+                </Text>
+              </View>
+            </View>
+
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableHighlight>
+      </View>
     )
   }
 
@@ -105,7 +111,10 @@ export default class SupplierList extends Component {
             data={this.state.suppliers}
             onRefresh={this._refreshDate}
             refreshing={this.state.refreshing}
-            renderItem={this._renderItem}/>}
+            renderItem={this._renderItem}
+            ListHeaderComponent={
+              <View style={{height:5}}></View>
+            }/>}
 
       </View>
     );
@@ -115,10 +124,12 @@ export default class SupplierList extends Component {
 const styles = StyleSheet.create({
   itemContainer: {
     padding:10, 
-    paddingTop:18, 
-    height:95, 
-    borderBottomWidth: 1, 
-    borderBottomColor: '#EFEFEF',
+    marginHorizontal:8,
+    marginTop:3,
+    marginBottom: 5,
+    backgroundColor:'white',
+    borderRadius:8,
+    elevation: 2,
   },
   itemTitleView: {
     flexDirection:'row', 
@@ -136,41 +147,30 @@ const styles = StyleSheet.create({
   minorText: {
     fontSize:14,
   },
+
+  progressBarContainer: {
+    height: 25,
+  },
   progressBarBase: {
     height:10, 
     borderRadius:5, 
     position:'absolute', 
-    left:10, 
-    top:48,
+    left:0, 
+    top:10,
   },
   progressBar: {
     height:10, 
     borderTopLeftRadius:5, 
     borderBottomLeftRadius:5,
     position:'absolute', 
-    left:10, 
-    top:48,
+    left:0, 
+    top:10,
   },
   detailView: {
     flexDirection:'row', 
-    alignItems:'flex-end', 
-    position:'absolute', 
-    left:10, 
-    top:65,
   },
   detailLeftView: {
     flexDirection:'row', 
-    alignItems:'flex-end', 
-    position:'absolute', 
-    left:0, 
-    top:0,
-  },
-  detailRightView: {
-    flexDirection:'row', 
-    alignItems:'flex-end', 
-    position:'absolute', 
-    left:size.width/2-10, 
-    top:0
   },
 
   loadding: {

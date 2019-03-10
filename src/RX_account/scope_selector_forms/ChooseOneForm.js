@@ -25,7 +25,6 @@ export default class ChooseOneInput extends Component {
       chosen_data: [''],
     };
 
-    this._initPicker();
   }
 
   _initPicker = () => {
@@ -44,6 +43,7 @@ export default class ChooseOneInput extends Component {
   }
 
   _chosenPopup = () => {
+    this._initPicker();
     Picker.show();
   }
 
@@ -72,12 +72,12 @@ const styles = StyleSheet.create({
   },
   fontChosen: {
     fontSize:14,
-    backgroundColor:'#efefef',
+    backgroundColor:'#d3d3d3',
     borderRadius:5,
   },
   touchableView: {
-    minWidth:80,
-    height:25,
+    minWidth:100,
+    height:50,
     flexDirection:'row',
     justifyContent:'flex-start',
     alignItems:'center',

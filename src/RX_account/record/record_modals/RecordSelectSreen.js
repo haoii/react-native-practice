@@ -95,6 +95,22 @@ export default class RecordSelectSreen extends Component {
             </View>
           </View>
         </View>
+
+        <View style={styles.classContainer}>
+          <Text style={styles.classTitleText}>材料</Text>
+          <View style={styles.classContentContainer}>
+            <View style={styles.classLineContainer}>
+              <TouchableHighlight 
+                onPress={() => this.props.navigation.navigate('PlaceOrderForm')}>
+                <View style={styles.itemTouchable}>
+                  <IconIonicons name='ios-cart' size={40} color='#2aa2ef' />
+                  <Text>采购材料</Text>
+                </View>
+              </TouchableHighlight>
+              
+            </View>
+          </View>
+        </View>
           
       </View>
     );

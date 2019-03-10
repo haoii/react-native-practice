@@ -23,10 +23,8 @@ export default class ChooseOneInput extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      chosen_data: '',
+      chosen_data: [''],
     };
-
-    this._initPicker();
   }
 
   _initPicker = () => {
@@ -34,10 +32,10 @@ export default class ChooseOneInput extends Component {
       pickerData: this.props.data,
       onPickerConfirm: data => {
         this.setState({
-          chosen_data:data[0]
+          chosen_data:data
         });
         if (this.props.onEndEditing)
-          this.props.onEndEditing(data[0])
+          this.props.onEndEditing(data)
       },
       pickerFontSize: 14,
       pickerTextEllipsisLen: 10,
@@ -45,30 +43,7 @@ export default class ChooseOneInput extends Component {
   }
 
   _chosenPopup = () => {
-    Picker.show();
-  }
-
-  _chosenPopup2 = () => {
-    let data = [];
-    for(var i=0;i<100;i++){
-        
-        data2 = [];
-        for (let j=0; j<3; j++) {
-          data2.push(j);
-        }
-
-        let _data = {};
-        _data[i] = data2;
-        data.push(_data);
-    }
-
-    Picker.init({
-        pickerData: data,
-        // selectedValue: [59, 1],
-        onPickerConfirm: data => {
-            this.setState({chosen_data:data[0]});
-        },
-    });
+    this._initPicker();
     Picker.show();
   }
 
@@ -81,7 +56,7 @@ export default class ChooseOneInput extends Component {
           </View>
 
           <TouchableHighlight style={styles.touchableView} onPress={this._chosenPopup}>
-            <Text>{this.state.chosen_data}</Text>
+            <Text>{this.state.chosen_data.join(' - ')}</Text>
           </TouchableHighlight>
 
         </View>

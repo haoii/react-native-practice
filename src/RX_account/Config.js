@@ -1,6 +1,6 @@
 
 
-const host_url = 'http:192.168.1.102:8000/';  //'http://47.100.252.211:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
+const host_url = 'http://10.0.2.2:8000/';  //'http://47.100.252.211:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
 const account_url = host_url + 'account/';
 const static_url = host_url + 'static/';
 const customers_url = account_url + 'customers/';
@@ -13,6 +13,8 @@ const material_classes_url = account_url + 'material_classes/';
 const materials_url = account_url + 'materials/';
 const supplier_detail_url = account_url + 'supplier_detail/';
 const material_orders_url = account_url + 'material_orders/';
+const suppliers_by_material_url = account_url + 'suppliers_by_material/';
+const add_material_order_url = account_url + 'add_material_order/';
 
 export default URL = {
   customers: customers_url,
@@ -25,6 +27,8 @@ export default URL = {
   materials: materials_url,
   supplier_detail: supplier_detail_url,
   material_orders: material_orders_url,
+  suppliers_by_material: suppliers_by_material_url,
+  add_material_order: add_material_order_url,
 };
 
 

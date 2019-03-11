@@ -68,8 +68,9 @@ export default class PlaceOrderForm extends Component {
     let formData = new FormData();
     formData.append("order_date", this.state.order_date);
     formData.append("remark", this.state.remark_value);
+    formData.append('order_items', JSON.stringify(this.order_items));
     
-    fetch(URL.submit_collect_from_customer,{
+    fetch(URL.add_material_order,{
       method:'POST',
       body:formData,
     })
@@ -91,6 +92,12 @@ export default class PlaceOrderForm extends Component {
           this.ready_to_commit = false;
           return false;
         }
+
+    if (this.order_items.length === 0) {
+      this.ready_to_commit = false;
+      return false;
+    }
+
     this.ready_to_commit = true;
     return true;
   }
@@ -109,6 +116,44 @@ export default class PlaceOrderForm extends Component {
           </View>
         );
     });
+  }
+
+  _renderPurchaseListEachSupplier = (supplier, items) => {
+
+    let quantities = {};
+    let material_info = {};
+    let total_expense = 0;
+    items.forEach(item => {
+      if (item.supplier === supplier) {
+        let key = [item.material, item.price];
+        total_expense += item.price * item.quantity;
+        if (key in quantities)
+          quantities[key] += item.quantity;
+        else {
+          quantities[key] = item.quantity;
+          material_info[key] = item;
+        }
+      }
+    });
+
+    return (
+      <View>
+        <Text style={styles.tableInnerTitleText}>{supplier} (合计{Math.floor(total_expense)}元)</Text>
+        {Object.keys(quantities).map((key, index) => {
+          return (
+            <View style={index>0? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer}>
+              <Text style={[styles.orderItemText, {width: 30}]}>{index+1}</Text>
+              <Text style={[styles.orderItemText, {flex: 1}]}>{material_info[key].material}</Text>
+              <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{material_info[key].price}</Text>
+              <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
+                {quantities[key]}{material_info[key].material_unit}
+              </Text>
+              <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{Math.floor(material_info[key].price * quantities[key])}</Text>
+            </View>
+          );
+        })}
+      </View>
+    );
   }
 
   _addCustomer = () => {
@@ -136,13 +181,8 @@ export default class PlaceOrderForm extends Component {
       this.order_items.push(order_item);
     }
 
-    // const items = [{"item_num": 1, "material": "\u8bfa\u8d1d\u5c14-4129", "material_unit": "\u5757", "supplier": "\u8bfa\u8d1d\u5c14\u74f7\u7816\u4e13\u5356\u5e97", "customer_name": "WangLiu", "customer_address": "Baker Street 2-3", "quantity": 25.0, "price": 250.0, "is_paid": false, "remark": null}, {"item_num": 2, "material": "\u5bc6\u5ea6\u677f-\u578b\u53f71", "material_unit": "\u5f20", "supplier": "2\u53f7\u6728\u6750\u5e97", "customer_name": "WangQi", "customer_address": "Baker Street 2-4", "quantity": 10.0, "price": 160.0, "is_paid": false, "remark": null}, {"item_num": 3, "material": "\u8bfa\u8d1d\u5c14-4129", "material_unit": "\u5757", "supplier": "\u8bfa\u8d1d\u5c14\u74f7\u7816\u4e13\u5356\u5e97", "customer_name": "\u738b\u4e94", "customer_address": "\u94b0\u68651-2-3", "quantity": 30.0, "price": 250.0, "is_paid": false, "remark": null}, {"item_num": 4, "material": "\u5bc6\u5ea6\u677f-\u578b\u53f71", "material_unit": "\u5f20", "supplier": "2\u53f7\u6728\u6750\u5e97", "customer_name": "\u738b\u4e94", "customer_address": "\u94b0\u68651-2-3", "quantity": 5.0, "price": 160.0, "is_paid": false, "remark": null}, {"item_num": 5, "material": "\u7ec6\u6728\u5de5\u677f-\u578b\u53f71", "material_unit": "\u5f20", "supplier": "2\u53f7\u6728\u6750\u5e97", "customer_name": "\u738b\u4e94", "customer_address": "\u94b0\u68651-2-3", "quantity": 2.0, "price": 200.0, "is_paid": false, "remark": null}];
-    // const items = [];
-
-
     let suppliers = new Set();
     this.order_items.forEach(i => {suppliers.add(i.supplier);});
-
 
     return (
       <View style={styles.container}>
@@ -197,6 +237,25 @@ export default class PlaceOrderForm extends Component {
                     </TouchableHighlight>}
 
               </View>
+
+              <View style={styles.tableContainer}>
+                <Text style={styles.level2TitleText}>各材料商材料采购单</Text>
+
+                <View style={styles.TableRowItemContainer}>
+                  <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
+                  <Text style={[styles.orderItemHeaderText, {flex: 1}]}>材料</Text>
+                  <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>单价</Text>
+                  <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
+                  <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>价格</Text>
+                </View>
+
+                {[...suppliers].map(supplier => {
+                  return this._renderPurchaseListEachSupplier(supplier, this.order_items);
+                })}
+
+              </View>
+
+
 
               <View style={{paddingHorizontal: 15}}>
 

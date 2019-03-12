@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight, CameraRoll, 
     Image, KeyboardAvoidingView, ScrollView, ActivityIndicator } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import IconIonicons from 'react-native-vector-icons/Ionicons';
 import Picker from 'react-native-picker';
 
 import URL from '../../Config';
@@ -221,7 +221,8 @@ export default class PlaceOrderForm extends Component {
                         <TouchableHighlight onPress={() => {this.props.navigation.navigate('AddOrderItemForm', {
                           customer_address: customer_address,
                         })}}>
-                          <Text style={styles.addMaterialBtnView}>添加材料</Text>
+                          {/* <Text style={styles.addMaterialBtnView}>添加材料</Text> */}
+                          <IconIonicons name='ios-add-circle-outline' size={25} color='blue' />
                         </TouchableHighlight>
                       </View>
                       

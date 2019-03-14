@@ -164,14 +164,15 @@ const styles = StyleSheet.create({
     marginHorizontal:15,
     marginBottom: 30,
     borderWidth: 1,
-    borderColor: 'lightgray',
+    borderColor: '#e8e8e8',
+    borderRadius:5,
   },
   level2TitleText: {
     fontSize:18,
     color:'black',
     textAlign:'center',
     height:40,
-    backgroundColor:'lightgray',
+    backgroundColor:'#e8e8e8',
     textAlignVertical:'center',
   },
   tableInnerTitleText: {
@@ -179,7 +180,7 @@ const styles = StyleSheet.create({
     height: 30,
     textAlign:'center',
     textAlignVertical:'center',
-    backgroundColor:'lightgray',
+    backgroundColor:'#e8e8e8',
   },
 
 
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     height: 30,
     borderTopWidth: 1,
-    borderTopColor: 'lightgray',
+    borderTopColor: '#e8e8e8',
   },
   orderItemHeaderText: {
     fontSize: 14,

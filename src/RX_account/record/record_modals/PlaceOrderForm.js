@@ -1,8 +1,10 @@
 
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight, CameraRoll, 
-    Image, KeyboardAvoidingView, ScrollView, ActivityIndicator } from 'react-native';
+    Image, KeyboardAvoidingView, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
+import IconFeather from 'react-native-vector-icons/Feather';
+import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import Picker from 'react-native-picker';
 
 import URL from '../../Config';
@@ -29,6 +31,8 @@ export default class PlaceOrderForm extends Component {
 
     this.order_items = [];
 
+    this.suppliers_paid = {};
+
     this.state = { 
 
       customer_addresses: new Set(),
@@ -39,6 +43,8 @@ export default class PlaceOrderForm extends Component {
       order_date: this._getCurDate(),
 
       customers_data_ready: false,
+
+      manual_update: true,
     };
   }
 
@@ -69,6 +75,7 @@ export default class PlaceOrderForm extends Component {
     formData.append("order_date", this.state.order_date);
     formData.append("remark", this.state.remark_value);
     formData.append('order_items', JSON.stringify(this.order_items));
+    formData.append('suppliers_paid', JSON.stringify(this.suppliers_paid));
     
     fetch(URL.add_material_order,{
       method:'POST',
@@ -102,17 +109,56 @@ export default class PlaceOrderForm extends Component {
     return true;
   }
 
-  _renderDemandListEachCutomer = (address, items) => {
+  _delItemByMaterialAddress = (customer_address, material) => {
+    for (let i=0; i<this.order_items.length; i++) {
+      if (this.order_items[i].customer_address === customer_address 
+          && this.order_items[i].material === material) {
+            this.order_items.splice(i, 1);
+          }
+    }
+    this.setState({
+      manual_update: true,
+    });
+  }
+
+  _delItemByAddress = (customer_address) => {
+    for (let i=0; i<this.order_items.length; i++) {
+      if (this.order_items[i].customer_address === customer_address) {
+        this.order_items.splice(i, 1);
+        i--;
+      }
+    }
+    tmp_addresses = this.state.customer_addresses;
+    tmp_addresses.delete(customer_address);
+    this.setState({
+      customer_addresses: tmp_addresses,
+    });
+  }
+
+  _renderDemandListEachCutomer = (customer_address, items) => {
     let index = 1;
     return items.map(item => {
-      if (item.customer_address === address)
+      if (item.customer_address === customer_address)
         return (
-          <View style={index>1? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer}>
+          <View style={[index>1? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer, {paddingRight:0}]}>
             <Text style={[styles.orderItemText, {width: 30}]}>{index++}</Text>
             <Text style={[styles.orderItemText, {flex: 1}]}>{item.material}</Text>
             <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
               {item.quantity}{item.material_unit}
             </Text>
+            <TouchableHighlight style={styles.delItemBtnView}
+              onPress={() => {
+                Alert.alert(
+                  null,
+                  '确认取消采购材料：' + item.material + '？',
+                  [
+                    {text: '不取消', onPress: () => {}, style: 'cancel'},
+                    {text: '确认取消', onPress: () => {this._delItemByMaterialAddress(customer_address, item.material);}},
+                  ],
+                  { cancelable: false }
+                );}}>
+              <IconIonicons name='ios-close-circle-outline' size={23} color='#E4572E' />
+            </TouchableHighlight>
           </View>
         );
     });
@@ -138,7 +184,23 @@ export default class PlaceOrderForm extends Component {
 
     return (
       <View>
-        <Text style={styles.tableInnerTitleText}>{supplier} (合计{Math.floor(total_expense)}元)</Text>
+        <View style={styles.tableInnerTitleRowView}>
+          <View style={{width:70}}></View>
+          <Text style={styles.tableInnerTitleText}>{supplier} (合计{Math.floor(total_expense)}元)</Text>
+          <TouchableHighlight onPress={() => {
+            this.suppliers_paid[supplier] = !this.suppliers_paid[supplier];
+            this.setState({manual_update: true});
+          }}>
+            <View style={styles.paidCheckView}>
+              <Text>已支付</Text>
+              {this.suppliers_paid[supplier]
+                ? <IconMaterialCommunity name='check-circle' size={23} color='#E4572E' />
+                : <IconMaterialCommunity name='checkbox-blank-circle-outline' size={23} color='#E4572E' />}
+            </View> 
+          </TouchableHighlight>
+          
+        </View>
+        
         {Object.keys(quantities).map((key, index) => {
           return (
             <View style={index>0? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer}>
@@ -179,6 +241,9 @@ export default class PlaceOrderForm extends Component {
     if (order_item) {
       navigation.setParams({order_item: null});
       this.order_items.push(order_item);
+
+      if (this.suppliers_paid[order_item.supplier] === undefined)
+        this.suppliers_paid[order_item.supplier] = false;
     }
 
     let suppliers = new Set();
@@ -210,20 +275,39 @@ export default class PlaceOrderForm extends Component {
                   <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
                   <Text style={[styles.orderItemHeaderText, {flex: 1}]}>材料</Text>
                   <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
+                  <View style={{width:20}}></View>
                 </View>
 
                 {[...this.state.customer_addresses].map(customer_address => {
                   return (
                     <View>
                       <View style={styles.tableInnerTitleRowView}>
-                        <View style={{width:80}}></View>
-                        <Text style={styles.tableInnerTitleView}>{customer_address}</Text>
-                        <TouchableHighlight onPress={() => {this.props.navigation.navigate('AddOrderItemForm', {
-                          customer_address: customer_address,
+
+                        <TouchableHighlight style={styles.addMaterialView}
+                          onPress={() => {this.props.navigation.navigate('AddOrderItemForm', {
+                            customer_address: customer_address,
                         })}}>
-                          {/* <Text style={styles.addMaterialBtnView}>添加材料</Text> */}
-                          <IconIonicons name='ios-add-circle-outline' size={25} color='blue' />
+                          <Text style={styles.addMaterialBtnText}>添加材料</Text>
+                          {/* <IconIonicons name='ios-add-circle-outline' size={23} color='#E4572E' /> */}
                         </TouchableHighlight>
+
+                        <Text style={styles.tableInnerTitleView}>{customer_address}</Text>
+
+                        <TouchableHighlight style={styles.delCustomerBtnView} 
+                          onPress={() => {
+                            Alert.alert(
+                              null,
+                              '确认取消采购该工地的所有材料：' + customer_address + '？',
+                              [
+                                {text: '不取消', onPress: () => {}, style: 'cancel'},
+                                {text: '确认取消', onPress: () => {this._delItemByAddress(customer_address);}},
+                              ],
+                              { cancelable: false }
+                            );
+                          }}>
+                          <IconFeather name='delete' size={23} color='#E4572E' />
+                        </TouchableHighlight>
+
                       </View>
                       
                       {this._renderDemandListEachCutomer(customer_address, this.order_items)}
@@ -233,7 +317,8 @@ export default class PlaceOrderForm extends Component {
 
                 {!this.state.customers_data_ready
                   ? <Text style={styles.tableOperateRowText}>正在获取工地信息...</Text>
-                  : <TouchableHighlight onPress={this._addCustomer}>
+                  : <TouchableHighlight style={styles.tableOperateRowView} 
+                      onPress={this._addCustomer}>
                       <Text style={styles.tableOperateRowText}>添加工地</Text>
                     </TouchableHighlight>}
 
@@ -291,24 +376,39 @@ const styles = StyleSheet.create({
   tableContainer: {
     marginHorizontal:15,
     marginBottom: 30,
+    borderRadius:5,
     borderWidth: 1,
-    borderColor: 'lightgray',
+    borderColor: '#e8e8e8',
+    backgroundColor:'white',
   },
   level2TitleText: {
     fontSize:18,
     color:'black',
     textAlign:'center',
     height:40,
-    backgroundColor:'lightgray',
+    backgroundColor:'#e8e8e8',
     textAlignVertical:'center',
   },
   tableInnerTitleText: {
     fontSize: 16,
     height: 30,
+    flex:1,
     textAlign:'center',
     textAlignVertical:'center',
-    backgroundColor:'lightgray',
+    backgroundColor:'#e8e8e8',
   },
+  paidCheckView: {
+    width:70,
+    height:30,
+    flexDirection:'row',
+    justifyContent:'flex-end',
+    alignItems:'center',
+  },
+  paidCheckText: {
+    fontSize:14,
+    color:'#E4572E',
+  },
+
 
   tableInnerTitleView: {
     flex:1, 
@@ -316,31 +416,62 @@ const styles = StyleSheet.create({
     textAlignVertical:'center',
     fontSize:16,
   },
-  addMaterialBtnView: {
-    color:'#E4572E',
-    width:80, 
+
+  addMaterialView: {
+    width:90, 
     height:30, 
-    textAlign:'right', 
+    paddingLeft:10,
+    justifyContent: 'center',
+    alignItems:'flex-start',
+  },
+  addMaterialBtnText: {
+    color:'#E4572E',
+    height: 20,
     textAlignVertical:'center', 
-    fontSize:16, 
-    paddingRight:10,
+    fontSize:14, 
+    borderRadius:10,
+    borderWidth:0.5,
+    borderColor:'#E4572E',
+    paddingHorizontal:8,
+  },
+
+  delItemBtnView: {
+    height:30, 
+    width:30, 
+    justifyContent:'center', 
+    alignItems:'flex-end'
+  },
+  delCustomerBtnView: {
+    width:30, 
+    height:30, 
+    marginLeft:60, 
+    justifyContent:'center', 
+    alignItems:'flex-end'
   },
 
   tableInnerTitleRowView: {
     flexDirection:'row',
     alignItems: 'center',
     height: 30,
-    backgroundColor:'lightgray',
+    backgroundColor:'#e8e8e8',
   },
 
-  tableOperateRowText: {
-    fontSize: 16,
-    height: 30,
-    textAlign:'center',
-    textAlignVertical:'center',
+  tableOperateRowView: {
+    height:30,
+    justifyContent:'center',
+    alignItems:'center',
     borderTopWidth: 1,
-    borderTopColor: 'lightgray',
+    borderTopColor: '#e8e8e8',
+  },
+  tableOperateRowText: {
     color:'#E4572E',
+    height: 20,
+    textAlignVertical:'center', 
+    fontSize:14, 
+    borderRadius:10,
+    borderWidth:0.5,
+    borderColor:'#E4572E',
+    paddingHorizontal:8,
   },
 
 
@@ -356,7 +487,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     height: 30,
     borderTopWidth: 1,
-    borderTopColor: 'lightgray',
+    borderTopColor: '#e8e8e8',
   },
   orderItemHeaderText: {
     fontSize: 14,

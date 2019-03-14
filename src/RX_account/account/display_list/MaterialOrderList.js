@@ -168,7 +168,8 @@ const styles = StyleSheet.create({
     // marginHorizontal:15,
     // marginBottom: 30,
     borderWidth: 1,
-    borderColor: 'lightgray',
+    borderColor: '#e8e8e8',
+    borderRadius:5,
   },
 
   TableHeaderContainer: {
@@ -176,7 +177,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     height: 30,
-    backgroundColor: 'lightgray',
+    backgroundColor: '#e8e8e8',
   },
   TableRowItemContainer: {
     flexDirection: 'row',
@@ -190,7 +191,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     height: 30,
     borderTopWidth: 1,
-    borderTopColor: 'lightgray',
+    borderTopColor: '#e8e8e8',
   },
 
 })

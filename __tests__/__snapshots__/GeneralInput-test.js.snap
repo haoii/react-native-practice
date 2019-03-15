@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<View
+  style={
+    Object {
+      "alignItems": "stretch",
+      "paddingBottom": 10,
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "alignItems": "center",
+        "backgroundColor": "white",
+        "borderRadius": 5,
+        "flexDirection": "row",
+        "height": 50,
+        "justifyContent": "space-between",
+        "marginBottom": 5,
+        "marginTop": 5,
+        "paddingLeft": 10,
+        "paddingRight": 10,
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "flexDirection": "row",
+        }
+      }
+    >
+      <Text
+        style={
+          Array [
+            Object {
+              "fontSize": 16,
+            },
+            undefined,
+          ]
+        }
+      >
+        
+      </Text>
+    </View>
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "flexDirection": "row",
+          "maxWidth": 200,
+        }
+      }
+    >
+      <TextInput
+        allowFontScaling={true}
+        keyboardType="default"
+        maxLength={64}
+        onChangeText={[Function]}
+        onEndEditing={[Function]}
+        placeholder=""
+        style={
+          Object {
+            "minWidth": 100,
+            "textAlign": "right",
+          }
+        }
+        underlineColorAndroid="transparent"
+        value=""
+      />
+      <Text
+        style={
+          Array [
+            Object {
+              "fontSize": 16,
+            },
+            undefined,
+          ]
+        }
+      >
+        
+      </Text>
+    </View>
+  </View>
+</View>
+`;

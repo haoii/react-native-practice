@@ -21,9 +21,7 @@ export default class AddCustomerForm extends Component {
   constructor(props) {
     super(props);
 
-    this.ready_to_commit = false;
-
-    this.state = { 
+    this.form_data ={
 
       name_value: '',
       name_comFlag: false,
@@ -48,6 +46,10 @@ export default class AddCustomerForm extends Component {
 
       sign_date: this._getCurDate(),
     };
+
+    this.state = {
+      ready_to_commit: false,
+    };
   }
 
   _getCurDate = () => {
@@ -57,18 +59,18 @@ export default class AddCustomerForm extends Component {
 
   _submitPost = () => {
 
-    if (!this.ready_to_commit)
+    if (!this.state.ready_to_commit)
       return;
 
     let formData = new FormData();
-    formData.append("name", this.state.name_value);
-    formData.append("address", this.state.address_value);
-    formData.append("sign_date", this.state.sign_date);
-    formData.append("duration", this.state.duration_value);
-    formData.append("phone", this.state.phone_value);
-    formData.append("area", this.state.area_value);
-    formData.append("total_price", this.state.total_price_value);
-    formData.append("price_discount", this.state.discount_value);
+    formData.append("name", this.form_data.name_value);
+    formData.append("address", this.form_data.address_value);
+    formData.append("sign_date", this.form_data.sign_date);
+    formData.append("duration", this.form_data.duration_value);
+    formData.append("phone", this.form_data.phone_value);
+    formData.append("area", this.form_data.area_value);
+    formData.append("total_price", this.form_data.total_price_value);
+    formData.append("price_discount", this.form_data.discount_value);
     
     fetch(URL.submit_add_customer,{
       method:'POST',
@@ -85,14 +87,18 @@ export default class AddCustomerForm extends Component {
   }
 
   _checkComplete = () => {
-    keys = Object.keys(this.state);
+    keys = Object.keys(this.form_data);
     for (let i = 0; i < keys.length; i++) 
       if (keys[i].length > 7 && keys[i].slice(-7) === 'comFlag') 
-        if (!this.state[keys[i]]) {
-          this.ready_to_commit = false;
+        if (!this.form_data[keys[i]]) {
+          this.setState({
+            ready_to_commit: false,
+          });
           return false;
         }
-    this.ready_to_commit = true;
+    this.setState({
+      ready_to_commit: true,
+    });
     return true;
   }
 
@@ -106,8 +112,8 @@ export default class AddCustomerForm extends Component {
             <Text style={styles.cancelText}>取消</Text>
           </TouchableHighlight>
 
-          <TouchableHighlight style={!this._checkComplete()?styles.btn:styles.activeBtn} onPress={this._submitPost}>
-            <Text style={!this._checkComplete()?styles.btnText:styles.activeBtnText}>确认</Text>
+          <TouchableHighlight style={!this.state.ready_to_commit?styles.btn:styles.activeBtn} onPress={this._submitPost}>
+            <Text style={!this.state.ready_to_commit?styles.btnText:styles.activeBtnText}>确认</Text>
           </TouchableHighlight>
         </View>
 
@@ -119,66 +125,63 @@ export default class AddCustomerForm extends Component {
                 label='客户名' max_length={64} 
                 exclude_str=')('
                 onEndEditing={(isValid, value) => {
-                  this.setState({
-                    name_comFlag: isValid,
-                    name_value: value,
-                  });}} />
+                  this.form_data.name_comFlag = isValid;
+                  this.form_data.name_value = value;
+                  this._checkComplete();
+                }} />
               <GeneralInput 
                 label='地址' max_length={256} hint='注意：地址提交后不可更改！'
                 onEndEditing={(isValid, value) => {
-                  this.setState({
-                    address_comFlag: isValid,
-                    address_value: value,
-                  });}} />
+                  this.form_data.address_comFlag = isValid;
+                  this.form_data.address_value = value;
+                  this._checkComplete();
+                }} />
               <GeneralInput 
                 label='电话' max_length={16} 
                 allow_empty={true} 
                 content_type='phone'
                 onEndEditing={(isValid, value) => {
-                  this.setState({
-                    phone_comFlag: isValid,
-                    phone_value: value,
-                  });}} />
+                  this.form_data.phone_comFlag = isValid;
+                  this.form_data.phone_value = value;
+                  this._checkComplete();
+                }} />
               <DateInput 
-                label='签单日期' init_date={this.state.sign_date}
+                label='签单日期' init_date={this.form_data.sign_date}
                 onEndEditing={(date) => {
-                  this.setState({
-                    sign_date: date,
-                  })}}/>      
+                  this.form_data.sign_date = date;
+                }}/>      
               <GeneralInput 
                 label='工期' placeholder='60' unit='天'
                 allow_empty={true} default_value_when_empty='60'
                 content_type='integer' value_min={1}
                 onEndEditing={(isValid, value) => {
-                  this.setState({
-                    duration_comFlag: isValid,
-                    duration_value: value,
-                  });}} />
+                  this.form_data.duration_comFlag = isValid;
+                  this.form_data.duration_value = value;
+                }} />
               <GeneralInput 
                 label='总报价' placeholder='0.00' unit='元' 
                 content_type='float' value_min={0}
                 onEndEditing={(isValid, num) => {
-                  this.setState({
-                    total_price_comFlag: isValid,
-                    total_price_value: num,
-                  });}} />
+                  this.form_data.total_price_comFlag = isValid;
+                  this.form_data.total_price_value = num;
+                  this._checkComplete();
+                }} />
               <GeneralInput 
                 label='折扣' placeholder='0.0' unit='' hint='提示：1到10之间' 
                 content_type='float' value_min={1} value_max={10}
                 onEndEditing={(isValid, num) => {
-                  this.setState({
-                    discount_comFlag: isValid,
-                    discount_value: num,
-                  });}} />
+                  this.form_data.discount_comFlag = isValid;
+                  this.form_data.discount_value = num;
+                  this._checkComplete();
+                }} />
               <GeneralInput 
                 label='面积' unit='平方'
                 allow_empty={true}
                 content_type='float' value_min={0}
                 onEndEditing={(isValid, value) => {
-                  this.setState({
-                    area_comFlag: isValid,
-                    area_value: value,
-                  });}} />
+                  this.form_data.area_comFlag = isValid;
+                  this.form_data.area_value = value;
+                }} />
             
             </View>
 

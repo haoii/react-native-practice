@@ -18,7 +18,7 @@ export default class GeneralInput extends Component {
     value_min: -10000000000,  // valid when conten_type is 'float' or 'integer'
     value_max: 10000000000,  // valid when conten_type is 'float' or 'integer'
 
-    exclude_str: '',
+    exclude_str: '',  // valid when conten_type is 'string'
   }
 
   constructor(props) {
@@ -64,8 +64,9 @@ export default class GeneralInput extends Component {
            && Number(value) > this.props.value_min), ''];      
   }
 
-  _innerOnEndEditing = () => {
-    input = this.state.input_value;
+  _innerOnEndEditing = (input) => {
+    this.setState({input_value: input});
+    // input = this.state.input_value;
     if (input.length === 0) {
       if (this.props.allow_empty) {
         this.setState({
@@ -133,8 +134,10 @@ export default class GeneralInput extends Component {
               value={this.state.input_value}
               keyboardType={this._getKeyboardType()}
               maxLength={this.props.max_length}
-              onChangeText={(text) => this.setState({input_value: text})}
-              onEndEditing={this._innerOnEndEditing}/>
+              onChangeText={this._innerOnEndEditing}
+              // onChangeText={(text) => this.setState({input_value: text})}
+              // onEndEditing={this._innerOnEndEditing}
+            />
             <Text style={[styles.fontMain, this._getFontColor()]}>{this.props.unit}</Text>
           </View>
         </View>

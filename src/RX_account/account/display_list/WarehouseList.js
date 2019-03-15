@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import URL from '../../Config';
-import MaterialScopeSelector from '../display_list_header/MaterialScopeSelector';
+import WarehouseHeader from '../display_list_header/WarehouseHeader';
 
 import Dimensions from 'Dimensions';
 
@@ -22,15 +22,16 @@ const size = {
   height: Dimensions.get('window').height
 };
 
-export default class MaterialList extends Component {
+export default class WarehouseList extends Component {
   constructor(props) {
     super(props);
 
     this.material_class = null;
+    this.warehouse = null;
 
     this.state = {
       refreshing: false,
-      materials: []
+      materials: [],
     }
   }
 
@@ -44,8 +45,9 @@ export default class MaterialList extends Component {
     formData.append("first_class", this.material_class[0]);
     formData.append("second_class", this.material_class[1]);
     formData.append("third_class", this.material_class[2]);
+    formData.append("warehouse", this.warehouse);
 
-    fetch(URL.materials, {
+    fetch(URL.warehouse_materials, {
       method:'POST',
       body:formData,
     })
@@ -69,7 +71,8 @@ export default class MaterialList extends Component {
     if (!this.material_class 
       || this.material_class[0] === '无' 
       || this.material_class[1] === '无'
-      || this.material_class[2] === '无') {
+      || this.material_class[2] === '无'
+      || !this.warehouse) {
         this.setState({materials: []});
         return;
       }
@@ -97,11 +100,8 @@ export default class MaterialList extends Component {
             </View>
 
             <View style={styles.detailView}>
-              <Text style={styles.minorText}>总用量：{item.value.total_used_amount}{item.value.unit}   </Text>
-              <Text style={styles.minorText}>总花费：{item.value.total_expense}元   </Text>
-              <Text style={styles.minorText}>
-                平均价：{Math.floor(item.value.total_expense/item.value.total_used_amount)}元/{item.value.unit}
-              </Text>
+              <Text style={styles.minorText}>库存数量：{item.value.quantity}{item.value.unit}</Text>
+              <Text style={styles.minorText}>单价：{item.value.price}元/{item.value.unit}</Text>
 
             </View>
           </View>
@@ -110,8 +110,13 @@ export default class MaterialList extends Component {
     )
   }
 
-  _chooseMaterialClass = (data) => {
+  _onEndMaterialClassChoose = (data) => {
     this.material_class = data;
+    this._refreshDate();
+  }
+
+  _onEndWarehouseChoose = (data) => {
+    this.warehouse = data[0];
     this._refreshDate();
   }
 
@@ -125,8 +130,9 @@ export default class MaterialList extends Component {
           refreshing={this.state.refreshing}
           renderItem={this._renderItem}
           ListHeaderComponent={
-            <MaterialScopeSelector 
-              onEndEditing={this._chooseMaterialClass} />
+            <WarehouseHeader 
+              onEndMaterialClassChoose={this._onEndMaterialClassChoose} 
+              onEndWarehouseChoose={this._onEndWarehouseChoose} />
           }/>
 
       </View>

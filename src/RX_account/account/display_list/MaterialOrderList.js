@@ -85,7 +85,7 @@ export default class MaterialOrderList extends Component {
                 <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
               </View>
 
-              {item.value.order_items.map((item, index) => {return (
+              {item.value.order_demand_items.map((item, index) => {return (
                 <View style={index>0? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer}>
                   <Text style={[styles.orderItemText, {width: 35}]}>{item.item_num}</Text>
                   <Text style={[styles.orderItemText, {flex: 1}]}>{item.customer_address}</Text>

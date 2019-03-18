@@ -94,12 +94,11 @@ export default class AddCustomerForm extends Component {
           this.setState({
             ready_to_commit: false,
           });
-          return false;
+          return;
         }
     this.setState({
       ready_to_commit: true,
     });
-    return true;
   }
 
   render() {
@@ -157,6 +156,7 @@ export default class AddCustomerForm extends Component {
                 onEndEditing={(isValid, value) => {
                   this.form_data.duration_comFlag = isValid;
                   this.form_data.duration_value = value;
+                  this._checkComplete();
                 }} />
               <GeneralInput 
                 label='总报价' placeholder='0.00' unit='元' 
@@ -181,6 +181,7 @@ export default class AddCustomerForm extends Component {
                 onEndEditing={(isValid, value) => {
                   this.form_data.area_comFlag = isValid;
                   this.form_data.area_value = value;
+                  this._checkComplete();
                 }} />
             
             </View>

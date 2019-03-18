@@ -7,12 +7,12 @@ import IconFeather from 'react-native-vector-icons/Feather';
 import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import Picker from 'react-native-picker';
 
-import URL from '../../Config';
-import GeneralInput from '../../forms/GeneralInput';
-import DateInput from '../../forms/DateInput';
-import ChooseOneInput from '../../forms/ChooseOneInput';
-import InputPlaceholder from '../../forms/InputPlaceholder';
-import ParagraphInput from '../../forms/ParagraphInput';
+import URL from '../../../Config';
+import GeneralInput from '../../../forms/GeneralInput';
+import DateInput from '../../../forms/DateInput';
+import ChooseOneInput from '../../../forms/ChooseOneInput';
+import InputPlaceholder from '../../../forms/InputPlaceholder';
+import ParagraphInput from '../../../forms/ParagraphInput';
 
 import Dimensions from 'Dimensions';
 
@@ -25,19 +25,26 @@ export default class PlaceOrderForm extends Component {
   constructor(props) {
     super(props);
 
+    this.ready_to_commit = false;
     this.customers_data = [];
     this._initCustomerNameData();
 
-    this.customer_demand_items = {};
-    this.material_demand_sum = {};
+    this.order_items = [];
 
-    this.state = {   
+    this.suppliers_paid = {};
+
+    this.state = { 
+
+      customer_addresses: new Set(),
+
       remark_value: '',
       remark_comFlag: true,
-      
+
       order_date: this._getCurDate(),
 
       customers_data_ready: false,
+
+      manual_update: true,
     };
   }
 
@@ -61,12 +68,14 @@ export default class PlaceOrderForm extends Component {
 
   _submitPost = () => {
 
-    if (!this._checkComplete())
+    if (!this.ready_to_commit)
       return;
 
     let formData = new FormData();
     formData.append("order_date", this.state.order_date);
     formData.append("remark", this.state.remark_value);
+    formData.append('order_items', JSON.stringify(this.order_items));
+    formData.append('suppliers_paid', JSON.stringify(this.suppliers_paid));
     
     fetch(URL.add_material_order,{
       method:'POST',
@@ -86,21 +95,138 @@ export default class PlaceOrderForm extends Component {
     keys = Object.keys(this.state);
     for (let i = 0; i < keys.length; i++) 
       if (keys[i].length > 7 && keys[i].slice(-7) === 'comFlag') 
-        if (!this.state[keys[i]]) 
+        if (!this.state[keys[i]]) {
+          this.ready_to_commit = false;
           return false;
+        }
+
+    if (this.order_items.length === 0) {
+      this.ready_to_commit = false;
+      return false;
+    }
+
+    this.ready_to_commit = true;
     return true;
+  }
+
+  _delItemByMaterialAddress = (customer_address, material) => {
+    for (let i=0; i<this.order_items.length; i++) {
+      if (this.order_items[i].customer_address === customer_address 
+          && this.order_items[i].material === material) {
+            this.order_items.splice(i, 1);
+          }
+    }
+    this.setState({
+      manual_update: true,
+    });
+  }
+
+  _delItemByAddress = (customer_address) => {
+    for (let i=0; i<this.order_items.length; i++) {
+      if (this.order_items[i].customer_address === customer_address) {
+        this.order_items.splice(i, 1);
+        i--;
+      }
+    }
+    tmp_addresses = this.state.customer_addresses;
+    tmp_addresses.delete(customer_address);
+    this.setState({
+      customer_addresses: tmp_addresses,
+    });
+  }
+
+  _renderDemandListEachCutomer = (customer_address, items) => {
+    let index = 1;
+    return items.map(item => {
+      if (item.customer_address === customer_address)
+        return (
+          <View style={[index>1? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer, {paddingRight:0}]}>
+            <Text style={[styles.orderItemText, {width: 30}]}>{index++}</Text>
+            <Text style={[styles.orderItemText, {flex: 1}]}>{item.material}</Text>
+            <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
+              {item.quantity}{item.material_unit}
+            </Text>
+            <TouchableHighlight style={styles.delItemBtnView}
+              onPress={() => {
+                Alert.alert(
+                  null,
+                  '确认取消采购材料：' + item.material + '？',
+                  [
+                    {text: '不取消', onPress: () => {}, style: 'cancel'},
+                    {text: '确认取消', onPress: () => {this._delItemByMaterialAddress(customer_address, item.material);}},
+                  ],
+                  { cancelable: false }
+                );}}>
+              <IconIonicons name='ios-close-circle-outline' size={23} color='#E4572E' />
+            </TouchableHighlight>
+          </View>
+        );
+    });
+  }
+
+  _renderPurchaseListEachSupplier = (supplier, items) => {
+
+    let quantities = {};
+    let material_info = {};
+    let total_expense = 0;
+    items.forEach(item => {
+      if (item.supplier === supplier) {
+        let key = [item.material, item.price];
+        total_expense += item.price * item.quantity;
+        if (key in quantities)
+          quantities[key] += item.quantity;
+        else {
+          quantities[key] = item.quantity;
+          material_info[key] = item;
+        }
+      }
+    });
+
+    return (
+      <View>
+        <View style={styles.tableInnerTitleRowView}>
+          <View style={{width:70}}></View>
+          <Text style={styles.tableInnerTitleText}>{supplier} (合计{Math.floor(total_expense)}元)</Text>
+          <TouchableHighlight onPress={() => {
+            this.suppliers_paid[supplier] = !this.suppliers_paid[supplier];
+            this.setState({manual_update: true});
+          }}>
+            <View style={styles.paidCheckView}>
+              <Text>已支付</Text>
+              {this.suppliers_paid[supplier]
+                ? <IconMaterialCommunity name='check-circle' size={23} color='#E4572E' />
+                : <IconMaterialCommunity name='checkbox-blank-circle-outline' size={23} color='#E4572E' />}
+            </View> 
+          </TouchableHighlight>
+          
+        </View>
+        
+        {Object.keys(quantities).map((key, index) => {
+          return (
+            <View style={index>0? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer}>
+              <Text style={[styles.orderItemText, {width: 30}]}>{index+1}</Text>
+              <Text style={[styles.orderItemText, {flex: 1}]}>{material_info[key].material}</Text>
+              <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{material_info[key].price}</Text>
+              <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
+                {quantities[key]}{material_info[key].material_unit}
+              </Text>
+              <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{Math.floor(material_info[key].price * quantities[key])}</Text>
+            </View>
+          );
+        })}
+      </View>
+    );
   }
 
   _addCustomer = () => {
     Picker.init({
       pickerData: this.customers_data,
       onPickerConfirm: data => {
-        if (data[0] in this.customer_demand_items) {
-          alert('该客户已存在');
-        } else {
-          this.customer_demand_items[data[0]] = [];
-        }
-        this.setState({});
+        tmp_addresses = this.state.customer_addresses;
+        tmp_addresses.add(data[0]);
+        this.setState({
+          customer_addresses: tmp_addresses,
+        });
       },
       pickerFontSize: 14,
       pickerTextEllipsisLen: 10,
@@ -108,101 +234,20 @@ export default class PlaceOrderForm extends Component {
     Picker.show();
   }
 
-  _renderDemandListEachCutomer = (items) => {
-    let index = 1;
-    return items.map(item => {
-      return (
-        <View style={[index>1? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer, {paddingRight:0}]}>
-          <Text style={[styles.orderItemText, {width: 30}]}>{index++}</Text>
-          <Text style={[styles.orderItemText, {flex: 1}]}>{item.material}</Text>
-          <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
-            {item.quantity}{item.material_unit}
-          </Text>
-          <TouchableHighlight style={styles.delItemBtnView}
-            onPress={() => {
-              Alert.alert(
-                null,
-                '确认取消采购材料：' + item.material + '？',
-                [
-                  {text: '不取消', onPress: () => {}, style: 'cancel'},
-                  // {text: '确认取消', onPress: () => {this._delItemByMaterialAddress(customer_address, item.material);}},
-                ],
-                { cancelable: false }
-              );}}>
-            <IconIonicons name='ios-close-circle-outline' size={23} color='#E4572E' />
-          </TouchableHighlight>
-        </View>
-      );
-    });
-  }
-
-  _renderPurchaseListEachMaterial = (items) => {
-    let index = 1;
-    return items.map(item => {
-      return (
-        <View style={[index>1? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer, {paddingRight:0}]}>
-          <Text style={[styles.orderItemText, {width: 30}]}>{index++}</Text>
-          <Text style={[styles.orderItemText, {flex: 1}]}>{item.supplier}</Text>
-          <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{item.price}</Text>
-          <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
-            {item.quantity}{item.material_unit}
-          </Text>
-          <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{Math.floor(item.price * item.quantity)}</Text>
-          <TouchableHighlight style={styles.delItemBtnView}
-            onPress={() => {
-              Alert.alert(
-                null,
-                '确认材料来源：' + item.supplier + '？',
-                [
-                  {text: '不取消', onPress: () => {}, style: 'cancel'},
-                  // {text: '确认取消', onPress: () => {this._delItemByMaterialAddress(customer_address, item.material);}},
-                ],
-                { cancelable: false }
-              );}}>
-            <IconIonicons name='ios-close-circle-outline' size={23} color='#E4572E' />
-          </TouchableHighlight>
-        </View>
-      );
-    });
-  }
-
-  _add_order_demand_item = (item) => {
-    this.customer_demand_items[item.customer_address].push(item);
-    if (item.material in this.material_demand_sum) {
-      this.material_demand_sum[item.material].quantity += item.quantity;
-      this.material_demand_sum[item.material].purchase_complete = false;
-    }
-    else {
-      this.material_demand_sum[item.material] = {
-        unit: item.material_unit,
-        quantity:item.quantity,
-        quantity_purchased:0,
-        purchase_complete:false,
-        purchase_items:[],
-      };
-    }
-
-
-  }
-
-  _add_order_purchase_item = (item) => {
-    this.material_demand_sum[item.material].purchase_items.push(item);
-    this.material_demand_sum[item.material].quantity_purchased += item.quantity;
-  }
-
   render() {
 
     const { navigation } = this.props;
-    const order_demand_item = navigation.getParam('order_demand_item', null);
-    if (order_demand_item) {
-      navigation.setParams({order_demand_item: null});
-      this._add_order_demand_item(order_demand_item);
+    const order_item = navigation.getParam('order_item', null);
+    if (order_item) {
+      navigation.setParams({order_item: null});
+      this.order_items.push(order_item);
+
+      if (this.suppliers_paid[order_item.supplier] === undefined)
+        this.suppliers_paid[order_item.supplier] = false;
     }
-    const order_purchase_item = navigation.getParam('order_purchase_item', null);
-    if (order_purchase_item) {
-      navigation.setParams({order_purchase_item: null});
-      this._add_order_purchase_item(order_purchase_item);
-    }
+
+    let suppliers = new Set();
+    this.order_items.forEach(i => {suppliers.add(i.supplier);});
 
     return (
       <View style={styles.container}>
@@ -222,6 +267,7 @@ export default class PlaceOrderForm extends Component {
           <ScrollView contentContainerStyle={styles.ScrollViewStyle}>
             <View style={styles.Canvas}>
 
+
               <View style={styles.tableContainer}>
                 <Text style={styles.level2TitleText}>各工地材料需求单</Text>
 
@@ -232,16 +278,17 @@ export default class PlaceOrderForm extends Component {
                   <View style={{width:20}}></View>
                 </View>
 
-                {Object.keys(this.customer_demand_items).map(customer_address => {
+                {[...this.state.customer_addresses].map(customer_address => {
                   return (
                     <View>
                       <View style={styles.tableInnerTitleRowView}>
 
                         <TouchableHighlight style={styles.addMaterialView}
-                          onPress={() => {this.props.navigation.navigate('AddOrderDemandItemForm', {
+                          onPress={() => {this.props.navigation.navigate('AddOrderItemForm', {
                             customer_address: customer_address,
                         })}}>
                           <Text style={styles.addMaterialBtnText}>添加材料</Text>
+                          {/* <IconIonicons name='ios-add-circle-outline' size={23} color='#E4572E' /> */}
                         </TouchableHighlight>
 
                         <Text style={styles.tableInnerTitleView}>{customer_address}</Text>
@@ -253,7 +300,7 @@ export default class PlaceOrderForm extends Component {
                               '确认取消采购该工地的所有材料：' + customer_address + '？',
                               [
                                 {text: '不取消', onPress: () => {}, style: 'cancel'},
-                                // {text: '确认取消', onPress: () => {this._delItemByAddress(customer_address);}},
+                                {text: '确认取消', onPress: () => {this._delItemByAddress(customer_address);}},
                               ],
                               { cancelable: false }
                             );
@@ -263,7 +310,7 @@ export default class PlaceOrderForm extends Component {
 
                       </View>
                       
-                      {this._renderDemandListEachCutomer(this.customer_demand_items[customer_address])}
+                      {this._renderDemandListEachCutomer(customer_address, this.order_items)}
                     </View>
                   );
                 })}
@@ -278,58 +325,23 @@ export default class PlaceOrderForm extends Component {
               </View>
 
               <View style={styles.tableContainer}>
-                <Text style={styles.level2TitleText}>材料来源</Text>
+                <Text style={styles.level2TitleText}>各材料商材料采购单</Text>
 
                 <View style={styles.TableRowItemContainer}>
                   <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
-                  <Text style={[styles.orderItemHeaderText, {flex: 1}]}>来源</Text>
+                  <Text style={[styles.orderItemHeaderText, {flex: 1}]}>材料</Text>
                   <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>单价</Text>
                   <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
                   <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>价格</Text>
-                  <View style={{width:20}}></View>
                 </View>
 
-                {Object.keys(this.material_demand_sum).map(material => {
-                  return (
-                    <View>
-                      <View style={styles.tableInnerTitleRowView}>
-
-                        <TouchableHighlight style={styles.addMaterialView}
-                          onPress={() => {this.props.navigation.navigate('AddOrderPurchaseItemForm', {
-                            material:material,
-                            unit:this.material_demand_sum[material].unit,
-
-                        })}}>
-                          <Text style={styles.addMaterialBtnText}>添加来源</Text>
-                        </TouchableHighlight>
-
-                        <Text style={styles.tableInnerTitleView}>
-                          {material}（已购：{this.material_demand_sum[material].quantity_purchased}/{this.material_demand_sum[material].quantity} 100元
-                        </Text>
-
-                        <TouchableHighlight style={styles.delCustomerBtnView} 
-                          onPress={() => {
-                            Alert.alert(
-                              null,
-                              '确认删除所有来源：' + material + '？',
-                              [
-                                {text: '不取消', onPress: () => {}, style: 'cancel'},
-                                // {text: '确认取消', onPress: () => {this._delItemByAddress(customer_address);}},
-                              ],
-                              { cancelable: false }
-                            );
-                          }}>
-                          <IconFeather name='delete' size={23} color='#E4572E' />
-                        </TouchableHighlight>
-
-                      </View>
-                      
-                      {this._renderPurchaseListEachMaterial(this.material_demand_sum[material].purchase_items)}
-                    </View>
-                  );
+                {[...suppliers].map(supplier => {
+                  return this._renderPurchaseListEachSupplier(supplier, this.order_items);
                 })}
 
               </View>
+
+
 
               <View style={{paddingHorizontal: 15}}>
 
@@ -337,15 +349,15 @@ export default class PlaceOrderForm extends Component {
                   label='订单日期' init_date={this.state.order_date}
                   onEndEditing={(date) => {
                     this.setState({
-                      order_date:date,
-                    });}}/> 
+                      order_date: date,
+                    })}}/> 
 
                 <ParagraphInput 
                   label='备注' allow_empty={true}
                   onEndEditing={(isValid, num) => {
                     this.setState({
-                      remark_comFlag:isValid,
-                      remark_value:num,
+                      remark_comFlag: isValid,
+                      remark_value: num,
                     });}} />   
 
               </View>  

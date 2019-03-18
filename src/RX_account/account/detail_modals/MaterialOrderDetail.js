@@ -46,35 +46,29 @@ export default class MaterialOrderDetail extends Component {
 
   _renderPurchaseListEachSupplier = (supplier, items) => {
 
-    let quantities = {};
-    let material_info = {};
     let total_expense = 0;
-    items.forEach(item => {
-      if (item.supplier === supplier) {
-        let key = [item.material, item.price];
+
+    let supplier_items = [];
+    items.map(item => {
+      if (item.from === supplier) {
+        supplier_items.push(item);
         total_expense += item.price * item.quantity;
-        if (key in quantities)
-          quantities[key] += item.quantity;
-        else {
-          quantities[key] = item.quantity;
-          material_info[key] = item;
-        }
-      }
+      };
     });
 
     return (
       <View>
         <Text style={styles.tableInnerTitleText}>{supplier} (合计{Math.floor(total_expense)}元)</Text>
-        {Object.keys(quantities).map((key, index) => {
+        {supplier_items.map((item, index) => {
           return (
             <View style={index>0? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer}>
               <Text style={[styles.orderItemText, {width: 30}]}>{index+1}</Text>
-              <Text style={[styles.orderItemText, {flex: 1}]}>{material_info[key].material}</Text>
-              <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{material_info[key].price}</Text>
+              <Text style={[styles.orderItemText, {flex: 1}]}>{item.material}</Text>
+              <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{item.price}</Text>
               <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
-                {quantities[key]}{material_info[key].material_unit}
+                {item.quantity}{item.material_unit}
               </Text>
-              <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{Math.floor(material_info[key].price * quantities[key])}</Text>
+              <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{Math.floor(item.price * item.quantity)}</Text>
             </View>
           );
         })}
@@ -85,11 +79,12 @@ export default class MaterialOrderDetail extends Component {
   render() {
     const { navigation } = this.props;
     const order = navigation.getParam('order'); 
-    const items = order.order_items;
+    const order_demand_items = order.order_demand_items;
+    const order_purchase_items = order.order_purchase_items;
     let customer_addresses = new Set();
-    items.forEach(i => {customer_addresses.add(i.customer_address);});
+    order_demand_items.forEach(i => {customer_addresses.add(i.customer_address);});
     let suppliers = new Set();
-    items.forEach(i => {suppliers.add(i.supplier);});
+    order_purchase_items.forEach(i => {suppliers.add(i.from);});
 
     return (
       <ScrollView contentContainerStyle={styles.container}>
@@ -114,7 +109,7 @@ export default class MaterialOrderDetail extends Component {
             return (
               <View>
                 <Text style={styles.tableInnerTitleText}>{address}</Text>
-                {this._renderDemandListEachCutomer(address, items)}
+                {this._renderDemandListEachCutomer(address, order_demand_items)}
               </View>
             );
           })}
@@ -134,7 +129,7 @@ export default class MaterialOrderDetail extends Component {
           </View>
 
           {[...suppliers].map(supplier => {
-            return this._renderPurchaseListEachSupplier(supplier, items);
+            return this._renderPurchaseListEachSupplier(supplier, order_purchase_items);
           })}
 
         </View>

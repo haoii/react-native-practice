@@ -69,12 +69,11 @@ export default class AddSupplierForm extends Component {
           this.setState({
             ready_to_commit: false,
           });
-          return false;
+          return;
         }
     this.setState({
       ready_to_commit: true,
     });
-    return true;
   }
 
   render() {

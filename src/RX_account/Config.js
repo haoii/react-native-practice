@@ -35,4 +35,6 @@ export default URL = {
   warehouse_materials: warehouse_materials_url,
 };
 
+export const EPSILON = 0.000000001;
+
 

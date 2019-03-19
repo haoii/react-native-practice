@@ -6,8 +6,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import ImagePicker from 'react-native-image-crop-picker';
 import { Input } from 'react-native-elements';
 
-import URL from '../../Config';
+import URL, {EPSILON} from '../../Config';
 import GeneralInput from '../../forms/GeneralInput';
+import GeneralInput_2 from '../../forms/GeneralInput_2';
 import DateInput from '../../forms/DateInput';
 import ChooseOneInput from '../../forms/ChooseOneInput';
 import InputPlaceholder from '../../forms/InputPlaceholder';
@@ -24,12 +25,19 @@ export default class AddOrderPurchaseItemForm extends Component {
   constructor(props) {
     super(props);
 
-    this.supplier_data = [];
-    this._getSupplierData();
+    this.nav_data = {
+      material: this.props.navigation.getParam('material'),
+      unit: this.props.navigation.getParam('unit'),
+      max_quantity: this.props.navigation.getParam('max_quantity'),
+    };
+
+    this.from_data = [];
+    this._getFromData();
     this.material_price_data = {};
+    this.quantity_on_hand = {};
 
     this.state = { 
-      supplier_data_ready: false,
+      from_data_ready: false,
 
       quantity_value: '',
       quantity_comFlag: false,
@@ -37,35 +45,40 @@ export default class AddOrderPurchaseItemForm extends Component {
       remark_value: '',
       remark_comFlag: true,
 
-      supplier_value: '',
-      supplier_comFlag: '',
+      from_value: '',
+      from_comFlag: '',
 
       material_price_value: '',
       material_price_comFlag: false,
 
+      from_hint:'',
+      max_quantity: this.nav_data.max_quantity,
+
+      quantity_input_str:'',
+      price_input_str:'',
     };
 
   }
 
-  _getSupplierData = () => {
-    let material = this.props.navigation.getParam('material');
-    fetch(URL.suppliers_by_material + material + '/')
+  _getFromData = () => {
+    fetch(URL.suppliers_by_material + this.nav_data.material + '/')
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.available_suppliers;
-        let arrList = [];
-        let priceList = {};
+        let arrData = responseJson.available_from;
+
         arrData.map(item => {
-          arrList.push(item.name);
-          priceList[item.name] = item.price.toString();
-        })
-        this.supplier_data = arrList;
-        this.material_price_data = priceList;
-        if (this.supplier_data.length === 0) {
-          this.supplier_data = ['无'];
+          this.from_data.push(item.name);
+          this.material_price_data[item.name] = item.price.toString();
+          if (item.type === 'warehouse') {
+            this.quantity_on_hand[item.name] = item.quantity;
+          }
+        });
+
+        if (this.from_data.length === 0) {
+          this.from_data = ['无'];
           this.material_price_data = {'无': ''};
         }
-        this.setState({supplier_data_ready: true});
+        this.setState({from_data_ready: true});
 
       }).catch((error) => {
         alert(error);
@@ -77,14 +90,13 @@ export default class AddOrderPurchaseItemForm extends Component {
       return;
     
     order_purchase_item = {
-      material: this.props.navigation.getParam('material'),
-      material_unit: this.props.navigation.getParam('unit'),
-      supplier: this.state.supplier_value,
+      material: this.nav_data.material,
+      material_unit: this.nav_data.unit,
+      from: this.state.from_value,
       price: Number(this.state.material_price_value),
       quantity: Number(this.state.quantity_value),
       remark: this.state.remark_value,
 
-      remark: this.state.remark_value,
     };
     
     this.props.navigation.navigate('PlaceOrderForm', {
@@ -121,50 +133,71 @@ export default class AddOrderPurchaseItemForm extends Component {
           <ScrollView contentContainerStyle={styles.ScrollViewStyle}>
             <View style={styles.Canvas}>
 
-              {!this.state.supplier_data_ready
+              {!this.state.from_data_ready
                 ? <InputPlaceholder label='材料商' message='正在获取材料商列表...' />
                 : <ChooseOneInput
                     label='材料商'
-                    data={this.supplier_data}
+                    data={this.from_data}
                     onEndEditing={(num) => {
 
                       if (!num
                         || num[0] === '无') {
                           this.setState({
-                            supplier_comFlag: false,
+                            from_comFlag: false,
                             material_price_comFlag: false,
+                            from_hint:'',
+                            max_quantity: this.nav_data.max_quantity,
+                            quantity_comFlag:false,
                           });
                           return;
                         }
 
+                      let tmp_hint = '';
+                      let tmp_max_quantity = this.nav_data.max_quantity;
+                      if (num[0] in this.quantity_on_hand) {
+                        tmp_hint = '库存：' + this.quantity_on_hand[num[0]];
+                        tmp_max_quantity = Math.min(tmp_max_quantity, this.quantity_on_hand[num[0]]);
+                      }
+
                       this.setState({
-                        supplier_comFlag:true,
-                        supplier_value:num[0],
+                        from_comFlag:true,
+                        from_value:num[0],
                         material_price_comFlag: true,
                         material_price_value: this.material_price_data[num[0]],
+                        from_hint:tmp_hint,
+                        max_quantity:tmp_max_quantity,
+                        quantity_comFlag:true,
+                        quantity_value:tmp_max_quantity,
+                        quantity_input_str:'',
+                        price_input_str:'',
                       });
                     }}/>}
 
-              {!this.state.supplier_comFlag
+              {!this.state.from_comFlag
                 ? null
-                : <GeneralInput 
-                    label='单价' placeholder={this.material_price_data[this.state.supplier_value]}
-                    allow_empty={true} default_value_when_empty={this.material_price_data[this.state.supplier_value]}
+                : <GeneralInput_2 
+                    label='单价' placeholder={this.material_price_data[this.state.from_value]} 
+                    allow_empty={true} default_value_when_empty={this.material_price_data[this.state.from_value]}
                     content_type='float' value_min={0} 
+                    value={this.state.price_input_str}
                     onEndEditing={(isValid, num) => {
                       this.setState({
                         material_price_comFlag: isValid,
                         material_price_value: num,
-                      });}} />}
+                      });}}
+                    onChangeText={(input) => {this.setState({price_input_str: input});}} />}
   
-              <GeneralInput 
-                label='数量' unit={this.props.navigation.getParam('unit')}
-                content_type='float' value_min={0} 
+              <GeneralInput_2 
+                label='数量' unit={this.nav_data.unit} hint={'还需要：' + this.nav_data.max_quantity + '  ' + this.state.from_hint}
+                content_type='float' value_min={0} value_max={this.state.max_quantity + EPSILON}
+                allow_empty={true} default_value_when_empty={this.state.max_quantity.toString()} placeholder={this.state.max_quantity.toString()}
+                value={this.state.quantity_input_str}
                 onEndEditing={(isValid, num) => {
                   this.setState({
                     quantity_comFlag: isValid,
                     quantity_value: num,
-                  });}} />
+                  });}} 
+                onChangeText={(input) => {this.setState({quantity_input_str: input});}} />
 
               <ParagraphInput 
                 label='备注' allow_empty={true}

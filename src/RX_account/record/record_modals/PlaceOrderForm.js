@@ -7,7 +7,7 @@ import IconFeather from 'react-native-vector-icons/Feather';
 import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import Picker from 'react-native-picker';
 
-import URL from '../../Config';
+import URL, {EPSILON} from '../../Config';
 import GeneralInput from '../../forms/GeneralInput';
 import DateInput from '../../forms/DateInput';
 import ChooseOneInput from '../../forms/ChooseOneInput';
@@ -30,6 +30,8 @@ export default class PlaceOrderForm extends Component {
 
     this.customer_demand_items = {};
     this.material_demand_sum = {};
+
+    this.from_paid = {};
 
     this.state = {   
       remark_value: '',
@@ -88,6 +90,15 @@ export default class PlaceOrderForm extends Component {
       if (keys[i].length > 7 && keys[i].slice(-7) === 'comFlag') 
         if (!this.state[keys[i]]) 
           return false;
+
+    let materials = Object.keys(this.material_demand_sum);
+    if (materials.length === 0)
+      return false;
+
+    for (let i=0; i<materials.length; i++)
+      if (!this.material_demand_sum[materials[i]].purchase_complete)
+        return false;
+
     return true;
   }
 
@@ -96,11 +107,11 @@ export default class PlaceOrderForm extends Component {
       pickerData: this.customers_data,
       onPickerConfirm: data => {
         if (data[0] in this.customer_demand_items) {
-          alert('该客户已存在');
+          alert('添加失败：该客户已存在。');
         } else {
           this.customer_demand_items[data[0]] = [];
+          this.setState({});
         }
-        this.setState({});
       },
       pickerFontSize: 14,
       pickerTextEllipsisLen: 10,
@@ -108,7 +119,7 @@ export default class PlaceOrderForm extends Component {
     Picker.show();
   }
 
-  _renderDemandListEachCutomer = (items) => {
+  _renderDemandListEachCutomer = (customer_address, items) => {
     let index = 1;
     return items.map(item => {
       return (
@@ -122,10 +133,10 @@ export default class PlaceOrderForm extends Component {
             onPress={() => {
               Alert.alert(
                 null,
-                '确认取消采购材料：' + item.material + '？',
+                '确认取消采购该材料：' + item.material + '？',
                 [
-                  {text: '不取消', onPress: () => {}, style: 'cancel'},
-                  // {text: '确认取消', onPress: () => {this._delItemByMaterialAddress(customer_address, item.material);}},
+                  {text: '放弃', onPress: () => {}, style: 'cancel'},
+                  {text: '确认取消', onPress: () => {this._delDemandItemByMaterial(customer_address, item);}},
                 ],
                 { cancelable: false }
               );}}>
@@ -136,13 +147,13 @@ export default class PlaceOrderForm extends Component {
     });
   }
 
-  _renderPurchaseListEachMaterial = (items) => {
+  _renderPurchaseListEachMaterial = (material, items) => {
     let index = 1;
     return items.map(item => {
       return (
         <View style={[index>1? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer, {paddingRight:0}]}>
           <Text style={[styles.orderItemText, {width: 30}]}>{index++}</Text>
-          <Text style={[styles.orderItemText, {flex: 1}]}>{item.supplier}</Text>
+          <Text style={[styles.orderItemText, {flex: 1}]}>{item.from}</Text>
           <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{item.price}</Text>
           <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
             {item.quantity}{item.material_unit}
@@ -152,10 +163,10 @@ export default class PlaceOrderForm extends Component {
             onPress={() => {
               Alert.alert(
                 null,
-                '确认材料来源：' + item.supplier + '？',
+                '确认删除该来源：' + item.from + '？',
                 [
-                  {text: '不取消', onPress: () => {}, style: 'cancel'},
-                  // {text: '确认取消', onPress: () => {this._delItemByMaterialAddress(customer_address, item.material);}},
+                  {text: '放弃', onPress: () => {}, style: 'cancel'},
+                  {text: '确认删除', onPress: () => {this._delPurchaseItemByFrom(material, item);}},
                 ],
                 { cancelable: false }
               );}}>
@@ -166,8 +177,85 @@ export default class PlaceOrderForm extends Component {
     });
   }
 
+  _renderPurchaseListEachFrom = (from, items) => {
+    return items.map((item, index) => {
+      return (
+        <View style={index>0? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer}>
+          <Text style={[styles.orderItemText, {width: 30}]}>{index+1}</Text>
+          <Text style={[styles.orderItemText, {flex: 1}]}>{item.material}</Text>
+          <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{item.price}</Text>
+          <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
+            {item.quantity}{item.material_unit}
+          </Text>
+          <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{Math.floor(item.price * item.quantity)}</Text>
+          <View style={{width:20}}></View>
+        </View>
+      );
+    });
+  }
+
+  _delPurchaseItemByFrom = (material, item) => {
+    let material_demand = this.material_demand_sum[material];
+    for (let i=0; i<material_demand.purchase_items.length; i++) {
+      if (material_demand.purchase_items[i].from === item.from) {
+        material_demand.purchase_items.splice(i, 1);
+        break;
+      }
+    }
+
+    material_demand.quantity_purchased -= item.quantity;
+    material_demand.expense -= item.quantity * item.price;
+    material_demand.purchase_complete = false;
+    this.setState({});
+  }
+
+  _delPurchaseAllItem = (material) => {
+    let material_demand = this.material_demand_sum[material];
+    material_demand.quantity_purchased = 0;
+    material_demand.expense = 0;
+    material_demand.purchase_complete = false;
+    material_demand.purchase_items = [];
+    this.setState({});
+  }
+
+  _delDemandItemByMaterial = (customer_address, item) => {
+    let demand_items = this.customer_demand_items[customer_address];
+    for (let i=0; i<demand_items.length; i++) {
+      if (demand_items[i].material === item.material) {
+        demand_items.splice(i, 1);
+        break;
+      }
+    }
+
+    this._delPurchaseAllItem(item.material);
+    let material_demand = this.material_demand_sum[item.material];
+    material_demand.quantity -= item.quantity;
+    if (material_demand.quantity < EPSILON) {
+      delete this.material_demand_sum[item.material];
+    }
+    this.setState({});
+  }
+
+  _delDemandAllItem = (customer_address) => {
+    let demand_items = this.customer_demand_items[customer_address];
+    while (demand_items.length > 0) {
+      this._delDemandItemByMaterial(customer_address, demand_items[demand_items.length-1]);
+    }
+
+    delete this.customer_demand_items[customer_address];
+    this.setState({});
+  }
+
   _add_order_demand_item = (item) => {
-    this.customer_demand_items[item.customer_address].push(item);
+    let demand_items = this.customer_demand_items[item.customer_address];
+    for (let i=0; i<demand_items.length; i++) {
+      if (demand_items[i].material === item.material) {
+        alert('添加失败：该材料已添加过。');
+        return;
+      }
+    }
+
+    demand_items.push(item);
     if (item.material in this.material_demand_sum) {
       this.material_demand_sum[item.material].quantity += item.quantity;
       this.material_demand_sum[item.material].purchase_complete = false;
@@ -179,15 +267,25 @@ export default class PlaceOrderForm extends Component {
         quantity_purchased:0,
         purchase_complete:false,
         purchase_items:[],
+        expense:0,
       };
     }
-
-
   }
 
   _add_order_purchase_item = (item) => {
-    this.material_demand_sum[item.material].purchase_items.push(item);
-    this.material_demand_sum[item.material].quantity_purchased += item.quantity;
+    let material_demand = this.material_demand_sum[item.material];
+    for (let i=0; i<material_demand.purchase_items.length; i++) {
+      if (material_demand.purchase_items[i].from === item.from) {
+        alert('添加失败：该来源已添加过。');
+        return;
+      }
+    }
+
+    material_demand.purchase_items.push(item);
+    material_demand.quantity_purchased += item.quantity;
+    material_demand.expense += item.quantity * item.price;
+    if (material_demand.quantity_purchased > material_demand.quantity - EPSILON)
+      material_demand.purchase_complete = true;
   }
 
   render() {
@@ -203,6 +301,28 @@ export default class PlaceOrderForm extends Component {
       navigation.setParams({order_purchase_item: null});
       this._add_order_purchase_item(order_purchase_item);
     }
+
+    let from_purchase_sum = {};
+    let materials = Object.keys(this.material_demand_sum);
+
+    for (let i=0; i<materials.length; i++) {
+      let purchase_items = this.material_demand_sum[materials[i]].purchase_items;
+      purchase_items.map(item => {
+        if (item.from in from_purchase_sum) {
+          from_purchase_sum[item.from].expense += item.price * item.quantity;
+          from_purchase_sum[item.from].purchase_items.push(item);
+        } else {
+          from_purchase_sum[item.from] = {
+            expense:item.price * item.quantity,
+            purchase_items:[item],
+          };
+
+          if (!(item.from in this.from_paid))
+            this.from_paid[item.from] = false;
+        }
+      });
+    }
+
 
     return (
       <View style={styles.container}>
@@ -252,8 +372,8 @@ export default class PlaceOrderForm extends Component {
                               null,
                               '确认取消采购该工地的所有材料：' + customer_address + '？',
                               [
-                                {text: '不取消', onPress: () => {}, style: 'cancel'},
-                                // {text: '确认取消', onPress: () => {this._delItemByAddress(customer_address);}},
+                                {text: '放弃', onPress: () => {}, style: 'cancel'},
+                                {text: '确认取消', onPress: () => {this._delDemandAllItem(customer_address);}},
                               ],
                               { cancelable: false }
                             );
@@ -263,7 +383,7 @@ export default class PlaceOrderForm extends Component {
 
                       </View>
                       
-                      {this._renderDemandListEachCutomer(this.customer_demand_items[customer_address])}
+                      {this._renderDemandListEachCutomer(customer_address, this.customer_demand_items[customer_address])}
                     </View>
                   );
                 })}
@@ -290,22 +410,32 @@ export default class PlaceOrderForm extends Component {
                 </View>
 
                 {Object.keys(this.material_demand_sum).map(material => {
+                  let material_demand = this.material_demand_sum[material];
                   return (
                     <View>
                       <View style={styles.tableInnerTitleRowView}>
 
-                        <TouchableHighlight style={styles.addMaterialView}
-                          onPress={() => {this.props.navigation.navigate('AddOrderPurchaseItemForm', {
-                            material:material,
-                            unit:this.material_demand_sum[material].unit,
+                        {material_demand.purchase_complete
+                          ? <View style={styles.addMaterialView}>
+                              <Text style={[styles.addMaterialBtnText, {color:'gray', borderColor: 'gray'}]}>添加来源</Text>
+                            </View>
+                          : <TouchableHighlight style={styles.addMaterialView}
+                              onPress={() => {this.props.navigation.navigate('AddOrderPurchaseItemForm', {
+                                material:material,
+                                unit:material_demand.unit,
+                                max_quantity:material_demand.quantity - material_demand.quantity_purchased,
+                            })}}>
+                              <Text style={styles.addMaterialBtnText}>添加来源</Text>
+                            </TouchableHighlight>}
 
-                        })}}>
-                          <Text style={styles.addMaterialBtnText}>添加来源</Text>
-                        </TouchableHighlight>
+                        
 
-                        <Text style={styles.tableInnerTitleView}>
-                          {material}（已购：{this.material_demand_sum[material].quantity_purchased}/{this.material_demand_sum[material].quantity} 100元
-                        </Text>
+                        <View style={styles.tableInnerTitleViewContainer}>
+                          <Text style={styles.materialTitleText}>{material}</Text>
+                          {material_demand.purchase_complete
+                            ? <IconIonicons name='md-checkmark' size={23} color='green' />
+                            : <IconIonicons name='ios-warning' size={23} color='#FBC02D' />}
+                        </View>
 
                         <TouchableHighlight style={styles.delCustomerBtnView} 
                           onPress={() => {
@@ -313,8 +443,8 @@ export default class PlaceOrderForm extends Component {
                               null,
                               '确认删除所有来源：' + material + '？',
                               [
-                                {text: '不取消', onPress: () => {}, style: 'cancel'},
-                                // {text: '确认取消', onPress: () => {this._delItemByAddress(customer_address);}},
+                                {text: '放弃', onPress: () => {}, style: 'cancel'},
+                                {text: '确认删除', onPress: () => {this._delPurchaseAllItem(material);}},
                               ],
                               { cancelable: false }
                             );
@@ -324,12 +454,70 @@ export default class PlaceOrderForm extends Component {
 
                       </View>
                       
-                      {this._renderPurchaseListEachMaterial(this.material_demand_sum[material].purchase_items)}
+                      {this._renderPurchaseListEachMaterial(material, material_demand.purchase_items)}
+
+                      <View style={[styles.TableRowItemContainerAfter2, {paddingRight:30, justifyContent:'flex-end'}]}>
+                        <Text style={[styles.orderItemText, {width:120, textAlign:'left'}]}>
+                          已购：{material_demand.quantity_purchased}/{material_demand.quantity}{material_demand.unit}
+                        </Text>
+                        <Text style={[styles.orderItemText, {width:110, textAlign:'right'}]}>
+                          合计：{material_demand.expense}元
+                        </Text>
+                      </View>
                     </View>
                   );
                 })}
 
               </View>
+
+
+              <View style={styles.tableContainer}>
+                <Text style={styles.level2TitleText}>各材料商材料采购单</Text>
+
+                <View style={styles.TableRowItemContainer}>
+                  <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
+                  <Text style={[styles.orderItemHeaderText, {flex: 1}]}>材料</Text>
+                  <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>单价</Text>
+                  <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
+                  <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>价格</Text>
+                  <View style={{width:20}}></View>
+                </View>
+
+                {Object.keys(from_purchase_sum).map(from => {
+                  return (
+                    <View>
+
+                      <View style={styles.tableInnerTitleRowView}>
+                        <View style={{width:70}}></View>
+                        <Text style={styles.tableInnerTitleText}>{from}</Text>
+                        <TouchableHighlight 
+                          onPress={() => {
+                            this.from_paid[from] = !this.from_paid[from];
+                            this.setState({});
+                          }}>
+                          <View style={styles.paidCheckView}>
+                            <Text>已支付</Text>
+                            {this.from_paid[from]
+                              ? <IconMaterialCommunity name='check-circle' size={23} color='#E4572E' />
+                              : <IconMaterialCommunity name='checkbox-blank-circle-outline' size={23} color='#E4572E' />} 
+                          </View> 
+                        </TouchableHighlight>
+                        
+                      </View>
+
+                      {this._renderPurchaseListEachFrom(from, from_purchase_sum[from].purchase_items)}
+
+                      <View style={[styles.TableRowItemContainerAfter2, {paddingRight:30, justifyContent:'flex-end'}]}>
+                        <Text style={[styles.orderItemText, {width:110, textAlign:'right'}]}>
+                          合计：{Math.floor(from_purchase_sum[from].expense)}元
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                })}
+
+              </View>
+
 
               <View style={{paddingHorizontal: 15}}>
 
@@ -404,6 +592,16 @@ const styles = StyleSheet.create({
     textAlignVertical:'center',
     fontSize:16,
   },
+  tableInnerTitleViewContainer: {
+    flex:1, 
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center',
+  },
+  materialTitleText: {
+    fontSize:16,
+    paddingRight:5,
+  },
 
   addMaterialView: {
     width:90, 
@@ -432,7 +630,7 @@ const styles = StyleSheet.create({
   delCustomerBtnView: {
     width:30, 
     height:30, 
-    marginLeft:60, 
+    marginLeft:30, 
     justifyContent:'center', 
     alignItems:'flex-end'
   },

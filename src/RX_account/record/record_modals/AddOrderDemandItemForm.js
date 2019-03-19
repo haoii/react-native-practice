@@ -86,7 +86,7 @@ export default class AddOrderDemandItemForm extends Component {
         arrData.map(item => {
           arrList.push(item.name);
           unitList[item.name] = item.unit;
-        })
+        });
         this.material_data = arrList;
         this.material_unit_data = unitList;
         if (this.material_data.length === 0) {

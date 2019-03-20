@@ -31,10 +31,8 @@ export default class AddOrderPurchaseItemForm extends Component {
       max_quantity: this.props.navigation.getParam('max_quantity'),
     };
 
-    this.from_data = [];
+    this.from_data = null;
     this._getFromData();
-    this.material_price_data = {};
-    this.quantity_on_hand = {};
 
     this.state = { 
       from_data_ready: false,
@@ -64,19 +62,15 @@ export default class AddOrderPurchaseItemForm extends Component {
     fetch(URL.suppliers_by_material + this.nav_data.material + '/')
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.available_from;
-
-        arrData.map(item => {
-          this.from_data.push(item.name);
-          this.material_price_data[item.name] = item.price.toString();
-          if (item.type === 'warehouse') {
-            this.quantity_on_hand[item.name] = item.quantity;
-          }
-        });
+        this.from_data = responseJson.available_from;
 
         if (this.from_data.length === 0) {
-          this.from_data = ['无'];
-          this.material_price_data = {'无': ''};
+          this.from_data = {
+            '无': {
+              type: 'supplier',
+              price: '',
+            },
+          };
         }
         this.setState({from_data_ready: true});
 
@@ -96,7 +90,7 @@ export default class AddOrderPurchaseItemForm extends Component {
       price: Number(this.state.material_price_value),
       quantity: Number(this.state.quantity_value),
       remark: this.state.remark_value,
-
+      type:this.from_data[this.state.from_value].type,
     };
     
     this.props.navigation.navigate('PlaceOrderForm', {
@@ -137,7 +131,7 @@ export default class AddOrderPurchaseItemForm extends Component {
                 ? <InputPlaceholder label='材料商' message='正在获取材料商列表...' />
                 : <ChooseOneInput
                     label='材料商'
-                    data={this.from_data}
+                    data={Object.keys(this.from_data)}
                     onEndEditing={(num) => {
 
                       if (!num
@@ -154,16 +148,16 @@ export default class AddOrderPurchaseItemForm extends Component {
 
                       let tmp_hint = '';
                       let tmp_max_quantity = this.nav_data.max_quantity;
-                      if (num[0] in this.quantity_on_hand) {
-                        tmp_hint = '库存：' + this.quantity_on_hand[num[0]];
-                        tmp_max_quantity = Math.min(tmp_max_quantity, this.quantity_on_hand[num[0]]);
+                      if (this.from_data[num[0]].type === 'warehouse') {
+                        tmp_hint = '库存：' + this.from_data[num[0]].quantity;
+                        tmp_max_quantity = Math.min(tmp_max_quantity, this.from_data[num[0]].quantity);
                       }
 
                       this.setState({
                         from_comFlag:true,
                         from_value:num[0],
                         material_price_comFlag: true,
-                        material_price_value: this.material_price_data[num[0]],
+                        material_price_value: this.from_data[num[0]].price,
                         from_hint:tmp_hint,
                         max_quantity:tmp_max_quantity,
                         quantity_comFlag:true,
@@ -176,8 +170,8 @@ export default class AddOrderPurchaseItemForm extends Component {
               {!this.state.from_comFlag
                 ? null
                 : <GeneralInput_2 
-                    label='单价' placeholder={this.material_price_data[this.state.from_value]} 
-                    allow_empty={true} default_value_when_empty={this.material_price_data[this.state.from_value]}
+                    label='单价' placeholder={this.from_data[this.state.from_value].price} 
+                    allow_empty={true} default_value_when_empty={this.from_data[this.state.from_value].price}
                     content_type='float' value_min={0} 
                     value={this.state.price_input_str}
                     onEndEditing={(isValid, num) => {

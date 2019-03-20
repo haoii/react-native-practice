@@ -68,3 +68,75 @@
   },
 ]
 
+
+{
+  "get_time": "2019-03-19T10:36:40.867Z", 
+  "latest_material_orders": 
+  [
+    {
+      "id": 6, 
+      "order_date": "2019-03-19", 
+      "clerk": "\u90dd\u9ad8\u5cf0", 
+      "remark": null, 
+      "customer_in_order": 
+      {
+        "\u5f20\u4e09(\u94b0\u68658-12-3)": 
+        {
+          "material_in_customer_in_order": 
+          {
+            "\u8bfa\u8d1d\u5c14-4129": 
+            {
+              "unit": "\u5757", 
+              "quantity": 2.0, 
+              "remark": null, 
+              "average_price": 300.0, 
+              "paid_ratio": 0.5
+            }
+          }
+        }, 
+
+        "WangJiu(Street 2-4)": 
+        {
+          "material_in_customer_in_order": 
+          {
+            "\u8bfa\u8d1d\u5c14-4129": 
+            {
+              "unit": "\u5757", 
+              "quantity": 8.0, 
+              "remark": null, 
+              "average_price": 300.0, 
+              "paid_ratio": 0.5
+            }
+          }
+        }
+      }, 
+      
+      "material_in_order": 
+      {
+        "\u8bfa\u8d1d\u5c14-4129": 
+        {
+          "quantity": 10.0, 
+          "expense": 3000.0, 
+          "unit": "\u5757", 
+          "from_in_material_in_order": 
+          {
+            "\u91d1\u5bb6\u88571\u53f7\u4ed3\u5e93(\u4ed3\u5e93)": 
+            {
+              "quantity": 5.0, 
+              "price": 300.0, 
+              "is_paid": true, 
+              "remark": null
+            }, 
+            "1\u53f7\u74f7\u7816\u5e97(4 )": 
+            {
+              "quantity": 5.0, 
+              "price": 300.0, 
+              "is_paid": false, 
+              "remark": null
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -69,6 +69,9 @@ export default class PlaceOrderForm extends Component {
     let formData = new FormData();
     formData.append("order_date", this.state.order_date);
     formData.append("remark", this.state.remark_value);
+    formData.append('customer_demand_items', JSON.stringify(this.customer_demand_items));
+    formData.append('material_demand_sum', JSON.stringify(this.material_demand_sum));
+    formData.append('from_paid', JSON.stringify(this.from_paid));
     
     fetch(URL.add_material_order,{
       method:'POST',
@@ -78,8 +81,8 @@ export default class PlaceOrderForm extends Component {
     .then((ret)=>{
       if (ret !== 'success')
         alert(ret);
-      else
-        this.props.navigation.goBack();
+      // else
+      //   this.props.navigation.goBack();
     })
     .catch((error)=>{alert(error)});
   }
@@ -315,10 +318,11 @@ export default class PlaceOrderForm extends Component {
           from_purchase_sum[item.from] = {
             expense:item.price * item.quantity,
             purchase_items:[item],
+            type:item.type,
           };
 
           if (!(item.from in this.from_paid))
-            this.from_paid[item.from] = false;
+            this.from_paid[item.from] = (item.type === 'warehouse');
         }
       });
     }
@@ -490,18 +494,24 @@ export default class PlaceOrderForm extends Component {
                       <View style={styles.tableInnerTitleRowView}>
                         <View style={{width:70}}></View>
                         <Text style={styles.tableInnerTitleText}>{from}</Text>
-                        <TouchableHighlight 
-                          onPress={() => {
-                            this.from_paid[from] = !this.from_paid[from];
-                            this.setState({});
-                          }}>
-                          <View style={styles.paidCheckView}>
-                            <Text>已支付</Text>
-                            {this.from_paid[from]
-                              ? <IconMaterialCommunity name='check-circle' size={23} color='#E4572E' />
-                              : <IconMaterialCommunity name='checkbox-blank-circle-outline' size={23} color='#E4572E' />} 
-                          </View> 
-                        </TouchableHighlight>
+
+                        {from_purchase_sum[from].type === 'warehouse'
+                          ? <View style={styles.paidCheckView}>
+                              <Text>已支付</Text>
+                              <IconMaterialCommunity name='check-circle' size={23} color='gray' />
+                            </View> 
+                          : <TouchableHighlight 
+                              onPress={() => {
+                                this.from_paid[from] = !this.from_paid[from];
+                                this.setState({});
+                              }}>
+                              <View style={styles.paidCheckView}>
+                                <Text>已支付</Text>
+                                {this.from_paid[from]
+                                  ? <IconMaterialCommunity name='check-circle' size={23} color='#E4572E' />
+                                  : <IconMaterialCommunity name='checkbox-blank-circle-outline' size={23} color='#E4572E' />} 
+                              </View> 
+                            </TouchableHighlight>}
                         
                       </View>
 

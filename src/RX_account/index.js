@@ -19,8 +19,8 @@ import CollectionFromCustomerForm from './record/record_modals/CollectionFromCus
 import SupplierDetail from './account/detail_modals/SupplierDetail';
 import MaterialOrderDetail from './account/detail_modals/MaterialOrderDetail';
 import PlaceOrderForm from './record/record_modals/PlaceOrderForm';
-import AddOrderItemForm from './record/record_modals/AddOrderItemForm';
-
+import AddOrderDemandItemForm from './record/record_modals/AddOrderDemandItemForm';
+import AddOrderPurchaseItemForm from './record/record_modals/AddOrderPurchaseItemForm';
 
 const MainBottomTab = createBottomTabNavigator(
   {
@@ -115,8 +115,14 @@ export default createAppContainer(createStackNavigator(
         header: null
       },
     },
-    AddOrderItemForm: {
-      screen: AddOrderItemForm,
+    AddOrderDemandItemForm: {
+      screen: AddOrderDemandItemForm,
+      navigationOptions: {
+        header: null
+      },
+    },
+    AddOrderPurchaseItemForm: {
+      screen: AddOrderPurchaseItemForm,
       navigationOptions: {
         header: null
       },

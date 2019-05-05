@@ -28,68 +28,46 @@ export default class MaterialOrderDetail extends Component {
     };
   }
 
-  _renderDemandListEachCutomer = (address, items) => {
+  _renderDemandListEachCutomer = (material_in_customer_in_order) => {
     let index = 1;
-    return items.map(item => {
-      if (item.customer_address === address)
-        return (
-          <View style={index>1? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer}>
-            <Text style={[styles.orderItemText, {width: 30}]}>{index++}</Text>
-            <Text style={[styles.orderItemText, {flex: 1}]}>{item.material}</Text>
-            <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
-              {item.quantity}{item.material_unit}
-            </Text>
-          </View>
-        );
+    return Object.keys(material_in_customer_in_order).map(material => {
+      return (
+        <View style={index>1? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer}>
+          <Text style={[styles.orderItemText, {width: 30}]}>{index++}</Text>
+          <Text style={[styles.orderItemText, {flex: 1}]}>{material}</Text>
+          <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
+            {material_in_customer_in_order[material].quantity}{material_in_customer_in_order[material].unit}
+          </Text>
+        </View>
+      );
     });
   }
 
-  _renderPurchaseListEachSupplier = (supplier, items) => {
+  _renderPurchaseListEachSupplier = (material_in_from_in_order) => {
 
-    let quantities = {};
-    let material_info = {};
-    let total_expense = 0;
-    items.forEach(item => {
-      if (item.supplier === supplier) {
-        let key = [item.material, item.price];
-        total_expense += item.price * item.quantity;
-        if (key in quantities)
-          quantities[key] += item.quantity;
-        else {
-          quantities[key] = item.quantity;
-          material_info[key] = item;
-        }
-      }
+    return Object.keys(material_in_from_in_order).map((material, index) => {
+      return (
+        <View style={index>0? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer}>
+          <Text style={[styles.orderItemText, {width: 30}]}>{index+1}</Text>
+          <Text style={[styles.orderItemText, {flex: 1}]}>{material}</Text>
+          <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{material_in_from_in_order[material].price}</Text>
+          <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
+            {material_in_from_in_order[material].quantity}{material_in_from_in_order[material].unit}
+          </Text>
+          <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>
+            {Math.floor(material_in_from_in_order[material].price * material_in_from_in_order[material].quantity)}
+          </Text>
+        </View>
+      );
     });
 
-    return (
-      <View>
-        <Text style={styles.tableInnerTitleText}>{supplier} (合计{Math.floor(total_expense)}元)</Text>
-        {Object.keys(quantities).map((key, index) => {
-          return (
-            <View style={index>0? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer}>
-              <Text style={[styles.orderItemText, {width: 30}]}>{index+1}</Text>
-              <Text style={[styles.orderItemText, {flex: 1}]}>{material_info[key].material}</Text>
-              <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{material_info[key].price}</Text>
-              <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
-                {quantities[key]}{material_info[key].material_unit}
-              </Text>
-              <Text style={[styles.orderItemText, {width: 55, textAlign:'right'}]}>{Math.floor(material_info[key].price * quantities[key])}</Text>
-            </View>
-          );
-        })}
-      </View>
-    );
   }
 
   render() {
     const { navigation } = this.props;
     const order = navigation.getParam('order'); 
-    const items = order.order_items;
-    let customer_addresses = new Set();
-    items.forEach(i => {customer_addresses.add(i.customer_address);});
-    let suppliers = new Set();
-    items.forEach(i => {suppliers.add(i.supplier);});
+    const customer_in_order = order.customer_in_order;
+    const from_in_order = order.from_in_order;
 
     return (
       <ScrollView contentContainerStyle={styles.container}>
@@ -110,11 +88,11 @@ export default class MaterialOrderDetail extends Component {
             <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
           </View>
 
-          {[...customer_addresses].map(address => {
+          {Object.keys(customer_in_order).map(customer_address => {
             return (
               <View>
-                <Text style={styles.tableInnerTitleText}>{address}</Text>
-                {this._renderDemandListEachCutomer(address, items)}
+                <Text style={styles.tableInnerTitleText}>{customer_address}</Text>
+                {this._renderDemandListEachCutomer(customer_in_order[customer_address].material_in_customer_in_order)}
               </View>
             );
           })}
@@ -133,8 +111,13 @@ export default class MaterialOrderDetail extends Component {
             <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>价格</Text>
           </View>
 
-          {[...suppliers].map(supplier => {
-            return this._renderPurchaseListEachSupplier(supplier, items);
+          {Object.keys(from_in_order).map(from => {
+            return (
+              <View>
+                <Text style={styles.tableInnerTitleText}>{from} (合计{Math.floor(from_in_order[from].expense)}元)</Text>
+                {this._renderPurchaseListEachSupplier(from_in_order[from].material_in_from_in_order)}
+              </View>
+            );
           })}
 
         </View>
@@ -164,14 +147,15 @@ const styles = StyleSheet.create({
     marginHorizontal:15,
     marginBottom: 30,
     borderWidth: 1,
-    borderColor: 'lightgray',
+    borderColor: '#e8e8e8',
+    borderRadius:5,
   },
   level2TitleText: {
     fontSize:18,
     color:'black',
     textAlign:'center',
     height:40,
-    backgroundColor:'lightgray',
+    backgroundColor:'#e8e8e8',
     textAlignVertical:'center',
   },
   tableInnerTitleText: {
@@ -179,7 +163,7 @@ const styles = StyleSheet.create({
     height: 30,
     textAlign:'center',
     textAlignVertical:'center',
-    backgroundColor:'lightgray',
+    backgroundColor:'#e8e8e8',
   },
 
 
@@ -195,7 +179,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     height: 30,
     borderTopWidth: 1,
-    borderTopColor: 'lightgray',
+    borderTopColor: '#e8e8e8',
   },
   orderItemHeaderText: {
     fontSize: 14,

@@ -15,6 +15,7 @@ export default class ChooseOneInput extends Component {
   static defaultProps = {
     label: '',
     data: [0, 1, 2],
+    justifyContent: 'flex-start',
 
     onEndEditing: null,
   }
@@ -49,8 +50,8 @@ export default class ChooseOneInput extends Component {
 
   render() {
     return (
-      <TouchableHighlight style={styles.touchableView} onPress={this._chosenPopup}>
-        <View style={styles.inputItemInnerView}>
+      <TouchableHighlight style={[styles.touchableView, {justifyContent: this.props.justifyContent}]} onPress={this._chosenPopup}>
+        <View style={[styles.inputItemInnerView, {justifyContent: this.props.justifyContent}]}>
           <Text style={styles.fontMain}>{this.props.label}：</Text>
 
           <Text style={styles.fontChosen}>{this.state.chosen_data.join(' - ')}</Text>
@@ -63,7 +64,6 @@ const styles = StyleSheet.create({
 
   inputItemInnerView: {
     flexDirection:'row',
-    justifyContent:'flex-start',
     alignItems:'center',
   },
 
@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
     minWidth:100,
     height:50,
     flexDirection:'row',
-    justifyContent:'flex-start',
     alignItems:'center',
   },
 

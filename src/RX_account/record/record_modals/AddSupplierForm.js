@@ -21,10 +21,7 @@ export default class AddSupplierForm extends Component {
   constructor(props) {
     super(props);
 
-    this.ready_to_commit = false;
-
-    this.state = { 
-
+    this.form_data = { 
       name_value: '',
       name_comFlag: false,
 
@@ -33,19 +30,22 @@ export default class AddSupplierForm extends Component {
 
       phone_value: '',
       phone_comFlag: true,
+    };
 
+    this.state = { 
+      ready_to_commit: false,
     };
   }
 
   _submitPost = () => {
 
-    if (!this.ready_to_commit)
+    if (!this.state.ready_to_commit)
       return;
 
     let formData = new FormData();
-    formData.append("name", this.state.name_value);
-    formData.append("address", this.state.address_value);
-    formData.append("phone", this.state.phone_value);
+    formData.append("name", this.form_data.name_value);
+    formData.append("address", this.form_data.address_value);
+    formData.append("phone", this.form_data.phone_value);
     
     fetch(URL.submit_add_supplier,{
       method:'POST',
@@ -62,15 +62,18 @@ export default class AddSupplierForm extends Component {
   }
 
   _checkComplete = () => {
-    keys = Object.keys(this.state);
+    keys = Object.keys(this.form_data);
     for (let i = 0; i < keys.length; i++) 
       if (keys[i].length > 7 && keys[i].slice(-7) === 'comFlag') 
-        if (!this.state[keys[i]]) {
-          this.ready_to_commit = false;
-          return false;
+        if (!this.form_data[keys[i]]) {
+          this.setState({
+            ready_to_commit: false,
+          });
+          return;
         }
-    this.ready_to_commit = true;
-    return true;
+    this.setState({
+      ready_to_commit: true,
+    });
   }
 
   render() {
@@ -83,8 +86,8 @@ export default class AddSupplierForm extends Component {
             <Text style={styles.cancelText}>取消</Text>
           </TouchableHighlight>
 
-          <TouchableHighlight style={!this._checkComplete()?styles.btn:styles.activeBtn} onPress={this._submitPost}>
-            <Text style={!this._checkComplete()?styles.btnText:styles.activeBtnText}>确认</Text>
+          <TouchableHighlight style={!this.state.ready_to_commit?styles.btn:styles.activeBtn} onPress={this._submitPost}>
+            <Text style={!this.state.ready_to_commit?styles.btnText:styles.activeBtnText}>确认</Text>
           </TouchableHighlight>
         </View>
 
@@ -96,26 +99,26 @@ export default class AddSupplierForm extends Component {
                 label='材料商名' max_length={64} 
                 exclude_str=')('
                 onEndEditing={(isValid, value) => {
-                  this.setState({
-                    name_comFlag: isValid,
-                    name_value: value,
-                  });}} />
+                  this.form_data.name_comFlag = isValid;
+                  this.form_data.name_value = value;
+                  this._checkComplete();
+                }} />
               <GeneralInput 
                 label='地址' max_length={256} 
                 onEndEditing={(isValid, value) => {
-                  this.setState({
-                    address_comFlag: isValid,
-                    address_value: value,
-                  });}} />
+                  this.form_data.address_comFlag = isValid;
+                  this.form_data.address_value = value;
+                  this._checkComplete();
+                }} />
               <GeneralInput 
                 label='电话' max_length={16} 
                 allow_empty={true} 
                 content_type='phone'
                 onEndEditing={(isValid, value) => {
-                  this.setState({
-                    phone_comFlag: isValid,
-                    phone_value: value,
-                  });}} />
+                  this.form_data.phone_comFlag = isValid;
+                  this.form_data.phone_value = value;
+                  this._checkComplete();
+                }} />
              
             
             </View>

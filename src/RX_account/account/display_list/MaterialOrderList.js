@@ -59,6 +59,29 @@ export default class MaterialOrderList extends Component {
     this._fetchData();
   }
 
+  _renderMaterialItems = (customer_in_order) => {
+    let material_render_items = [];
+    let index = 1;
+
+    Object.keys(customer_in_order).map(customer_address => {
+      let materials = customer_in_order[customer_address].material_in_customer_in_order;
+      Object.keys(materials).map(material => {
+        material_render_items.push(
+          <View style={index>1? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer}>
+            <Text style={[styles.orderItemText, {width: 35}]}>{index++}</Text>
+            <Text style={[styles.orderItemText, {flex: 1}]}>{customer_address}</Text>
+            <Text style={[styles.orderItemText, {flex: 1}]}>{material}</Text>
+            <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
+              {materials[material].quantity}{materials[material].unit}
+            </Text>
+          </View>
+        );
+      });
+    });
+
+    return material_render_items;
+  }
+
   _renderItem = ({item}) => {
     return (
       
@@ -85,16 +108,7 @@ export default class MaterialOrderList extends Component {
                 <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
               </View>
 
-              {item.value.order_items.map((item, index) => {return (
-                <View style={index>0? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer}>
-                  <Text style={[styles.orderItemText, {width: 35}]}>{item.item_num}</Text>
-                  <Text style={[styles.orderItemText, {flex: 1}]}>{item.customer_address}</Text>
-                  <Text style={[styles.orderItemText, {flex: 1}]}>{item.material}</Text>
-                  <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
-                    {item.quantity}{item.material_unit}
-                  </Text>
-                </View>
-              );})}
+              {this._renderMaterialItems(item.value.customer_in_order)}
 
             </View>
           </View>
@@ -168,7 +182,8 @@ const styles = StyleSheet.create({
     // marginHorizontal:15,
     // marginBottom: 30,
     borderWidth: 1,
-    borderColor: 'lightgray',
+    borderColor: '#e8e8e8',
+    borderRadius:5,
   },
 
   TableHeaderContainer: {
@@ -176,7 +191,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     height: 30,
-    backgroundColor: 'lightgray',
+    backgroundColor: '#e8e8e8',
   },
   TableRowItemContainer: {
     flexDirection: 'row',
@@ -190,7 +205,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     height: 30,
     borderTopWidth: 1,
-    borderTopColor: 'lightgray',
+    borderTopColor: '#e8e8e8',
   },
 
 })

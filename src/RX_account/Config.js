@@ -15,6 +15,8 @@ const supplier_detail_url = account_url + 'supplier_detail/';
 const material_orders_url = account_url + 'material_orders/';
 const suppliers_by_material_url = account_url + 'suppliers_by_material/';
 const add_material_order_url = account_url + 'add_material_order/';
+const warehouses_url = account_url + 'warehouses/';
+const warehouse_materials_url = account_url + 'warehouse_materials/';
 
 export default URL = {
   customers: customers_url,
@@ -29,6 +31,10 @@ export default URL = {
   material_orders: material_orders_url,
   suppliers_by_material: suppliers_by_material_url,
   add_material_order: add_material_order_url,
+  warehouses: warehouses_url,
+  warehouse_materials: warehouse_materials_url,
 };
+
+export const EPSILON = 0.000000001;
 
 

@@ -22,8 +22,9 @@ export default class ParagraphInput extends Component {
     };
   }
 
-  _innerOnEndEditing = () => {
-    input = this.state.input_value;
+  _innerOnEndEditing = (input) => {
+    this.setState({input_value: input})
+    // input = this.state.input_value;
     if (input.length === 0) {
       if (this.props.allow_empty) {
         this.setState({
@@ -81,8 +82,10 @@ export default class ParagraphInput extends Component {
             placeholder={this.props.placeholder} 
             value={this.state.input_value}
             maxLength={this.props.max_length}
-            onChangeText={(text) => this.setState({input_value: text})}
-            onEndEditing={this._innerOnEndEditing}/>
+            onChangeText={this._innerOnEndEditing}
+            // onChangeText={(text) => this.setState({input_value: text})}
+            // onEndEditing={this._innerOnEndEditing}
+          />
         </View>
 
         {this.props.hint

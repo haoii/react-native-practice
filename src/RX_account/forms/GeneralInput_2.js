@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight } from 'react-native';
 
-export default class GeneralInput extends Component {
+export default class GeneralInput_2 extends Component {
   static defaultProps = {
     label: '',
     placeholder: '',
@@ -21,12 +21,12 @@ export default class GeneralInput extends Component {
     exclude_str: '',  // valid when conten_type is 'string'
 
     value:'',
+    onChangeText:null,
   }
 
   constructor(props) {
     super(props);
     this.state = { 
-      input_value:this.props.value,
       message:'',
       message_level:'info',
     };
@@ -67,8 +67,8 @@ export default class GeneralInput extends Component {
   }
 
   _innerOnEndEditing = (input) => {
-    this.setState({input_value: input});
-    // input = this.state.input_value;
+    this.props.onChangeText(input);
+
     if (input.length === 0) {
       if (this.props.allow_empty) {
         this.setState({
@@ -133,12 +133,10 @@ export default class GeneralInput extends Component {
             <TextInput 
               style={styles.textInput}
               placeholder={this.props.placeholder} 
-              value={this.state.input_value}
+              value={this.props.value}
               keyboardType={this._getKeyboardType()}
               maxLength={this.props.max_length}
               onChangeText={this._innerOnEndEditing}
-              // onChangeText={(text) => this.setState({input_value: text})}
-              // onEndEditing={this._innerOnEndEditing}
             />
             <Text style={[styles.fontMain, this._getFontColor()]}>{this.props.unit}</Text>
           </View>

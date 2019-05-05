@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight, 
           } from 'react-native';
 
-import ChooseOneInput from '../scope_selector_forms/ChooseOneForm';
+import ChooseOneForm from '../../scope_selector_forms/ChooseOneForm';
 
 import Dimensions from 'Dimensions';
 
@@ -45,7 +45,7 @@ export default class MaterialScopeSelector extends Component {
       <View style={styles.container}>
         {!this.state.material_class_data_ready
           ? <Text>正在获取材料类别列表...</Text>
-          : <ChooseOneInput label='类别' 
+          : <ChooseOneForm label='类别' 
               data={this.material_class_data} 
               onEndEditing={this.props.onEndEditing} />}
 

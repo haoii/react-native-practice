@@ -38,7 +38,7 @@ export default class CollectionList extends Component {
     fetch(URL.collections_from_customer)
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.latest_collections;
+        let arrData = responseJson.data;
         let i = 0;
         let arrList = [];
         arrData.map(item => {

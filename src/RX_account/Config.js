@@ -1,6 +1,6 @@
 
 
-const host_url = 'http://192.168.1.101:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
+const host_url = 'http://192.168.1.129:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
 const account_url = host_url + 'account/';
 const static_url = host_url + 'static/';
 const customers_url = account_url + 'customers/';

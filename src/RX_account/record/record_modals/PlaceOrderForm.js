@@ -81,8 +81,8 @@ export default class PlaceOrderForm extends Component {
     .then((ret)=>{
       if (ret !== 'success')
         alert(ret);
-      // else
-      //   this.props.navigation.goBack();
+      else
+        this.props.navigation.goBack();
     })
     .catch((error)=>{alert(error)});
   }

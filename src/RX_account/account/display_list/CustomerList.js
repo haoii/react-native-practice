@@ -39,7 +39,7 @@ export default class CustomerList extends Component {
     fetch(URL.customers)
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.latest_customers;
+        let arrData = responseJson.data;
         let i = 0;
         let arrList = [];
         // 直接赋值的话没有 key 键,就会发出警告,

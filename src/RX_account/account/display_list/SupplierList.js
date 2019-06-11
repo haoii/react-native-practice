@@ -39,7 +39,7 @@ export default class SupplierList extends Component {
     fetch(URL.suppliers)
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.latest_suppliers;
+        let arrData = responseJson.data;
         let i = 0;
         let arrList = [];
         arrData.map(item => {

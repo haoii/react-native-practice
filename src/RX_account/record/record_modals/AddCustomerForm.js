@@ -41,7 +41,7 @@ export default class AddCustomerForm extends Component {
       discount_value: '',
       discount_comFlag: false,
 
-      area_value: '',
+      area_value: '0',
       area_comFlag: true,
 
       sign_date: this._getCurDate(),
@@ -53,8 +53,9 @@ export default class AddCustomerForm extends Component {
   }
 
   _getCurDate = () => {
-    let t = new Date();
-    return '' + t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
+    // let t = new Date();
+    // return '' + t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
+    return new Date().toISOString().slice(0,10);
   }
 
   _submitPost = () => {
@@ -66,6 +67,7 @@ export default class AddCustomerForm extends Component {
     formData.append("name", this.form_data.name_value);
     formData.append("address", this.form_data.address_value);
     formData.append("sign_date", this.form_data.sign_date);
+    // formData.append("sign_date", new Date().toISOString());
     formData.append("duration", this.form_data.duration_value);
     formData.append("phone", this.form_data.phone_value);
     formData.append("area", this.form_data.area_value);
@@ -175,8 +177,8 @@ export default class AddCustomerForm extends Component {
                   this._checkComplete();
                 }} />
               <GeneralInput 
-                label='面积' unit='平方'
-                allow_empty={true}
+                label='面积' placeholder='0' unit='平方'
+                allow_empty={true} default_value_when_empty='0'
                 content_type='float' value_min={0}
                 onEndEditing={(isValid, value) => {
                   this.form_data.area_comFlag = isValid;

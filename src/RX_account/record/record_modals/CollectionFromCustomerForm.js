@@ -46,8 +46,7 @@ export default class CollectionFromCustomerForm extends Component {
   }
 
   _getCurDate = () => {
-    let t = new Date();
-    return '' + t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
+    return new Date().toISOString().slice(0,10);
   }
 
   _initCustomerNameData = () => {
@@ -55,7 +54,7 @@ export default class CollectionFromCustomerForm extends Component {
       .then(response => response.json())
       .then(responseJson => {
         let arrData = responseJson.data;
-        this.customers_data = arrData.map(item => item.name + '(' + item.address + ')')
+        this.customers_data = arrData.map(item => item.name + '(' + item.address + ')(' + item.id + ')')
         this.setState({customers_data_ready:true});
 
       }).catch(error => {
@@ -69,7 +68,7 @@ export default class CollectionFromCustomerForm extends Component {
       return;
 
     let formData = new FormData();
-    formData.append("name", this.state.customer_name_value);
+    formData.append("customer", this.state.customer_name_value);
     formData.append("collect_date", this.state.collect_date);
     formData.append("amount", this.state.amount_value);
     formData.append("remark", this.state.remark_value);

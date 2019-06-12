@@ -54,7 +54,7 @@ export default class CollectionFromCustomerForm extends Component {
       .then(response => response.json())
       .then(responseJson => {
         let arrData = responseJson.data;
-        this.customers_data = arrData.map(item => item.name + '(' + item.address + ')(' + item.id + ')')
+        this.customers_data = arrData.map(item => item.name + '(' + item.address + ')')
         this.setState({customers_data_ready:true});
 
       }).catch(error => {

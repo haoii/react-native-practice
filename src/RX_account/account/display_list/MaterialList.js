@@ -51,7 +51,7 @@ export default class MaterialList extends Component {
     })
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.all_materials;
+        let arrData = responseJson.data;
         let i = 0;
         let arrList = [];
         arrData.map(item => {

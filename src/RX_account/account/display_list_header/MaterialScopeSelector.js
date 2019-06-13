@@ -32,7 +32,7 @@ export default class MaterialScopeSelector extends Component {
     fetch(URL.material_classes)
       .then(response => response.json())
       .then(responseJson => {
-        this.material_class_data = responseJson.material_classes;
+        this.material_class_data = responseJson.data;
         this.setState({material_class_data_ready: true});
 
       }).catch(error => {

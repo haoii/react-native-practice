@@ -39,7 +39,7 @@ export default class SupplierDetailMaterials extends Component {
     fetch(URL.supplier_detail + this.props.supplier_id + '/')
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.all_materials;
+        let arrData = responseJson.data;
         let i = 0;
         let arrList = [];
         arrData.map(item => {

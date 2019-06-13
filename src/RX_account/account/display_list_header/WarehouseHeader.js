@@ -37,7 +37,7 @@ export default class WarehouseHeader extends Component {
     fetch(URL.material_classes)
       .then(response => response.json())
       .then(responseJson => {
-        this.material_class_data = responseJson.material_classes;
+        this.material_class_data = responseJson.data;
         this.setState({material_class_data_ready: true});
 
       }).catch(error => {
@@ -49,7 +49,7 @@ export default class WarehouseHeader extends Component {
     fetch(URL.warehouses)
       .then(response => response.json())
       .then(responseJson => {
-        this.warehouse_data = responseJson.all_warehouses.map(i => {return i.name;});
+        this.warehouse_data = responseJson.data.map(i => {return i.name;});
         this.setState({warehouse_data_ready: true});
 
       }).catch(error => {

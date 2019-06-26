@@ -56,7 +56,7 @@ export default class AddOrderDemandItemForm extends Component {
     fetch(URL.material_classes)
       .then(response => response.json())
       .then(responseJson => {
-        this.material_class_data = responseJson.material_classes;
+        this.material_class_data = responseJson.data;
         if (this.material_class_data.length === 0) {
           this.material_class_data = [{'无': [{'无': ['无']}]}];
         }
@@ -80,7 +80,7 @@ export default class AddOrderDemandItemForm extends Component {
     })
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.all_materials;
+        let arrData = responseJson.data;
         let arrList = [];
         let unitList = {};
         arrData.map(item => {

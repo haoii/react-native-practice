@@ -33,7 +33,7 @@ export default class AccountScreen extends Component {
           locked={false}
         >
           <View tabLabel='客户' style={{backgroundColor:'#f4f4f4'}}>
-            <CustomerList />
+            <CustomerList navigation={this.props.navigation} />
           </View>
           <View tabLabel='材料商' style={{backgroundColor:'#f4f4f4'}}>
             <SupplierList navigation={this.props.navigation} />

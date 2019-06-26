@@ -40,7 +40,7 @@ export default class MaterialOrderList extends Component {
     fetch(URL.material_orders)
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.latest_material_orders;
+        let arrData = responseJson.data;
         let i = 0;
         let arrList = [];
         arrData.map(item => {

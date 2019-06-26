@@ -52,7 +52,7 @@ export default class PlaceOrderForm extends Component {
     fetch(URL.customers)
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.latest_customers;
+        let arrData = responseJson.data;
         this.customers_data = arrData.map(item => item.name + '(' + item.address + ')')
         this.setState({customers_data_ready:true});
 

@@ -21,6 +21,7 @@ import MaterialOrderDetail from './account/detail_modals/MaterialOrderDetail';
 import PlaceOrderForm from './record/record_modals/PlaceOrderForm';
 import AddOrderDemandItemForm from './record/record_modals/AddOrderDemandItemForm';
 import AddOrderPurchaseItemForm from './record/record_modals/AddOrderPurchaseItemForm';
+import CustomerDetail from './account/detail_modals/CustomerDetail';
 
 const MainBottomTab = createBottomTabNavigator(
   {
@@ -140,6 +141,12 @@ export default createAppContainer(createStackNavigator(
       //   header: null
       // },
     },
+    CustomerDetail: {
+      screen: CustomerDetail,
+      navigationOptions: {
+        header: null
+      },
+    }
   },
   {
     initialRouteName: 'MainBottomTab',

@@ -62,7 +62,7 @@ export default class AddOrderPurchaseItemForm extends Component {
     fetch(URL.suppliers_by_material + this.nav_data.material + '/')
       .then(response => response.json())
       .then(responseJson => {
-        this.from_data = responseJson.available_from;
+        this.from_data = responseJson.data;
 
         if (this.from_data.length === 0) {
           this.from_data = {

@@ -78,7 +78,9 @@ export default class CustomerList extends Component {
       <View>
         <TouchableHighlight
           onPress={() =>
-            this.props.navigation.push('CustomerDetail')}
+            this.props.navigation.push('CustomerDetail', {
+              customer: item.value,
+            })}
           style={styles.itemContainer}>
 
           <View>

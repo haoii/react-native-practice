@@ -47,6 +47,9 @@ export default class AddCustomerForm extends Component {
       sign_date: this._getCurDate(),
     };
 
+    this.operation_type = 'add';
+    this.customer_id_to_edit = '0';
+
     this.state = {
       ready_to_commit: false,
     };
@@ -73,6 +76,8 @@ export default class AddCustomerForm extends Component {
     formData.append("area", this.form_data.area_value);
     formData.append("total_price", this.form_data.total_price_value);
     formData.append("price_discount", this.form_data.discount_value);
+    formData.append("operation_type", this.operation_type);
+    formData.append("customer_id_to_edit", this.customer_id_to_edit);
     
     fetch(URL.submit_add_customer,{
       method:'POST',
@@ -104,6 +109,29 @@ export default class AddCustomerForm extends Component {
   }
 
   render() {
+    const { navigation } = this.props;
+    const customer = navigation.getParam('customerToUpdate', null);
+    if (customer) {
+      navigation.setParams({customerToUpdate: null});
+      this.operation_type = 'edit';
+      this.customer_id_to_edit = customer.id.toString();
+      this.form_data.name_value = customer.name;
+      this.form_data.name_comFlag = true;
+      this.form_data.address_value = customer.address;
+      this.form_data.address_comFlag = true;
+      this.form_data.phone_value = customer.phone;
+      this.form_data.phone_comFlag = true;
+      this.form_data.duration_value = customer.duration.toString();
+      this.form_data.discount_comFlag = true;
+      this.form_data.total_price_value = customer.total_price.toString();
+      this.form_data.total_price_comFlag = true;
+      this.form_data.discount_value = customer.price_discount.toString();
+      this.form_data.discount_comFlag = true;
+      this.form_data.area_value = customer.area.toString();
+      this.form_data.area_comFlag = true;
+      this.form_data.sign_date = customer.sign_date;
+    }
+
     return (
       <View style={styles.container}>
 
@@ -123,6 +151,7 @@ export default class AddCustomerForm extends Component {
 
             <View style={styles.Canvas}>
               <GeneralInput 
+                value={this.form_data.name_value}
                 label='客户名' max_length={64} 
                 exclude_str=')('
                 onEndEditing={(isValid, value) => {
@@ -131,13 +160,15 @@ export default class AddCustomerForm extends Component {
                   this._checkComplete();
                 }} />
               <GeneralInput 
-                label='地址' max_length={256} hint='注意：地址提交后不可更改！'
+                value={this.form_data.address_value}
+                label='地址' max_length={256}
                 onEndEditing={(isValid, value) => {
                   this.form_data.address_comFlag = isValid;
                   this.form_data.address_value = value;
                   this._checkComplete();
                 }} />
               <GeneralInput 
+                value={this.form_data.phone_value}
                 label='电话' max_length={16} 
                 allow_empty={true} 
                 content_type='phone'
@@ -150,8 +181,10 @@ export default class AddCustomerForm extends Component {
                 label='签单日期' init_date={this.form_data.sign_date}
                 onEndEditing={(date) => {
                   this.form_data.sign_date = date;
+                  this._checkComplete();
                 }}/>      
               <GeneralInput 
+                value={this.form_data.duration_value}
                 label='工期' placeholder='60' unit='天'
                 allow_empty={true} default_value_when_empty='60'
                 content_type='integer' value_min={1}
@@ -161,6 +194,7 @@ export default class AddCustomerForm extends Component {
                   this._checkComplete();
                 }} />
               <GeneralInput 
+                value={this.form_data.total_price_value}
                 label='总报价' placeholder='0.00' unit='元' 
                 content_type='float' value_min={0}
                 onEndEditing={(isValid, num) => {
@@ -169,6 +203,7 @@ export default class AddCustomerForm extends Component {
                   this._checkComplete();
                 }} />
               <GeneralInput 
+                value={this.form_data.discount_value}
                 label='折扣' placeholder='0.0' unit='' hint='提示：1到10之间' 
                 content_type='float' value_min={1} value_max={10}
                 onEndEditing={(isValid, num) => {
@@ -177,6 +212,7 @@ export default class AddCustomerForm extends Component {
                   this._checkComplete();
                 }} />
               <GeneralInput 
+                value={this.form_data.area_value}
                 label='面积' placeholder='0' unit='平方'
                 allow_empty={true} default_value_when_empty='0'
                 content_type='float' value_min={0}

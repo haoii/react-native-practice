@@ -1,5 +1,5 @@
 
-const host_url = 'http://192.168.1.120:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
+const host_url = 'http://192.168.1.104:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
 const account_url = host_url + 'account/';
 const static_url = host_url + 'static/';
 const customers_url = account_url + 'customers/';
@@ -16,6 +16,7 @@ const suppliers_by_material_url = account_url + 'suppliers_by_material/';
 const add_material_order_url = account_url + 'add_material_order/';
 const warehouses_url = account_url + 'warehouses/';
 const warehouse_materials_url = account_url + 'warehouse_materials/';
+const delete_customer_url = account_url + 'delete_customer/';
 
 export default URL = {
   customers: customers_url,
@@ -32,6 +33,7 @@ export default URL = {
   add_material_order: add_material_order_url,
   warehouses: warehouses_url,
   warehouse_materials: warehouse_materials_url,
+  delete_customer: delete_customer_url,
 };
 
 export const EPSILON = 0.000000001;

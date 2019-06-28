@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight, 
-        Button, TouchableOpacity, Modal } from 'react-native';
+        Button, TouchableOpacity, Modal, Alert } from 'react-native';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 
 import NavigationHeader from '../../baseComponent/NavigationHeader';
@@ -21,7 +21,35 @@ export default class CustomerDetail extends Component {
     };
   }
 
+  _deleteCustomer = (id) => {
+    let formData = new FormData();
+    formData.append("id", id.toString());
+    
+    fetch(URL.delete_customer,{
+      method:'POST',
+      body:formData,
+    })
+    .then((response) => response.text())
+    .then((ret)=>{
+      if (ret !== 'success')
+        alert(ret);
+      else
+        this.props.navigation.goBack();
+    })
+    .catch((error)=>{alert(error)});
+  }
 
+  _confirmDeleteCustomer = (id) => {
+    Alert.alert(
+      null,
+      '删除客户后不可恢复，确认删除？',
+      [
+        {text: '放弃删除', onPress: () => {}, style: 'cancel'},
+        {text: '确认删除', onPress: () => {this._deleteCustomer(id);}},
+      ],
+      { cancelable: false }
+    );
+  }
 
   render() {
     const { navigation } = this.props;
@@ -37,7 +65,7 @@ export default class CustomerDetail extends Component {
                 customerToUpdate: customer,
               });
             },
-            'test2': () => alert('tt22'),
+            '删除': () => this._confirmDeleteCustomer(customer.id),
           }}
         />
 

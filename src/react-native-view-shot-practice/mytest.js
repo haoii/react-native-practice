@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight, 
         Image } from 'react-native';
 import ViewShot from "react-native-view-shot";
+import Share from 'react-native-share';
 
 import Dimensions from 'Dimensions';
 const size = {
@@ -29,11 +30,26 @@ export default class ExampleCaptureOnMountSimpler  extends Component {
     })
   }
 
+  _share = () => {
+    const shareOptions = {
+      title: 'Share via',
+      message: 'some message',
+      url: this.state.url,
+    };
+
+    Share.open(shareOptions)
+    .then((res) => { console.log(res) })
+    .catch((err) => { err && console.log(err); });
+  }
+
   render() {
     return (
       <View>
         <TouchableHighlight onPress={this._capture}>
           <Text>button</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={this._share}>
+          <Text>share</Text>
         </TouchableHighlight>
         {/* <Image source={{uri:this.state.uri}} style={{width:220,height:220,borderRadius:6,marginRight:6,borderWidth:1,borderColor:'red'}} /> */}
 

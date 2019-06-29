@@ -5141,6 +5141,11 @@ react-native-scrollable-tab-view@^0.10.0:
     prop-types "^15.6.0"
     react-timer-mixin "^0.13.3"
 
+react-native-share@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.npm.taobao.org/react-native-share/download/react-native-share-1.2.1.tgz#3756a3cf383c1489a6a0edf2b529ec025ee8f8f7"
+  integrity sha1-N1ajzzg8FImmoO3ytSnsAl7o+Pc=
+
 react-native-status-bar-height@^2.2.0:
   version "2.2.0"
   resolved "http://registry.npm.taobao.org/react-native-status-bar-height/download/react-native-status-bar-height-2.2.0.tgz#3bd51de134660efc5f5ad136ca573c7d5790f7ed"

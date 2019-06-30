@@ -44,8 +44,7 @@ export default class PlaceOrderForm extends Component {
   }
 
   _getCurDate = () => {
-    let t = new Date();
-    return '' + t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
+    return new Date().toISOString().slice(0,10);
   }
 
   _initCustomerNameData = () => {

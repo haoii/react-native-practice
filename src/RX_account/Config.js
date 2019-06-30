@@ -1,5 +1,5 @@
 
-const host_url = 'http://192.168.1.102:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
+const host_url = 'http://192.168.1.103:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
 const account_url = host_url + 'account/';
 const static_url = host_url + 'static/';
 const customers_url = account_url + 'customers/';
@@ -12,7 +12,7 @@ const material_classes_url = account_url + 'material_classes/';
 const materials_url = account_url + 'materials/';
 const supplier_detail_url = account_url + 'supplier_detail/';
 const material_orders_url = account_url + 'material_orders/';
-const suppliers_by_material_url = account_url + 'suppliers_by_material/';
+const froms_by_material_url = account_url + 'froms_by_material/';
 const add_material_order_url = account_url + 'add_material_order/';
 const warehouses_url = account_url + 'warehouses/';
 const warehouse_materials_url = account_url + 'warehouse_materials/';
@@ -29,7 +29,7 @@ export default URL = {
   materials: materials_url,
   supplier_detail: supplier_detail_url,
   material_orders: material_orders_url,
-  suppliers_by_material: suppliers_by_material_url,
+  froms_by_material: froms_by_material_url,
   add_material_order: add_material_order_url,
   warehouses: warehouses_url,
   warehouse_materials: warehouse_materials_url,

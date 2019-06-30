@@ -59,7 +59,7 @@ export default class AddOrderPurchaseItemForm extends Component {
   }
 
   _getFromData = () => {
-    fetch(URL.suppliers_by_material + this.nav_data.material + '/')
+    fetch(URL.froms_by_material + this.nav_data.material + '/')
       .then(response => response.json())
       .then(responseJson => {
         this.from_data = responseJson.data;
@@ -157,7 +157,7 @@ export default class AddOrderPurchaseItemForm extends Component {
                         from_comFlag:true,
                         from_value:num[0],
                         material_price_comFlag: true,
-                        material_price_value: this.from_data[num[0]].price,
+                        material_price_value: this.from_data[num[0]].price.toString(),
                         from_hint:tmp_hint,
                         max_quantity:tmp_max_quantity,
                         quantity_comFlag:true,
@@ -170,8 +170,8 @@ export default class AddOrderPurchaseItemForm extends Component {
               {!this.state.from_comFlag
                 ? null
                 : <GeneralInput_2 
-                    label='单价' placeholder={this.from_data[this.state.from_value].price} 
-                    allow_empty={true} default_value_when_empty={this.from_data[this.state.from_value].price}
+                    label='单价' placeholder={this.from_data[this.state.from_value].price.toString()} 
+                    allow_empty={true} default_value_when_empty={this.from_data[this.state.from_value].price.toString()}
                     content_type='float' value_min={0} 
                     value={this.state.price_input_str}
                     onEndEditing={(isValid, num) => {

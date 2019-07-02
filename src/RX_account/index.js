@@ -23,6 +23,8 @@ import AddOrderDemandItemForm from './record/record_modals/AddOrderDemandItemFor
 import AddOrderPurchaseItemForm from './record/record_modals/AddOrderPurchaseItemForm';
 import CustomerDetail from './account/detail_modals/CustomerDetail';
 
+import LoginScreen from './me/LoginScreen';
+
 const MainBottomTab = createBottomTabNavigator(
   {
     记录: {
@@ -143,6 +145,12 @@ export default createAppContainer(createStackNavigator(
     },
     CustomerDetail: {
       screen: CustomerDetail,
+      navigationOptions: {
+        header: null
+      },
+    },
+    LoginScreen: {
+      screen: LoginScreen,
       navigationOptions: {
         header: null
       },

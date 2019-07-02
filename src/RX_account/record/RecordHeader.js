@@ -5,6 +5,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 
 export default class RecordHeader extends Component {
+
+  _test = () => {
+    this.props.navigation.navigate('LoginScreen');
+  }
+
   render() {
     // const {navigate} = this.props.navigation;
     return (
@@ -14,7 +19,7 @@ export default class RecordHeader extends Component {
           <IconIonicons name="ios-add" size={30} color="#222222" />
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.search} onPress={() =>alert('SearchIng')}>
+        <TouchableOpacity style={styles.search} onPress={this._test}>
           <Text style={{
             textAlign: 'center',
             lineHeight: 25,

@@ -20,6 +20,7 @@ const warehouse_materials_url = account_url + 'warehouse_materials/';
 const delete_customer_url = account_url + 'delete_customer/';
 
 const login_url = user_url + 'login/';
+const logout_url = user_url + 'logout/';
 
 export default URL = {
   customers: customers_url,
@@ -39,6 +40,7 @@ export default URL = {
   delete_customer: delete_customer_url,
 
   login:login_url,
+  logout:logout_url,
 };
 
 export const EPSILON = 0.000000001;

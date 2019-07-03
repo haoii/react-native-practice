@@ -24,7 +24,6 @@ export default class CollectionList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ready: true,
       refreshing: false,
       collections: []
     }
@@ -35,17 +34,22 @@ export default class CollectionList extends Component {
   }
 
   _fetchData = () => {
-    fetch(URL.collections_from_customer)
+    fetch(URL.collections_from_customer, {credentials: 'same-origin'})
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.data;
-        let i = 0;
-        let arrList = [];
-        arrData.map(item => {
-          arrList.push({key: i, value: item});
-          i++;
-        })
-        this.setState({collections: arrList, ready: false, refreshing: false});
+        if (responseJson.msg === 'success') {
+          let arrData = responseJson.data;
+          let i = 0;
+          let arrList = [];
+          arrData.map(item => {
+            arrList.push({key: i, value: item});
+            i++;
+          })
+          this.setState({collections: arrList, refreshing: false});
+        } else {
+          this.setState({collections: [], refreshing: false});
+          alert(responseJson.data);
+        }
 
       }).catch((error) => {
         alert(error);
@@ -83,13 +87,11 @@ export default class CollectionList extends Component {
   render() {
     return (
       <View>
-        {this.state.ready
-          ? <Text>正在加载...</Text>
-          : <FlatList
-            data={this.state.collections}
-            onRefresh={this._refreshDate}
-            refreshing={this.state.refreshing}
-            renderItem={this._renderItem}/>}
+        <FlatList
+          data={this.state.collections}
+          onRefresh={this._refreshDate}
+          refreshing={this.state.refreshing}
+          renderItem={this._renderItem}/>
 
       </View>
     );

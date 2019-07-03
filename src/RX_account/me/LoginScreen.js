@@ -19,26 +19,50 @@ export default class LoginScreen extends Component {
     this.state = { 
       user_name:'',
       password:'',
+      hint:'',
     };
   }
 
-  _test = () => {
+  _logout = () => {
+    fetch(URL.logout,{credentials: 'same-origin'})
+    .then((response) => response.json())
+    .then((ret)=>{
+      if (ret.msg === 'success')
+        alert('退出成功');
+      else 
+        alert('出现未知错误');
+    })
+    .catch((error)=>{alert('服务器出错了')});
+  }
+
+  _login = () => {
+    if (!this._checkComplete())
+      return;
+
     let formData = new FormData();
     formData.append("name", this.state.user_name);
     formData.append("password", this.state.password);
     
-    fetch(URL.login,{
+    fetch(URL.login, {
       method:'POST',
       body:formData,
+      credentials: 'same-origin' 
     })
-    .then((response) => response.text())
+    .then((response) => response.json())
     .then((ret)=>{
-      if (ret !== 'success')
-        alert(ret);
-      else
+      if (ret.msg === 'success') {
+        this.setState({hint:''});
         this.props.navigation.goBack();
+      } else if (ret.msg === 'wrong_name_or_password') {
+        this.setState({hint:'用户名或密码错误'});
+      } else {
+        alert('出现未知错误');
+        this.setState({hint:''});
+      }
     })
-    .catch((error)=>{alert(error)});
+    .catch((error)=>{
+      this.setState({hint:'服务器出错了'});
+    });
   }
 
   _checkComplete = () => {
@@ -51,6 +75,10 @@ export default class LoginScreen extends Component {
         <View style={{height:60}}></View>
         <Text style={styles.titleText}>登录</Text>
 
+        {this.state.hint
+          ? <Text style={styles.wrongHintText}>{this.state.hint}</Text>
+          : null}
+
         <View style={styles.inputContainer}>
           <Text style={[styles.inputText, styles.inputItemNameView]}>用户名</Text>
           <TextInput 
@@ -58,7 +86,7 @@ export default class LoginScreen extends Component {
             placeholder='请填写用户名' 
             value={this.state.user_name}
             maxLength={16}
-            onChangeText={(value) => this.setState({user_name:value})}
+            onChangeText={(value) => this.setState({user_name:value, hint:''})}
           />
         </View>
 
@@ -69,7 +97,7 @@ export default class LoginScreen extends Component {
             placeholder='请填写密码' 
             value={this.state.password}
             maxLength={16}
-            onChangeText={(value) => this.setState({password:value})}
+            onChangeText={(value) => this.setState({password:value, hint:''})}
           />
         </View>
 
@@ -77,8 +105,12 @@ export default class LoginScreen extends Component {
           <Text style={styles.hintText}>注册账号请联系管理员</Text>
         </View>
 
-        <TouchableHighlight style={!this._checkComplete()?styles.btn:styles.activeBtn} onPress={this._test}>
+        <TouchableHighlight style={!this._checkComplete()?styles.btn:styles.activeBtn} onPress={this._login}>
           <Text style={!this._checkComplete()?styles.btnText:styles.activeBtnText}>登录</Text>
+        </TouchableHighlight>
+
+        <TouchableHighlight style={styles.activeBtn} onPress={this._logout}>
+          <Text style={styles.activeBtnText}>退出登录</Text>
         </TouchableHighlight>
       </View>
     );
@@ -118,6 +150,10 @@ const styles = StyleSheet.create({
   hintText: {
     fontSize:14,
     color:'#2aa2ef',
+  },
+  wrongHintText: {
+    fontSize:14,
+    color:'red',
   },
 
   btn:{

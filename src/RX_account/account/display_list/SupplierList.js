@@ -12,6 +12,8 @@ import {
   ActivityIndicator
 } from 'react-native';
 
+import RetryComponent from '../../baseComponent/RetryComponent';
+
 import URL from '../../Config';
 
 import Dimensions from 'Dimensions';
@@ -25,31 +27,44 @@ export default class SupplierList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ready: true,
       refreshing: false,
-      suppliers: []
+      suppliers: [],
+
+      got_no_data: false,
+      no_data_hint: '',
     }
   }
 
   componentDidMount() {
-    this._fetchData();
+    this._refreshDate();
   }
 
   _fetchData = () => {
-    fetch(URL.suppliers)
+    fetch(URL.suppliers, {credentials: 'same-origin'})
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.data;
-        let i = 0;
-        let arrList = [];
-        arrData.map(item => {
-          arrList.push({key: i, value: item});
-          i++;
-        })
-        this.setState({suppliers: arrList, ready: false, refreshing: false});
+        if (responseJson.msg === 'success') {
+          if (responseJson.data.length === 0) {
+            this.setState({refreshing: false, got_no_data:true, no_data_hint: '没有数据~'});
+          } else {
+            let arrData = responseJson.data;
+            let i = 0;
+            let arrList = [];
+            arrData.map(item => {
+              arrList.push({key: i, value: item});
+              i++;
+            })
+            this.setState({suppliers: arrList, refreshing: false, got_no_data:false});
+          }
+        } else if (responseJson.msg === 'not_logged_in') {
+          this.setState({refreshing: false, got_no_data:true, no_data_hint: '您还没有登录~'});
+          this.props.navigation.navigate('LoginScreen');
+        } else {
+          this.setState({refreshing: false, got_no_data:true, no_data_hint: '出现未知错误'});
+        }
 
       }).catch((error) => {
-        alert(error);
+        this.setState({refreshing: false, got_no_data:true, no_data_hint: '服务器出错了'});
       });
   }
 
@@ -105,16 +120,19 @@ export default class SupplierList extends Component {
   render() {
     return (
       <View>
-        {this.state.ready
-          ? <ActivityIndicator size="large" style={styles.loadding}/>
+        {this.state.got_no_data
+          ? <RetryComponent 
+              hint={this.state.no_data_hint} 
+              retryFunc={this._refreshDate}
+              style={{height:400}}/>
           : <FlatList
-            data={this.state.suppliers}
-            onRefresh={this._refreshDate}
-            refreshing={this.state.refreshing}
-            renderItem={this._renderItem}
-            ListHeaderComponent={
-              <View style={{height:5}}></View>
-            }/>}
+              data={this.state.suppliers}
+              onRefresh={this._refreshDate}
+              refreshing={this.state.refreshing}
+              renderItem={this._renderItem}
+              ListHeaderComponent={
+                <View style={{height:5}}></View>
+              }/>}
 
       </View>
     );

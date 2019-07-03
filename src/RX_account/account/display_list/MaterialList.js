@@ -48,6 +48,7 @@ export default class MaterialList extends Component {
     fetch(URL.materials, {
       method:'POST',
       body:formData,
+      credentials: 'same-origin'
     })
       .then(response => response.json())
       .then(responseJson => {

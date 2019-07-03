@@ -29,7 +29,7 @@ export default class MaterialScopeSelector extends Component {
   }
 
   _initMaterialClassData = () => {
-    fetch(URL.material_classes)
+    fetch(URL.material_classes, {credentials: 'same-origin'})
       .then(response => response.json())
       .then(responseJson => {
         this.material_class_data = responseJson.data;

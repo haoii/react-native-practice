@@ -14,10 +14,10 @@ const size = {
 export default class ChooseOneInput extends Component {
   static defaultProps = {
     label: '',
-    data: [0, 1, 2],
     justifyContent: 'flex-start',
 
     onEndEditing: null,
+    gettingDataUrl: '',
   }
 
   constructor(props) {
@@ -29,23 +29,32 @@ export default class ChooseOneInput extends Component {
   }
 
   _initPicker = () => {
-    Picker.init({
-      pickerData: this.props.data,
-      onPickerConfirm: data => {
-        this.setState({
-          chosen_data:data
+    fetch(this.props.gettingDataUrl, {credentials: 'same-origin'})
+      .then(response => response.json())
+      .then(responseJson => {
+
+        Picker.init({
+          pickerData: responseJson.data,
+          onPickerConfirm: data => {
+            this.setState({
+              chosen_data:data
+            });
+            if (this.props.onEndEditing)
+              this.props.onEndEditing(data)
+          },
+          pickerFontSize: 14,
+          pickerTextEllipsisLen: 10,
         });
-        if (this.props.onEndEditing)
-          this.props.onEndEditing(data)
-      },
-      pickerFontSize: 14,
-      pickerTextEllipsisLen: 10,
-    });
+        Picker.show();
+
+      }).catch(error => {
+        alert(error);
+      });
+    
   }
 
   _chosenPopup = () => {
     this._initPicker();
-    Picker.show();
   }
 
   render() {

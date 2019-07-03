@@ -20,34 +20,16 @@ export default class MaterialScopeSelector extends Component {
   constructor(props) {
     super(props);
 
-    this.material_class_data = [];
-    this._initMaterialClassData();
-
     this.state = { 
-      material_class_data_ready: false,
     };
-  }
-
-  _initMaterialClassData = () => {
-    fetch(URL.material_classes, {credentials: 'same-origin'})
-      .then(response => response.json())
-      .then(responseJson => {
-        this.material_class_data = responseJson.data;
-        this.setState({material_class_data_ready: true});
-
-      }).catch(error => {
-        alert(error);
-      });
   }
 
   render() {
     return (
       <View style={styles.container}>
-        {!this.state.material_class_data_ready
-          ? <Text>正在获取材料类别列表...</Text>
-          : <ChooseOneForm label='类别' 
-              data={this.material_class_data} 
-              onEndEditing={this.props.onEndEditing} />}
+        <ChooseOneForm label='类别' 
+          onEndEditing={this.props.onEndEditing}
+          gettingDataUrl={URL.material_classes} />
 
         <View style={styles.timeSelectView}>
           <Text style={styles.mainFont}>2019年2月1日 - 至今 </Text>

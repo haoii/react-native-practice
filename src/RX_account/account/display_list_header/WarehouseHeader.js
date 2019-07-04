@@ -21,58 +21,23 @@ export default class WarehouseHeader extends Component {
   constructor(props) {
     super(props);
 
-    this.material_class_data = [];
-    this._initMaterialClassData();
-
-    this.warehouse_data = [];
-    this._initWarehouseData();
-
     this.state = { 
-      material_class_data_ready: false,
-      warehouse_data_ready: false,
+
     };
-  }
-
-  _initMaterialClassData = () => {
-    fetch(URL.material_classes)
-      .then(response => response.json())
-      .then(responseJson => {
-        this.material_class_data = responseJson.data;
-        this.setState({material_class_data_ready: true});
-
-      }).catch(error => {
-        alert(error);
-      });
-  }
-
-  _initWarehouseData = () => {
-    fetch(URL.warehouses)
-      .then(response => response.json())
-      .then(responseJson => {
-        this.warehouse_data = responseJson.data.map(i => {return i.name;});
-        this.setState({warehouse_data_ready: true});
-
-      }).catch(error => {
-        alert(error);
-      });
   }
 
   render() {
     return (
       <View style={styles.container}>
-        {!this.state.material_class_data_ready
-          ? <Text>正在获取材料类别列表...</Text>
-          : <ChooseOneForm label='类别' 
-              data={this.material_class_data} 
-              onEndEditing={this.props.onEndMaterialClassChoose} />}
+        <ChooseOneForm label='类别' 
+          onEndEditing={this.props.onEndMaterialClassChoose}
+          gettingDataUrl={URL.material_classes} />
 
         <View style={styles.dividerView}></View>
 
-        {!this.state.warehouse_data_ready
-          ? <Text>正在获取仓库列表...</Text>
-          : <ChooseOneForm label='仓库' 
-              data={this.warehouse_data} 
-              onEndEditing={this.props.onEndWarehouseChoose} />}
+        <ChooseOneForm label='仓库' 
+          onEndEditing={this.props.onEndWarehouseChoose}
+          gettingDataUrl={URL.warehouses} />
       </View>);
   }
 }

@@ -37,7 +37,7 @@ export default class MaterialOrderList extends Component {
   }
 
   _fetchData = () => {
-    fetch(URL.material_orders)
+    fetch(URL.material_orders, {credentials: 'same-origin'})
       .then(response => response.json())
       .then(responseJson => {
         let arrData = responseJson.data;

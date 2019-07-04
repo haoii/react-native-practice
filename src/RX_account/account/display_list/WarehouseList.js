@@ -50,6 +50,7 @@ export default class WarehouseList extends Component {
     fetch(URL.warehouse_materials, {
       method:'POST',
       body:formData,
+      credentials: 'same-origin',
     })
       .then(response => response.json())
       .then(responseJson => {

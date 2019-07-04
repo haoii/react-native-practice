@@ -1,4 +1,6 @@
 
+import Dimensions from 'Dimensions';
+
 const host_url = 'http://192.168.1.103:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
 const account_url = host_url + 'account/';
 const static_url = host_url + 'static/';
@@ -45,4 +47,7 @@ export default URL = {
 
 export const EPSILON = 0.000000001;
 
-
+export const ScreenSize = {
+  width: Dimensions.get('window').width,
+  height: Dimensions.get('window').height
+};

@@ -28,15 +28,24 @@ export default class CustomerDetail extends Component {
     fetch(URL.delete_customer,{
       method:'POST',
       body:formData,
+      credentials: 'same-origin',
     })
-    .then((response) => response.text())
-    .then((ret)=>{
-      if (ret !== 'success')
-        alert(ret);
-      else
+    .then((response) => response.json())
+    .then((responseJson)=>{
+      if (responseJson.msg === 'success') {
         this.props.navigation.goBack();
+      } else if (responseJson.msg === 'not_logged_in') {
+        this.props.navigation.navigate('LoginScreen');
+      } else if (responseJson.msg === 'has_linked_data') {
+        alert('存在与此客户关联的其他数据，无法删除！')
+      } else {
+        alert('出现未知错误');
+      }
+
     })
-    .catch((error)=>{alert(error)});
+    .catch((error)=>{
+      alert('服务器出错了');
+    });
   }
 
   _confirmDeleteCustomer = (id) => {

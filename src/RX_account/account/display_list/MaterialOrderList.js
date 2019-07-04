@@ -13,6 +13,8 @@ import {
   ActivityIndicator
 } from 'react-native';
 
+import RetryComponent from '../../baseComponent/RetryComponent';
+
 import URL from '../../Config';
 import MaterialOrderDetail from '../detail_modals/MaterialOrderDetail';
 
@@ -28,7 +30,10 @@ export default class MaterialOrderList extends Component {
     super(props);
     this.state = {
       refreshing: false,
-      orders: []
+      orders: [],
+
+      got_no_data: false,
+      no_data_hint: '',
     }
   }
 
@@ -40,17 +45,28 @@ export default class MaterialOrderList extends Component {
     fetch(URL.material_orders, {credentials: 'same-origin'})
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.data;
-        let i = 0;
-        let arrList = [];
-        arrData.map(item => {
-          arrList.push({key: i, value: item});
-          i++;
-        })
-        this.setState({orders: arrList, refreshing: false});
+        if (responseJson.msg === 'success') {
+          if (responseJson.data.length === 0) {
+            this.setState({orders:[], refreshing: false, got_no_data:true, no_data_hint: '没有数据~'});
+          } else {
+            let arrData = responseJson.data;
+            let i = 0;
+            let arrList = [];
+            arrData.map(item => {
+              arrList.push({key: i, value: item});
+              i++;
+            })
+            this.setState({orders: arrList, refreshing: false, got_no_data:false});
+          }
+        } else if (responseJson.msg === 'not_logged_in') {
+          this.setState({orders:[], refreshing: false, got_no_data:true, no_data_hint: '您还没有登录~'});
+          this.props.navigation.navigate('LoginScreen');
+        } else {
+          this.setState({orders:[], refreshing: false, got_no_data:true, no_data_hint: '出现未知错误'});
+        }
 
       }).catch((error) => {
-        alert(error);
+        this.setState({orders:[], refreshing: false, got_no_data:true, no_data_hint: '服务器出错了'});
       });
   }
 
@@ -129,6 +145,13 @@ export default class MaterialOrderList extends Component {
           ListHeaderComponent={
             <View style={{height:5}}></View>
           }/>
+
+        {this.state.got_no_data
+          ? <RetryComponent 
+              hint={this.state.no_data_hint} 
+              retryFunc={this._refreshDate}
+              style={{height:400}}/>
+          : null}
 
       </View>
     );

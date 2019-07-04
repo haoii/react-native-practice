@@ -25,7 +25,7 @@ export default class RecordScreen extends Component {
           </View>
           <View style={styles.classContentContainer}>
 
-            <CollectionList />
+            <CollectionList navigation={this.props.navigation} />
 
           </View>
         </View>

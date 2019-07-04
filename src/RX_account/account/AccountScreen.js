@@ -39,7 +39,7 @@ export default class AccountScreen extends Component {
             <SupplierList navigation={this.props.navigation} />
           </View>
           <View tabLabel='材料' style={{backgroundColor:'#f4f4f4'}}>
-            <MaterialList />
+            <MaterialList navigation={this.props.navigation} />
           </View>
           <View tabLabel='材料订单' style={{backgroundColor:'#f4f4f4'}}>
             <MaterialOrderList navigation={this.props.navigation} />

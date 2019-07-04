@@ -29,7 +29,8 @@ export default class MaterialScopeSelector extends Component {
       <View style={styles.container}>
         <ChooseOneForm label='类别' 
           onEndEditing={this.props.onEndEditing}
-          gettingDataUrl={URL.material_classes} />
+          gettingDataUrl={URL.material_classes}
+          navigation={this.props.navigation} />
 
         <View style={styles.timeSelectView}>
           <Text style={styles.mainFont}>2019年2月1日 - 至今 </Text>

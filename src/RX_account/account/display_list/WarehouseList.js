@@ -12,6 +12,8 @@ import {
   ActivityIndicator
 } from 'react-native';
 
+import RetryComponent from '../../baseComponent/RetryComponent';
+
 import URL from '../../Config';
 import WarehouseHeader from '../display_list_header/WarehouseHeader';
 
@@ -32,6 +34,9 @@ export default class WarehouseList extends Component {
     this.state = {
       refreshing: false,
       materials: [],
+
+      got_no_data: false,
+      no_data_hint: '',
     }
   }
 
@@ -54,17 +59,28 @@ export default class WarehouseList extends Component {
     })
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.data;
-        let i = 0;
-        let arrList = [];
-        arrData.map(item => {
-          arrList.push({key: i, value: item});
-          i++;
-        })
-        this.setState({materials: arrList, refreshing: false});
+        if (responseJson.msg === 'success') {
+          if (responseJson.data.length === 0) {
+            this.setState({materials:[], refreshing: false, got_no_data:true, no_data_hint: '没有数据~'});
+          } else {
+            let arrData = responseJson.data;
+            let i = 0;
+            let arrList = [];
+            arrData.map(item => {
+              arrList.push({key: i, value: item});
+              i++;
+            })
+            this.setState({materials: arrList, refreshing: false, got_no_data:false});
+          }
+        } else if (responseJson.msg === 'not_logged_in') {
+          this.setState({materials:[], refreshing: false, got_no_data:true, no_data_hint: '您还没有登录~'});
+          this.props.navigation.navigate('LoginScreen');
+        } else {
+          this.setState({materials:[], refreshing: false, got_no_data:true, no_data_hint: '出现未知错误'});
+        }
 
       }).catch((error) => {
-        alert(error);
+        this.setState({materials:[], refreshing: false, got_no_data:true, no_data_hint: '服务器出错了'});
       });
   }
 
@@ -133,8 +149,16 @@ export default class WarehouseList extends Component {
           ListHeaderComponent={
             <WarehouseHeader 
               onEndMaterialClassChoose={this._onEndMaterialClassChoose} 
-              onEndWarehouseChoose={this._onEndWarehouseChoose} />
+              onEndWarehouseChoose={this._onEndWarehouseChoose}
+              navigation={this.props.navigation} />
           }/>
+
+        {this.state.got_no_data
+          ? <RetryComponent 
+              hint={this.state.no_data_hint} 
+              retryFunc={this._refreshDate}
+              style={{height:400}}/>
+          : null}
 
       </View>
     );

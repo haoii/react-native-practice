@@ -31,13 +31,15 @@ export default class WarehouseHeader extends Component {
       <View style={styles.container}>
         <ChooseOneForm label='类别' 
           onEndEditing={this.props.onEndMaterialClassChoose}
-          gettingDataUrl={URL.material_classes} />
+          gettingDataUrl={URL.material_classes}
+          navigation={this.props.navigation} />
 
         <View style={styles.dividerView}></View>
 
         <ChooseOneForm label='仓库' 
           onEndEditing={this.props.onEndWarehouseChoose}
-          gettingDataUrl={URL.warehouses} />
+          gettingDataUrl={URL.warehouses}
+          navigation={this.props.navigation} />
       </View>);
   }
 }

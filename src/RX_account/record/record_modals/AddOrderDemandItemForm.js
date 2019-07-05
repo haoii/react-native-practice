@@ -53,17 +53,26 @@ export default class AddOrderDemandItemForm extends Component {
   }
 
   _initMaterialClassData = () => {
-    fetch(URL.material_classes)
+    fetch(URL.material_classes, {credentials: 'same-origin'})
       .then(response => response.json())
       .then(responseJson => {
-        this.material_class_data = responseJson.data;
-        if (this.material_class_data.length === 0) {
-          this.material_class_data = [{'无': [{'无': ['无']}]}];
+        if (responseJson.msg === 'success') {
+          this.material_class_data = responseJson.data;
+          if (this.material_class_data.length === 0) {
+            this.material_class_data = [{'无': [{'无': ['无']}]}];
+          }
+          this.setState({material_class_data_ready: true});
+        } else if (responseJson.msg === 'not_logged_in') {
+          alert('您还没有登录~');
+          this.props.navigation.navigate('MainBottomTab');
+        } else {
+          alert('出现未知错误');
+          this.props.navigation.navigate('MainBottomTab');
         }
-        this.setState({material_class_data_ready: true});
 
       }).catch(error => {
-        alert(error);
+        alert('服务器出错了');
+        this.props.navigation.navigate('MainBottomTab');
       });
   }
 
@@ -77,26 +86,36 @@ export default class AddOrderDemandItemForm extends Component {
     fetch(URL.materials, {
       method:'POST',
       body:formData,
+      credentials: 'same-origin'
     })
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.data;
-        let arrList = [];
-        let unitList = {};
-        arrData.map(item => {
-          arrList.push(item.name);
-          unitList[item.name] = item.unit;
-        });
-        this.material_data = arrList;
-        this.material_unit_data = unitList;
-        if (this.material_data.length === 0) {
-          this.material_data = ['无'];
-          this.material_unit_data = {'无': '无'};
+        if (responseJson.msg === 'success') {
+          let arrData = responseJson.data;
+          let arrList = [];
+          let unitList = {};
+          arrData.map(item => {
+            arrList.push(item.name);
+            unitList[item.name] = item.unit;
+          });
+          this.material_data = arrList;
+          this.material_unit_data = unitList;
+          if (this.material_data.length === 0) {
+            this.material_data = ['无'];
+            this.material_unit_data = {'无': '无'};
+          }
+          this.setState({material_data_ready:true});
+        } else if (responseJson.msg === 'not_logged_in') {
+          alert('您还没有登录~');
+          this.props.navigation.navigate('MainBottomTab');
+        } else {
+          alert('出现未知错误');
+          this.props.navigation.navigate('MainBottomTab');
         }
-        this.setState({material_data_ready:true});
 
       }).catch((error) => {
-        alert(error);
+        alert('服务器出错了');
+        this.props.navigation.navigate('MainBottomTab');
       });
   }
 

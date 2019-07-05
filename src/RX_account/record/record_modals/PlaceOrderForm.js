@@ -48,15 +48,29 @@ export default class PlaceOrderForm extends Component {
   }
 
   _initCustomerNameData = () => {
-    fetch(URL.customers)
+    fetch(URL.customers, {credentials: 'same-origin'})
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.data;
-        this.customers_data = arrData.map(item => item.name + '(' + item.address + ')')
-        this.setState({customers_data_ready:true});
+        if (responseJson.msg === 'success') {
+          if (responseJson.data.length === 0) {
+            alert('还没有客户数据~');
+            this.props.navigation.goBack();
+          } else {
+            let arrData = responseJson.data;
+            this.customers_data = arrData.map(item => item.name + '(' + item.address + ')')
+            this.setState({customers_data_ready:true});
+          }
+        } else if (responseJson.msg === 'not_logged_in') {
+          alert('您还没有登录~');
+          this.props.navigation.goBack();
+        } else {
+          alert('出现未知错误');
+          this.props.navigation.goBack();
+        }
 
       }).catch(error => {
-        alert(error);
+        alert('服务器出错了');
+        this.props.navigation.goBack();
       });
   }
 
@@ -75,15 +89,24 @@ export default class PlaceOrderForm extends Component {
     fetch(URL.add_material_order,{
       method:'POST',
       body:formData,
+      credentials: 'same-origin',
     })
-    .then((response) => response.text())
-    .then((ret)=>{
-      if (ret !== 'success')
-        alert(ret);
-      else
+    .then((response) => response.json())
+    .then((responseJson)=>{
+      if (responseJson.msg === 'success') {
         this.props.navigation.goBack();
-    })
-    .catch((error)=>{alert(error)});
+      }  else if (responseJson.msg === 'not_logged_in') {
+        alert('您还没有登录~');
+        this.props.navigation.navigate('MainBottomTab');
+      } else {
+        alert('出现未知错误');
+        this.props.navigation.navigate('MainBottomTab');
+      }
+
+    }).catch((error) => {
+      alert('服务器出错了');
+      this.props.navigation.navigate('MainBottomTab');
+    });
   }
 
   _checkComplete = () => {

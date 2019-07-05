@@ -59,23 +59,32 @@ export default class AddOrderPurchaseItemForm extends Component {
   }
 
   _getFromData = () => {
-    fetch(URL.froms_by_material + this.nav_data.material + '/')
+    fetch(URL.froms_by_material + this.nav_data.material + '/',{credentials: 'same-origin'})
       .then(response => response.json())
       .then(responseJson => {
-        this.from_data = responseJson.data;
+        if (responseJson.msg === 'success') {
+          this.from_data = responseJson.data;
 
-        if (this.from_data.length === 0) {
-          this.from_data = {
-            '无': {
-              type: 'supplier',
-              price: '',
-            },
-          };
+          if (Object.keys(this.from_data).length === 0) {
+            this.from_data = {
+              '无': {
+                type: 'supplier',
+                price: 1,
+              },
+            };
+          }
+          this.setState({from_data_ready: true});
+        } else if (responseJson.msg === 'not_logged_in') {
+          alert('您还没有登录~');
+          this.props.navigation.navigate('MainBottomTab');
+        } else {
+          alert('出现未知错误');
+          this.props.navigation.navigate('MainBottomTab');
         }
-        this.setState({from_data_ready: true});
 
       }).catch((error) => {
-        alert(error);
+        alert('服务器出错了');
+        this.props.navigation.navigate('MainBottomTab');
       });
   }
 

@@ -65,6 +65,31 @@ export default class LoginScreen extends Component {
     });
   }
 
+  _login_test = () => {
+
+    let formData = new FormData();
+    formData.append("name", 'hgf');
+    formData.append("password", '1');
+    
+    fetch('http://localhost:8080/user/login', {
+      method:'POST',
+      body:formData,
+    })
+    .then((response) => response.json())
+    .then((ret)=>{
+      if (ret.msg === 'success') {
+        alert('登陆成功');
+      } else if (ret.msg === 'wrong_name_or_password') {
+        alert('用户名或密码错误');
+      } else {
+        alert('出现未知错误');
+      }
+    })
+    .catch((error)=>{
+      alert('服务器出错了');
+    });
+  }
+
   _checkComplete = () => {
     return (this.state.user_name && this.state.password);
   }

@@ -36,7 +36,7 @@ export default class SupplierDetailMaterials extends Component {
 
   _fetchData = () => {
 
-    fetch(URL.supplier_detail + this.props.supplier_id + '/')
+    fetch(URL.supplier_detail + this.props.supplier_id + '/',{credentials: 'same-origin',})
       .then(response => response.json())
       .then(responseJson => {
         let arrData = responseJson.data;

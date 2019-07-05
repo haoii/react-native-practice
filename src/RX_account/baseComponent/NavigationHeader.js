@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5, 
     borderBottomColor: '#c3c3c3',
     backgroundColor: '#f8f8f8',
+    elevation: 2,
   },
   backIcon: {
     height:45,

@@ -1,11 +1,12 @@
 
 import Dimensions from 'Dimensions';
 
-const host_url = 'http://192.168.1.103:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
+const host_url = 'http://192.168.1.105:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
 const account_url = host_url + 'account/';
 const static_url = host_url + 'static/';
 const user_url = host_url + 'user/';
 const customers_url = account_url + 'customers/';
+const customers_table_by_date_url = account_url + 'customers_table_by_date/';
 const suppliers_url = account_url + 'suppliers/';
 const submit_add_customer_url = account_url + 'add_customer/';
 const submit_add_supplier_url = account_url + 'add_supplier/';
@@ -26,6 +27,7 @@ const logout_url = user_url + 'logout/';
 
 export default URL = {
   customers: customers_url,
+  customers_table_by_date: customers_table_by_date_url,
   suppliers: suppliers_url,
   submit_add_customer: submit_add_customer_url,
   submit_add_supplier: submit_add_supplier_url,

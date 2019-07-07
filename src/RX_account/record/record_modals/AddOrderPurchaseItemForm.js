@@ -32,6 +32,7 @@ export default class AddOrderPurchaseItemForm extends Component {
     };
 
     this.from_data = null;
+    this.from_table = null;
     this._getFromData();
 
     this.state = { 
@@ -63,16 +64,9 @@ export default class AddOrderPurchaseItemForm extends Component {
       .then(response => response.json())
       .then(responseJson => {
         if (responseJson.msg === 'success') {
-          this.from_data = responseJson.data;
+          this.from_data = responseJson.data.from_data;
+          this.from_table = responseJson.data.from_table;
 
-          if (Object.keys(this.from_data).length === 0) {
-            this.from_data = {
-              '无': {
-                type: 'supplier',
-                price: 1,
-              },
-            };
-          }
           this.setState({from_data_ready: true});
         } else if (responseJson.msg === 'not_logged_in') {
           alert('您还没有登录~');
@@ -139,12 +133,14 @@ export default class AddOrderPurchaseItemForm extends Component {
               {!this.state.from_data_ready
                 ? <InputPlaceholder label='材料商' message='正在获取材料商列表...' />
                 : <ChooseOneInput
-                    label='材料商'
-                    data={Object.keys(this.from_data)}
+                    label='来源'
+                    pickerTitleText='选择来源'
+                    wheelFlex={[1,2]}
+                    data={this.from_table}
                     onEndEditing={(num) => {
 
                       if (!num
-                        || num[0] === '无') {
+                        || num[1] === '无') {
                           this.setState({
                             from_comFlag: false,
                             material_price_comFlag: false,
@@ -157,16 +153,16 @@ export default class AddOrderPurchaseItemForm extends Component {
 
                       let tmp_hint = '';
                       let tmp_max_quantity = this.nav_data.max_quantity;
-                      if (this.from_data[num[0]].type === 'warehouse') {
-                        tmp_hint = '库存：' + this.from_data[num[0]].quantity;
-                        tmp_max_quantity = Math.min(tmp_max_quantity, this.from_data[num[0]].quantity);
+                      if (this.from_data[num[1]].type === 'warehouse') {
+                        tmp_hint = '库存：' + this.from_data[num[1]].quantity;
+                        tmp_max_quantity = Math.min(tmp_max_quantity, this.from_data[num[1]].quantity);
                       }
 
                       this.setState({
                         from_comFlag:true,
-                        from_value:num[0],
+                        from_value:num[1],
                         material_price_comFlag: true,
-                        material_price_value: this.from_data[num[0]].price.toString(),
+                        material_price_value: this.from_data[num[1]].price.toString(),
                         from_hint:tmp_hint,
                         max_quantity:tmp_max_quantity,
                         quantity_comFlag:true,

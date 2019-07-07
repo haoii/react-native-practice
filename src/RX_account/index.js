@@ -22,6 +22,7 @@ import PlaceOrderForm from './record/record_modals/PlaceOrderForm';
 import AddOrderDemandItemForm from './record/record_modals/AddOrderDemandItemForm';
 import AddOrderPurchaseItemForm from './record/record_modals/AddOrderPurchaseItemForm';
 import CustomerDetail from './account/detail_modals/CustomerDetail';
+import OrderReceiptsGenerator from './record/record_modals/OrderReceiptsGenerator';
 
 import LoginScreen from './me/LoginScreen';
 
@@ -154,7 +155,13 @@ export default createAppContainer(createStackNavigator(
       navigationOptions: {
         header: null
       },
-    }
+    },
+    OrderReceiptsGenerator: {
+      screen: OrderReceiptsGenerator,
+      navigationOptions: {
+        header: null
+      },
+    },
   },
   {
     initialRouteName: 'MainBottomTab',

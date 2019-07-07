@@ -16,6 +16,8 @@ export default class ChooseOneInput extends Component {
     label: '',
     hint: '',
     data: [0, 1, 2],
+    pickerTitleText: '选择',
+    wheelFlex: [1,1,1],
 
     onEndEditing: null,
   }
@@ -30,6 +32,10 @@ export default class ChooseOneInput extends Component {
   _initPicker = () => {
     Picker.init({
       pickerData: this.props.data,
+      pickerConfirmBtnText: '确认',
+      pickerCancelBtnText: '取消',
+      pickerTitleText: this.props.pickerTitleText,
+      wheelFlex: this.props.wheelFlex,
       onPickerConfirm: data => {
         this.setState({
           chosen_data:data

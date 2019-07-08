@@ -5102,10 +5102,22 @@ react-native-image-crop-picker@^0.22.0:
   resolved "http://registry.npm.taobao.org/react-native-image-crop-picker/download/react-native-image-crop-picker-0.22.0.tgz#8f7f657dcde45cc366ac529a624205155571c03f"
   integrity sha1-j39lfc3kXMNmrFKaYkIFFVVxwD8=
 
+react-native-image-pan-zoom@^2.1.9:
+  version "2.1.11"
+  resolved "https://registry.npm.taobao.org/react-native-image-pan-zoom/download/react-native-image-pan-zoom-2.1.11.tgz#61bcb69219d95e76a9797d23e4a2e8e0bd654ae9"
+  integrity sha1-Yby2khnZXnapeX0j5KLo4L1lSuk=
+
 react-native-image-picker@^0.28.0:
   version "0.28.0"
   resolved "http://registry.npm.taobao.org/react-native-image-picker/download/react-native-image-picker-0.28.0.tgz#e3f26df170ea932e9c0404624fbced2f59a300e3"
   integrity sha1-4/Jt8XDqky6cBARiT7ztL1mjAOM=
+
+react-native-image-zoom-viewer@^2.2.26:
+  version "2.2.26"
+  resolved "https://registry.npm.taobao.org/react-native-image-zoom-viewer/download/react-native-image-zoom-viewer-2.2.26.tgz#c6f070abb094cfbe1b3b7d8a38ad979a5facbdc5"
+  integrity sha1-xvBwq7CUz74bO32KOK2Xml+svcU=
+  dependencies:
+    react-native-image-pan-zoom "^2.1.9"
 
 react-native-picker@^4.3.7:
   version "4.3.7"

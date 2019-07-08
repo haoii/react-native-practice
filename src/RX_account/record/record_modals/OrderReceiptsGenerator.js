@@ -1,9 +1,11 @@
 
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight, 
-        Image, KeyboardAvoidingView, ScrollView } from 'react-native';
+        Image, KeyboardAvoidingView, ScrollView, Modal  } from 'react-native';
 import ViewShot from "react-native-view-shot";
 import Share from 'react-native-share';
+import ImageViewer from 'react-native-image-zoom-viewer';
+
 
 import Dimensions from 'Dimensions';
 const size = {
@@ -25,7 +27,13 @@ export default class OrderReceiptsGenerator  extends Component {
 
     this.state = { 
       customer_demand_items_url: {},
+      imageModalVisible: false,
+      images: [],
     };
+  }
+
+  _setModalVisible = (visible) => {
+    this.setState({ imageModalVisible: visible });
   }
 
   _capture = () => {
@@ -55,6 +63,16 @@ export default class OrderReceiptsGenerator  extends Component {
     let urls = this.state.customer_demand_items_url;
     urls[customer_name] = uri;
     this.setState({customer_demand_items_url:urls});
+
+    let imgs = [];
+    Object.keys(urls).map(name => {
+      imgs.push({
+        url:urls[name],
+        props:{},
+      });
+    });
+
+    this.setState({images: imgs});
   }
 
   _render_customer_demand_items = () => {
@@ -64,7 +82,7 @@ export default class OrderReceiptsGenerator  extends Component {
     customer_names.map(customer_name => {
       render_items.push(
         <ViewShot  onCapture={(uri) => this._onCapture_customer_demand_items(uri, customer_name)} captureMode="mount"
-        style={{width:600, }}>
+        style={{width:600, height:300, backgroundColor:'green'}}>
 
           <Text style={{textAlign:'center', borderBottomWidth:1, borderColor:'#000'}}>客户需求单</Text>
 
@@ -81,6 +99,14 @@ export default class OrderReceiptsGenerator  extends Component {
     return (
 
       <View style={styles.container}>
+
+        <Modal
+          transparent={false}
+          visible={this.state.imageModalVisible}
+          onRequestClose={() => this._setModalVisible(false)}
+        >
+          <ImageViewer imageUrls={this.state.images}/>
+        </Modal>
 
         <View style={styles.headerContainer}>
           <TouchableHighlight style={styles.cancelBtn}
@@ -102,8 +128,11 @@ export default class OrderReceiptsGenerator  extends Component {
             {Object.keys(this.state.customer_demand_items_url).map(customer_name => {
               let url = this.state.customer_demand_items_url[customer_name];
               return (
-                <Image source={{uri:url}} 
+                <TouchableHighlight onPress={() => this._setModalVisible(true)}>
+                  <Image source={{uri:url}} 
                   style={{width:120,height:120,marginRight:6,borderWidth:1,borderColor:'red',resizeMode: 'contain',}} />
+                </TouchableHighlight>
+                
               );
               
             })}

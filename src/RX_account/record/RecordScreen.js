@@ -7,6 +7,7 @@ import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import RecordHeader from './RecordHeader';
 import CollectionList from '../account/display_list/CollectionList';
+import LatestOperationList from './LatestOperationList';
 
 // import PostList from './PostList';
 
@@ -18,7 +19,7 @@ export default class RecordScreen extends Component {
       <View style={{width:width,height:height,paddingTop:10,paddingBottom:100,backgroundColor:'#fff'}}>
         <RecordHeader navigation={this.props.navigation}/>
         
-        <View style={styles.classContainer}>
+        {/* <View style={styles.classContainer}>
           <View style={styles.classTitleBar}>
             <Text style={styles.classTitleText}>收款</Text>
             <Text style={styles.classTitleText}>更多</Text>
@@ -28,7 +29,9 @@ export default class RecordScreen extends Component {
             <CollectionList navigation={this.props.navigation} />
 
           </View>
-        </View>
+        </View> */}
+
+        <LatestOperationList navigation={this.props.navigation} />
 
       </View>
     );

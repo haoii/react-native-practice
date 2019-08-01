@@ -80,14 +80,15 @@ export default class MaterialOrderList extends Component {
     let index = 1;
 
     Object.keys(customer_in_order).map(customer_address => {
+      let address = customer_address.slice(customer_address.indexOf('(')+1,-1);
       let materials = customer_in_order[customer_address].material_in_customer_in_order;
       Object.keys(materials).map(material => {
         material_render_items.push(
           <View style={index>1? styles.TableRowItemContainerAfter2: styles.TableRowItemContainer}>
-            <Text style={[styles.orderItemText, {width: 35}]}>{index++}</Text>
-            <Text style={[styles.orderItemText, {flex: 1}]}>{customer_address}</Text>
-            <Text style={[styles.orderItemText, {flex: 1}]}>{material}</Text>
-            <Text style={[styles.orderItemText, {width: 60, textAlign:'right'}]}>
+            <Text style={[styles.orderItemText, {width: 25}]}>{index++}</Text>
+            <Text style={[styles.orderItemText, {flex: 5}]}>{address}</Text>
+            <Text style={[styles.orderItemText, {flex: 4}]}>{material}</Text>
+            <Text style={[styles.orderItemText, {width: 40, textAlign:'right'}]}>
               {materials[material].quantity}{materials[material].unit}
             </Text>
           </View>
@@ -119,9 +120,9 @@ export default class MaterialOrderList extends Component {
 
               <View style={styles.TableHeaderContainer}>
                 <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
-                <Text style={[styles.orderItemHeaderText, {flex: 1}]}>工地</Text>
-                <Text style={[styles.orderItemHeaderText, {flex: 1}]}>材料</Text>
-                <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
+                <Text style={[styles.orderItemHeaderText, {flex: 5}]}>工地</Text>
+                <Text style={[styles.orderItemHeaderText, {flex: 4}]}>材料</Text>
+                <Text style={[styles.orderItemHeaderText, {width: 40, textAlign:'right'}]}>数量</Text>
               </View>
 
               {this._renderMaterialItems(item.value.customer_in_order)}

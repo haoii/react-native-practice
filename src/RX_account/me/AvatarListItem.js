@@ -24,7 +24,7 @@ export default class AvatarListItem extends Component {
         </View>
 
         <View style={styles.itemContainer}>
-          <Text style={styles.textTitle}>郝高峰</Text>
+          <Text style={styles.textTitle}>程宁宁</Text>
 
           <View style={styles.DataContainer}>
             

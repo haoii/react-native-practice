@@ -77,21 +77,21 @@ export default class PlaceOrderForm extends Component {
 
   _submitPost = () => {
 
-    this.props.navigation.navigate('OrderReceiptsGenerator', {
-      customer_demand_items: {'张三(street1)':[{"customer_address":"张三(street1)", "material":"诺贝尔12", "material_unit":"块", "quantity": 5, "remark": "啊啊啊啊"},
-                                               {"customer_address":"张三(street1)", "material":"密度板12", "material_unit":"张", "quantity": 8, "remark": ""}],
-                              '张四(street1)':[{"customer_address":"张四(street1)", "material":"诺贝尔12", "material_unit":"块", "quantity": 10, "remark": "啊啊啊啊"}]},
-      from_purchase_sum: {"1号瓷砖店":{"expense":4280, "purchase_items":[{"material":"诺贝尔123", "material_unit":"块", "from":"1号瓷砖店", "price":500, "quantity": 10, "remark":"", "type":"supplier"},
-                                                                        {"material":"贝尔3", "material_unit":"块", "from":"1号瓷砖店", "price":450, "quantity": 8, "remark":"", "type":"supplier"}]},
-                          "2号仓库":{"expense":3000, "purchase_items":[{"material":"诺贝尔123", "material_unit":"块", "from":"1号瓷砖店", "price":400, "quantity": 5, "remark":"", "type":"warehouse"}]}},
-    });
-    return;
+    // this.props.navigation.navigate('OrderReceiptsGenerator', {
+    //   customer_demand_items: {'张三(street1)':[{"customer_address":"张三(street1)", "material":"诺贝尔12", "material_unit":"块", "quantity": 5, "remark": "啊啊啊啊"},
+    //                                            {"customer_address":"张三(street1)", "material":"密度板12", "material_unit":"张", "quantity": 8, "remark": ""}],
+    //                           '张四(street1)':[{"customer_address":"张四(street1)", "material":"诺贝尔12", "material_unit":"块", "quantity": 10, "remark": "啊啊啊啊"}]},
+    //   from_purchase_sum: {"1号瓷砖店":{"expense":4280, "purchase_items":[{"material":"诺贝尔123", "material_unit":"块", "from":"1号瓷砖店", "price":500, "quantity": 10, "remark":"", "type":"supplier"},
+    //                                                                     {"material":"贝尔3", "material_unit":"块", "from":"1号瓷砖店", "price":450, "quantity": 8, "remark":"", "type":"supplier"}]},
+    //                       "2号仓库":{"expense":3000, "purchase_items":[{"material":"诺贝尔123", "material_unit":"块", "from":"1号瓷砖店", "price":400, "quantity": 5, "remark":"", "type":"warehouse"}]}},
+    // });
+    // return;
 
-    this.props.navigation.navigate('OrderReceiptsGenerator', {
-      customer_demand_items: this.customer_demand_items,
-      from_purchase_sum: this.from_purchase_sum,
-    });
-    return;
+    // this.props.navigation.navigate('OrderReceiptsGenerator', {
+    //   customer_demand_items: this.customer_demand_items,
+    //   from_purchase_sum: this.from_purchase_sum,
+    // });
+    // return;
 
     if (!this._checkComplete())
       return;
@@ -416,6 +416,7 @@ export default class PlaceOrderForm extends Component {
                 </View>
 
                 {Object.keys(this.customer_demand_items).map(customer_address => {
+                  let address = customer_address.slice(customer_address.indexOf('(')+1,-1);
                   return (
                     <View>
                       <View style={styles.tableInnerTitleRowView}>
@@ -427,7 +428,7 @@ export default class PlaceOrderForm extends Component {
                           <Text style={styles.addMaterialBtnText}>添加材料</Text>
                         </TouchableHighlight>
 
-                        <Text style={styles.tableInnerTitleView}>{customer_address}</Text>
+                        <Text style={styles.tableInnerTitleView}>{address}</Text>
 
                         <TouchableHighlight style={styles.delCustomerBtnView} 
                           onPress={() => {

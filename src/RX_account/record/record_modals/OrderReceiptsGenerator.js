@@ -75,6 +75,23 @@ export default class OrderReceiptsGenerator  extends Component {
     this.setState({images: imgs});
   }
 
+  _render_customer_demand_items_material = (materials) => {
+    let index = 1;
+    let reder_material_items = [];
+    materials.map((material) => {
+      reder_material_items.push(
+        <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+          <Text style={{width:30}}>{index}</Text>
+          <Text style={{flex:4}}>{material.material}</Text>
+          <Text style={{flex:1}}>{material.quantity}</Text>
+        </View>
+      );
+      index++;
+    });
+    return reder_material_items;
+
+  }
+
   _render_customer_demand_items = () => {
     let customer_demand_items = this.nav_data.customer_demand_items;
     let customer_names = Object.keys(customer_demand_items);
@@ -82,11 +99,24 @@ export default class OrderReceiptsGenerator  extends Component {
     customer_names.map(customer_name => {
       render_items.push(
         <ViewShot  onCapture={(uri) => this._onCapture_customer_demand_items(uri, customer_name)} captureMode="mount"
-        style={{width:600, height:300, backgroundColor:'green'}}>
+        style={{width:480, height:300, backgroundColor:'white'}}>
 
-          <Text style={{textAlign:'center', borderBottomWidth:1, borderColor:'#000'}}>客户需求单</Text>
+          <View style={{borderBottomWidth:1, borderColor:'#000', }}>
+            <Text style={{textAlign:'center', fontSize:18, padding:10}}>客 户 材 料 需 求 单</Text>
+            <View style={{flexDirection:'row', justifyContent:'space-between', paddingHorizontal:10}}>
+              <Text>客户：{customer_name}</Text>
+              <Text>订单号：NA1907230001</Text>
+            </View>
+          </View>
 
-          <Text>{customer_name}</Text>
+          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+            <Text style={{width:30}}>编号</Text>
+            <Text style={{flex:4}}>材料</Text>
+            <Text style={{flex:1}}>数量</Text>
+          </View>
+
+          {this._render_customer_demand_items_material(customer_demand_items[customer_name])}
+
           <Text>{customer_demand_items[customer_name][0].material}</Text>
         </ViewShot>
       );
@@ -123,7 +153,7 @@ export default class OrderReceiptsGenerator  extends Component {
           <ScrollView contentContainerStyle={styles.ScrollViewStyle}>
             <View style={styles.Canvas}>
 
-            {this._render_customer_demand_items()}
+            
 
             {Object.keys(this.state.customer_demand_items_url).map(customer_name => {
               let url = this.state.customer_demand_items_url[customer_name];
@@ -136,6 +166,10 @@ export default class OrderReceiptsGenerator  extends Component {
               );
               
             })}
+
+            <View style={{position:'absolute', top:0, left:size.width+10}}>
+              {this._render_customer_demand_items()}
+            </View>
 
             </View>
           </ScrollView>

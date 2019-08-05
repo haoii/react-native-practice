@@ -3,10 +3,10 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 
-export default class DateInput extends Component {
+export default class DateTimeInput extends Component {
   static defaultProps = {
-    label: '日期',
-    init_date: '2019-3-3',
+    label: '时间',
+    init_datetime: '2019-3-3 13:23:56',
     hint: '',
 
     onEndEditing: null,
@@ -15,15 +15,15 @@ export default class DateInput extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      date:this.props.init_date,
+      datetime:this.props.init_datetime,
     };
   }
 
 
-  _innerOnEndEditing = (date) => {
-    this.setState({date: date});
+  _innerOnEndEditing = (datetime) => {
+    this.setState({datetime: datetime});
     if (this.props.onEndEditing)
-      this.props.onEndEditing(date);
+      this.props.onEndEditing(datetime);
   }
 
   render() {
@@ -35,10 +35,11 @@ export default class DateInput extends Component {
           </View>
           <DatePicker
             style={styles.DatePickerStyle}
-            date={this.state.date}
-            mode="date"
-            format="YYYY-MM-DD"
+            date={this.state.datetime}
+            mode="datetime"
+            format="YYYY-MM-DD HH:mm:ss"
             androidMode='spinner'
+            // is24Hour={true}
             confirmBtnText="确认"
             cancelBtnText="取消"
             customStyles={{
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
     flexDirection:'row'
   },
   DatePickerStyle: {
-    width: 150,
+    width: 200,
   },
   fontMain: {
     fontSize:16,

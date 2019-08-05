@@ -74,7 +74,7 @@ export default class MaterialOrderDetail extends Component {
         <View style={styles.summarizeView}>
           <Text style={styles.titleText}>订单号：{order.id}</Text>
           <Text style={styles.infoText}>负责人：{order.clerk}</Text>
-          <Text style={styles.infoText}>日期：{order.order_date}</Text>
+          <Text style={styles.infoText}>日期：{order.order_datetime}</Text>
           <Text style={styles.infoText}>备注：{order.remark}</Text>
 
         </View>

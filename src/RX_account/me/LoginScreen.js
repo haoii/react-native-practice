@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight, 
           } from 'react-native';
 
+import DeviceStorage from '../DeviceStorage';
+
 import Dimensions from 'Dimensions';
 
 const size = {
@@ -52,6 +54,9 @@ export default class LoginScreen extends Component {
     .then((ret)=>{
       if (ret.msg === 'success') {
         this.setState({hint:''});
+
+        DeviceStorage.save('user_info', {name:'高流'});
+
         this.props.navigation.goBack();
       } else if (ret.msg === 'wrong_name_or_password') {
         this.setState({hint:'用户名或密码错误'});

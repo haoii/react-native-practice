@@ -10,9 +10,11 @@ import Picker from 'react-native-picker';
 import URL, {EPSILON} from '../../Config';
 import GeneralInput from '../../forms/GeneralInput';
 import DateInput from '../../forms/DateInput';
+import DateTimeInput from '../../forms/DateTimeInput';
 import ChooseOneInput from '../../forms/ChooseOneInput';
 import InputPlaceholder from '../../forms/InputPlaceholder';
 import ParagraphInput from '../../forms/ParagraphInput';
+import DeviceStorage from '../../DeviceStorage';
 
 import Dimensions from 'Dimensions';
 
@@ -28,6 +30,14 @@ export default class PlaceOrderForm extends Component {
     this.customers_data = [];
     this._initCustomerNameData();
 
+    this.new_order_id = 0;
+    this._receiveNewOrderId();
+
+    this.user_info = null;
+    DeviceStorage.get('user_info').then((info) => {
+      this.user_info = info;
+    });
+
     this.from_purchase_sum = {};
 
     this.customer_demand_items = {};
@@ -39,14 +49,26 @@ export default class PlaceOrderForm extends Component {
       remark_value: '',
       remark_comFlag: true,
       
-      order_date: this._getCurDate(),
+      order_datetime: this._getCurDate(),
 
       customers_data_ready: false,
     };
   }
 
   _getCurDate = () => {
-    return new Date().toISOString().slice(0,10);
+    let dt = new Date();
+    let dts = '' + dt.getFullYear();
+    let month = dt.getMonth()+1;
+    dts += '-' + (month < 10? ('0'+month): month);
+    let day = dt.getDate();
+    dts += '-' + (day < 10? ('0'+day): day);
+    let hour = dt.getHours();
+    dts += ' ' + (hour < 10? ('0'+hour): hour);
+    let minute = dt.getMinutes();
+    dts += ':' + (minute < 10? ('0'+minute): minute);
+    let second = dt.getSeconds();
+    dts += ':' + (second < 10? ('0'+second): second);
+    return dts;
   }
 
   _initCustomerNameData = () => {
@@ -75,29 +97,65 @@ export default class PlaceOrderForm extends Component {
       });
   }
 
+  _receiveNewOrderId = () => {
+    fetch(URL.get_material_order_id, {credentials: 'same-origin'})
+      .then(response => response.json())
+      .then(responseJson => {
+        if (responseJson.msg === 'success') {
+          this.new_order_id = responseJson.data;
+        } else if (responseJson.msg === 'not_logged_in') {
+          alert('您还没有登录~');
+          this.props.navigation.goBack();
+        } else {
+          alert('出现未知错误');
+          this.props.navigation.goBack();
+        }
+
+      }).catch(error => {
+        alert('服务器出错了');
+        this.props.navigation.goBack();
+      });
+  }
+
   _submitPost = () => {
 
-    this.props.navigation.navigate('OrderReceiptsGenerator', {
-      customer_demand_items: {'谢村忠(钻石湾7-1-1402)':[{"customer_address":"谢村忠(钻石湾7-1-1402)", "material":"诺贝尔-B49", "material_unit":"块", "quantity": 5, "remark": "test"},
-                                               {"customer_address":"谢村忠(钻石湾7-1-1402)", "material":"马可波罗-A12-4", "material_unit":"块", "quantity": 8, "remark": ""}],
-                              '唐昕(大华锦绣5-2-402)':[{"customer_address":"唐昕(大华锦绣5-2-402)", "material":"诺贝尔-B49", "material_unit":"块", "quantity": 10, "remark": "test"}]},
-      from_purchase_sum: {"瓷砖店-李":{"expense":4280, "purchase_items":[{"material":"诺贝尔-B49", "material_unit":"块", "from":"瓷砖店-李", "price":500, "quantity": 10, "remark":"", "type":"supplier"},
-                                                                        {"material":"马可波罗-A12-4", "material_unit":"块", "from":"瓷砖店-李", "price":450, "quantity": 8, "remark":"", "type":"supplier"}]},
-                          "华南2号仓库":{"expense":3000, "purchase_items":[{"material":"诺贝尔-B49", "material_unit":"块", "from":"华南2号仓库", "price":400, "quantity": 5, "remark":"", "type":"warehouse"}]}},
-    });
-    return;
+    
 
     // this.props.navigation.navigate('OrderReceiptsGenerator', {
-    //   customer_demand_items: this.customer_demand_items,
-    //   from_purchase_sum: this.from_purchase_sum,
+    //   customer_demand_items: {'谢村忠(钻石湾7-1-1402)':[{"customer_address":"谢村忠(钻石湾7-1-1402)", "material":"诺贝尔-B49", "material_unit":"块", "quantity": 5, "remark": "test"},
+    //                                            {"customer_address":"谢村忠(钻石湾7-1-1402)", "material":"马可波罗-A12-4", "material_unit":"块", "quantity": 8, "remark": ""}],
+    //                           '唐昕(大华锦绣5-2-402)':[{"customer_address":"唐昕(大华锦绣5-2-402)", "material":"诺贝尔-B49", "material_unit":"块", "quantity": 10, "remark": ""}]},
+    //   from_purchase_sum: {"瓷砖店-李":{"expense":4280, "type":"supplier", "purchase_items":[{"material":"诺贝尔-B49", "material_unit":"块", "from":"瓷砖店-李", "price":500, "quantity": 10, "remark":"", "type":"supplier"},
+    //                                                                     {"material":"马可波罗-A12-4", "material_unit":"块", "from":"瓷砖店-李", "price":450, "quantity": 8, "remark":"", "type":"supplier"}]},
+    //                       "华南2号仓库":{"expense":2000, "type":"warehouse", "purchase_items":[{"material":"诺贝尔-B49", "material_unit":"块", "from":"华南2号仓库", "price":400, "quantity": 5, "remark":"test", "type":"warehouse"}]}},
+    //   order_datetime: this.state.order_datetime,
+    //   new_order_id: this.new_order_id,
+    //   user_info: this.user_info,
     // });
     // return;
 
     if (!this._checkComplete())
       return;
 
+    this.props.navigation.setParams({waiting_render_img: true});
+    this.setState();
+
+    this.props.navigation.navigate('OrderReceiptsGenerator', {
+      customer_demand_items: this.customer_demand_items,
+      from_purchase_sum: this.from_purchase_sum,
+      material_demand_sum: this.material_demand_sum,
+      order_datetime: this.state.order_datetime,
+      from_paid: this.from_paid,
+
+      new_order_id: this.new_order_id,
+      user_info: this.user_info,
+      remark: this.state.remark_value,
+    });
+    return;
+
+    
     let formData = new FormData();
-    formData.append("order_date", this.state.order_date);
+    formData.append("order_datetime", this.state.order_datetime);
     formData.append("remark", this.state.remark_value);
     formData.append('customer_demand_items', JSON.stringify(this.customer_demand_items));
     formData.append('material_demand_sum', JSON.stringify(this.material_demand_sum));
@@ -150,7 +208,7 @@ export default class PlaceOrderForm extends Component {
       pickerConfirmBtnText: '确认',
       pickerCancelBtnText: '取消',
       pickerTitleText: '选择客户',
-      wheelFlex: [2, 1, 6],
+      wheelFlex: [2, 1, 8],
       onPickerConfirm: data => {
         if (data[0] in this.customer_demand_items) {
           alert('添加失败：该客户已存在。');
@@ -160,7 +218,7 @@ export default class PlaceOrderForm extends Component {
         }
       },
       pickerFontSize: 14,
-      pickerTextEllipsisLen: 10,
+      pickerTextEllipsisLen: 15,
     });
     Picker.show();
   }
@@ -182,7 +240,7 @@ export default class PlaceOrderForm extends Component {
                   null,
                   '确认取消采购该材料：' + item.material + '？',
                   [
-                    {text: '放弃', onPress: () => {}, style: 'cancel'},
+                    {text: '不取消', onPress: () => {}, style: 'cancel'},
                     {text: '确认取消', onPress: () => {this._delDemandItemByMaterial(customer_address, item);}},
                   ],
                   { cancelable: false }
@@ -219,7 +277,7 @@ export default class PlaceOrderForm extends Component {
                   null,
                   '确认删除该来源：' + item.from + '？',
                   [
-                    {text: '放弃', onPress: () => {}, style: 'cancel'},
+                    {text: '不删除', onPress: () => {}, style: 'cancel'},
                     {text: '确认删除', onPress: () => {this._delPurchaseItemByFrom(material, item);}},
                   ],
                   { cancelable: false }
@@ -386,6 +444,10 @@ export default class PlaceOrderForm extends Component {
       });
     }
 
+    const waiting_render_img = navigation.getParam('waiting_render_img', null);
+    if (order_purchase_item) {
+      navigation.setParams({waiting_render_img: null});
+    }
 
     return (
       <View style={styles.container}>
@@ -403,212 +465,215 @@ export default class PlaceOrderForm extends Component {
 
         <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={30} style={styles.keyboardAvoiding} enabled>
           <ScrollView contentContainerStyle={styles.ScrollViewStyle}>
-            <View style={styles.Canvas}>
+            {waiting_render_img
+              ? <Text style={{paddingLeft:10}}>正在渲染图片...</Text>
+              : <View style={styles.Canvas}>
 
-              <View style={styles.tableContainer}>
-                <Text style={styles.level2TitleText}>各工地材料需求单</Text>
+                  
+                  <View style={styles.tableContainer}>
+                    <Text style={styles.level2TitleText}>各工地材料需求单</Text>
 
-                <View style={styles.TableRowItemContainer}>
-                  <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
-                  <Text style={[styles.orderItemHeaderText, {flex: 1}]}>材料</Text>
-                  <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
-                  <View style={{width:20}}></View>
-                </View>
-
-                {Object.keys(this.customer_demand_items).map(customer_address => {
-                  let address = customer_address.slice(customer_address.indexOf('(')+1,-1);
-                  return (
-                    <View>
-                      <View style={styles.tableInnerTitleRowView}>
-
-                        <TouchableHighlight style={styles.addMaterialView}
-                          onPress={() => {this.props.navigation.navigate('AddOrderDemandItemForm', {
-                            customer_address: customer_address,
-                        })}}>
-                          <Text style={styles.addMaterialBtnText}>添加材料</Text>
-                        </TouchableHighlight>
-
-                        <Text style={styles.tableInnerTitleView}>{address}</Text>
-
-                        <TouchableHighlight style={styles.delCustomerBtnView} 
-                          onPress={() => {
-                            Alert.alert(
-                              null,
-                              '确认取消采购该工地的所有材料：' + customer_address + '？',
-                              [
-                                {text: '放弃', onPress: () => {}, style: 'cancel'},
-                                {text: '确认取消', onPress: () => {this._delDemandAllItem(customer_address);}},
-                              ],
-                              { cancelable: false }
-                            );
-                          }}>
-                          <IconFeather name='delete' size={23} color='#E4572E' />
-                        </TouchableHighlight>
-
-                      </View>
-                      
-                      {this._renderDemandListEachCutomer(customer_address, this.customer_demand_items[customer_address])}
+                    <View style={styles.TableRowItemContainer}>
+                      <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
+                      <Text style={[styles.orderItemHeaderText, {flex: 1}]}>材料</Text>
+                      <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
+                      <View style={{width:20}}></View>
                     </View>
-                  );
-                })}
 
-                {!this.state.customers_data_ready
-                  ? <Text style={styles.tableOperateRowText}>正在获取工地信息...</Text>
-                  : <TouchableHighlight style={styles.tableOperateRowView} 
-                      onPress={this._addCustomer}>
-                      <Text style={styles.tableOperateRowText}>添加工地</Text>
-                    </TouchableHighlight>}
+                    {Object.keys(this.customer_demand_items).map(customer_address => {
+                      let address = customer_address.slice(customer_address.indexOf('(')+1,-1);
+                      return (
+                        <View>
+                          <View style={styles.tableInnerTitleRowView}>
 
-              </View>
-
-              <View style={styles.tableContainer}>
-                <Text style={styles.level2TitleText}>材料来源</Text>
-
-                <View style={styles.TableRowItemContainer}>
-                  <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
-                  <Text style={[styles.orderItemHeaderText, {flex: 1}]}>来源</Text>
-                  <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>单价</Text>
-                  <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
-                  <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>价格</Text>
-                  <View style={{width:20}}></View>
-                </View>
-
-                {Object.keys(this.material_demand_sum).map(material => {
-                  let material_demand = this.material_demand_sum[material];
-                  return (
-                    <View>
-                      <View style={styles.tableInnerTitleRowView}>
-
-                        {material_demand.purchase_complete
-                          ? <View style={styles.addMaterialView}>
-                              <Text style={[styles.addMaterialBtnText, {color:'gray', borderColor: 'gray'}]}>添加来源</Text>
-                            </View>
-                          : <TouchableHighlight style={styles.addMaterialView}
-                              onPress={() => {this.props.navigation.navigate('AddOrderPurchaseItemForm', {
-                                material:material,
-                                unit:material_demand.unit,
-                                max_quantity:material_demand.quantity - material_demand.quantity_purchased,
+                            <TouchableHighlight style={styles.addMaterialView}
+                              onPress={() => {this.props.navigation.navigate('AddOrderDemandItemForm', {
+                                customer_address: customer_address,
                             })}}>
-                              <Text style={styles.addMaterialBtnText}>添加来源</Text>
-                            </TouchableHighlight>}
+                              <Text style={styles.addMaterialBtnText}>添加材料</Text>
+                            </TouchableHighlight>
 
-                        
+                            <Text style={styles.tableInnerTitleView}>{address}</Text>
 
-                        <View style={styles.tableInnerTitleViewContainer}>
-                          <Text style={styles.materialTitleText}>{material}</Text>
-                          {material_demand.purchase_complete
-                            ? <IconIonicons name='md-checkmark' size={23} color='green' />
-                            : <IconIonicons name='ios-warning' size={23} color='#FBC02D' />}
-                        </View>
-
-                        <TouchableHighlight style={styles.delCustomerBtnView} 
-                          onPress={() => {
-                            Alert.alert(
-                              null,
-                              '确认删除所有来源：' + material + '？',
-                              [
-                                {text: '放弃', onPress: () => {}, style: 'cancel'},
-                                {text: '确认删除', onPress: () => {this._delPurchaseAllItem(material);}},
-                              ],
-                              { cancelable: false }
-                            );
-                          }}>
-                          <IconFeather name='delete' size={23} color='#E4572E' />
-                        </TouchableHighlight>
-
-                      </View>
-                      
-                      {this._renderPurchaseListEachMaterial(material, material_demand.purchase_items)}
-
-                      <View style={[styles.TableRowItemContainerAfter2, {paddingRight:30, justifyContent:'flex-end'}]}>
-                        <Text style={[styles.orderItemText, {width:120, textAlign:'left'}]}>
-                          已购：{material_demand.quantity_purchased}/{material_demand.quantity}{material_demand.unit}
-                        </Text>
-                        <Text style={[styles.orderItemText, {width:110, textAlign:'right'}]}>
-                          合计：{material_demand.expense}元
-                        </Text>
-                      </View>
-                    </View>
-                  );
-                })}
-
-              </View>
-
-
-              <View style={styles.tableContainer}>
-                <Text style={styles.level2TitleText}>各材料商采购单</Text>
-
-                <View style={styles.TableRowItemContainer}>
-                  <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
-                  <Text style={[styles.orderItemHeaderText, {flex: 1}]}>材料</Text>
-                  <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>单价</Text>
-                  <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
-                  <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>价格</Text>
-                  <View style={{width:20}}></View>
-                </View>
-
-                {Object.keys(from_purchase_sum).map(from => {
-                  return (
-                    <View>
-
-                      <View style={styles.tableInnerTitleRowView}>
-                        <View style={{width:70}}></View>
-                        <Text style={styles.tableInnerTitleText}>{from}</Text>
-
-                        {from_purchase_sum[from].type === 'warehouse'
-                          ? <View style={styles.paidCheckView}>
-                              <Text>已支付</Text>
-                              <IconMaterialCommunity name='check-circle' size={23} color='gray' />
-                            </View> 
-                          : <TouchableHighlight 
+                            <TouchableHighlight style={styles.delCustomerBtnView} 
                               onPress={() => {
-                                this.from_paid[from] = !this.from_paid[from];
-                                this.setState({});
+                                Alert.alert(
+                                  null,
+                                  '确认取消采购该工地的所有材料：' + customer_address + '？',
+                                  [
+                                    {text: '不取消', onPress: () => {}, style: 'cancel'},
+                                    {text: '确认取消', onPress: () => {this._delDemandAllItem(customer_address);}},
+                                  ],
+                                  { cancelable: false }
+                                );
                               }}>
-                              <View style={styles.paidCheckView}>
-                                <Text>已支付</Text>
-                                {this.from_paid[from]
-                                  ? <IconMaterialCommunity name='check-circle' size={23} color='#E4572E' />
-                                  : <IconMaterialCommunity name='checkbox-blank-circle-outline' size={23} color='#E4572E' />} 
-                              </View> 
-                            </TouchableHighlight>}
-                        
-                      </View>
+                              <IconFeather name='delete' size={23} color='#E4572E' />
+                            </TouchableHighlight>
 
-                      {this._renderPurchaseListEachFrom(from, from_purchase_sum[from].purchase_items)}
+                          </View>
+                          
+                          {this._renderDemandListEachCutomer(customer_address, this.customer_demand_items[customer_address])}
+                        </View>
+                      );
+                    })}
 
-                      <View style={[styles.TableRowItemContainerAfter2, {paddingRight:30, justifyContent:'flex-end'}]}>
-                        <Text style={[styles.orderItemText, {width:110, textAlign:'right'}]}>
-                          合计：{Math.floor(from_purchase_sum[from].expense)}元
-                        </Text>
-                      </View>
+                    {!this.state.customers_data_ready
+                      ? <Text style={styles.tableOperateRowText}>正在获取工地信息...</Text>
+                      : <TouchableHighlight style={styles.tableOperateRowView} 
+                          onPress={this._addCustomer}>
+                          <Text style={styles.tableOperateRowText}>添加工地</Text>
+                        </TouchableHighlight>}
+
+                  </View>
+
+                  <View style={styles.tableContainer}>
+                    <Text style={styles.level2TitleText}>材料来源</Text>
+
+                    <View style={styles.TableRowItemContainer}>
+                      <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
+                      <Text style={[styles.orderItemHeaderText, {flex: 1}]}>来源</Text>
+                      <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>单价</Text>
+                      <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
+                      <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>价格</Text>
+                      <View style={{width:20}}></View>
                     </View>
-                  );
-                })}
 
-              </View>
+                    {Object.keys(this.material_demand_sum).map(material => {
+                      let material_demand = this.material_demand_sum[material];
+                      return (
+                        <View>
+                          <View style={styles.tableInnerTitleRowView}>
+
+                            {material_demand.purchase_complete
+                              ? <View style={styles.addMaterialView}>
+                                  <Text style={[styles.addMaterialBtnText, {color:'gray', borderColor: 'gray'}]}>添加来源</Text>
+                                </View>
+                              : <TouchableHighlight style={styles.addMaterialView}
+                                  onPress={() => {this.props.navigation.navigate('AddOrderPurchaseItemForm', {
+                                    material:material,
+                                    unit:material_demand.unit,
+                                    max_quantity:material_demand.quantity - material_demand.quantity_purchased,
+                                })}}>
+                                  <Text style={styles.addMaterialBtnText}>添加来源</Text>
+                                </TouchableHighlight>}
+
+                            
+
+                            <View style={styles.tableInnerTitleViewContainer}>
+                              <Text style={styles.materialTitleText}>{material}</Text>
+                              {material_demand.purchase_complete
+                                ? <IconIonicons name='md-checkmark' size={23} color='green' />
+                                : <IconIonicons name='ios-warning' size={23} color='#FBC02D' />}
+                            </View>
+
+                            <TouchableHighlight style={styles.delCustomerBtnView} 
+                              onPress={() => {
+                                Alert.alert(
+                                  null,
+                                  '确认删除所有来源：' + material + '？',
+                                  [
+                                    {text: '不删除', onPress: () => {}, style: 'cancel'},
+                                    {text: '确认删除', onPress: () => {this._delPurchaseAllItem(material);}},
+                                  ],
+                                  { cancelable: false }
+                                );
+                              }}>
+                              <IconFeather name='delete' size={23} color='#E4572E' />
+                            </TouchableHighlight>
+
+                          </View>
+                          
+                          {this._renderPurchaseListEachMaterial(material, material_demand.purchase_items)}
+
+                          <View style={[styles.TableRowItemContainerAfter2, {paddingRight:30, justifyContent:'flex-end'}]}>
+                            <Text style={[styles.orderItemText, {width:120, textAlign:'left'}]}>
+                              已购：{material_demand.quantity_purchased}/{material_demand.quantity}{material_demand.unit}
+                            </Text>
+                            <Text style={[styles.orderItemText, {width:110, textAlign:'right'}]}>
+                              合计：{material_demand.expense}元
+                            </Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+
+                  </View>
 
 
-              <View style={{paddingHorizontal: 15}}>
+                  <View style={styles.tableContainer}>
+                    <Text style={styles.level2TitleText}>各材料商采购单</Text>
 
-                <DateInput 
-                  label='订单日期' init_date={this.state.order_date}
-                  onEndEditing={(date) => {
-                    this.setState({
-                      order_date:date,
-                    });}}/> 
+                    <View style={styles.TableRowItemContainer}>
+                      <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
+                      <Text style={[styles.orderItemHeaderText, {flex: 1}]}>材料</Text>
+                      <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>单价</Text>
+                      <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
+                      <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>价格</Text>
+                      <View style={{width:20}}></View>
+                    </View>
 
-                <ParagraphInput 
-                  label='备注' allow_empty={true}
-                  onEndEditing={(isValid, num) => {
-                    this.setState({
-                      remark_comFlag:isValid,
-                      remark_value:num,
-                    });}} />   
+                    {Object.keys(from_purchase_sum).map(from => {
+                      return (
+                        <View>
 
-              </View>  
+                          <View style={styles.tableInnerTitleRowView}>
+                            <View style={{width:70}}></View>
+                            <Text style={styles.tableInnerTitleText}>{from}</Text>
 
-            </View>
+                            {from_purchase_sum[from].type === 'warehouse'
+                              ? <View style={styles.paidCheckView}>
+                                  <Text>已支付</Text>
+                                  <IconMaterialCommunity name='check-circle' size={23} color='gray' />
+                                </View> 
+                              : <TouchableHighlight 
+                                  onPress={() => {
+                                    this.from_paid[from] = !this.from_paid[from];
+                                    this.setState({});
+                                  }}>
+                                  <View style={styles.paidCheckView}>
+                                    <Text>已支付</Text>
+                                    {this.from_paid[from]
+                                      ? <IconMaterialCommunity name='check-circle' size={23} color='#E4572E' />
+                                      : <IconMaterialCommunity name='checkbox-blank-circle-outline' size={23} color='#E4572E' />} 
+                                  </View> 
+                                </TouchableHighlight>}
+                            
+                          </View>
+
+                          {this._renderPurchaseListEachFrom(from, from_purchase_sum[from].purchase_items)}
+
+                          <View style={[styles.TableRowItemContainerAfter2, {paddingRight:30, justifyContent:'flex-end'}]}>
+                            <Text style={[styles.orderItemText, {width:110, textAlign:'right'}]}>
+                              合计：{Math.floor(from_purchase_sum[from].expense)}元
+                            </Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+
+                  </View>
+
+
+                  <View style={{paddingHorizontal: 15}}>
+
+                    <DateTimeInput 
+                      label='订单日期' init_datetime={this.state.order_datetime}
+                      onEndEditing={(datetime) => {
+                        this.setState({
+                          order_datetime:datetime,
+                        });}}/> 
+
+                    <ParagraphInput 
+                      label='备注' allow_empty={true}
+                      onEndEditing={(isValid, num) => {
+                        this.setState({
+                          remark_comFlag:isValid,
+                          remark_value:num,
+                        });}} />   
+
+                  </View>  
+
+                </View>}
           </ScrollView>
         </KeyboardAvoidingView>
 

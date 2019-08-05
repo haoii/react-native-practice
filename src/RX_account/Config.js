@@ -1,7 +1,7 @@
 
 import Dimensions from 'Dimensions';
 
-const host_url = 'http://192.168.1.108:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
+const host_url = 'http://192.168.1.104:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
 const account_url = host_url + 'account/';
 const static_url = host_url + 'static/';
 const user_url = host_url + 'user/';
@@ -21,9 +21,12 @@ const add_material_order_url = account_url + 'add_material_order/';
 const warehouses_url = account_url + 'warehouses/';
 const warehouse_materials_url = account_url + 'warehouse_materials/';
 const delete_customer_url = account_url + 'delete_customer/';
+const get_material_order_id_url = account_url + 'get_material_order_id/';
 
 const login_url = user_url + 'login/';
 const logout_url = user_url + 'logout/';
+
+const static_dir_url = host_url + 'resource/';
 
 export default URL = {
   customers: customers_url,
@@ -42,9 +45,12 @@ export default URL = {
   warehouses: warehouses_url,
   warehouse_materials: warehouse_materials_url,
   delete_customer: delete_customer_url,
+  get_material_order_id: get_material_order_id_url,
 
   login:login_url,
   logout:logout_url,
+
+  static_dir: static_dir_url,
 };
 
 export const EPSILON = 0.000000001;

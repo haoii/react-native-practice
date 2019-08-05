@@ -12,6 +12,7 @@ import {
   FlatList,
   ActivityIndicator
 } from 'react-native';
+import IconIonicons from 'react-native-vector-icons/Ionicons';
 
 import RetryComponent from '../../baseComponent/RetryComponent';
 
@@ -112,7 +113,17 @@ export default class MaterialOrderList extends Component {
         >
           <View>
             <View style={styles.itemTitleView}>
-              <Text style={styles.minorText}>日期：{item.value.order_date}   </Text>
+
+              <TouchableHighlight onPress={() =>
+                this.props.navigation.push('MaterialOrderReceiptsDetail', {
+                  order: item.value,
+                })}
+                style={{paddingLeft:10, paddingRight:30}}>
+                <IconIonicons name="ios-share" size={20} />
+              </TouchableHighlight>
+
+              <View style={{flex:1}}></View>
+              <Text style={styles.minorText}>日期：{item.value.order_datetime}   </Text>
               <Text style={styles.minorText}>编号：{item.value.id}</Text>
             </View>
 

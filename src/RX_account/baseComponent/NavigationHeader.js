@@ -80,14 +80,14 @@ export default class NavigationHeader extends Component {
         <View style={styles.headerContainer}>
           <TouchableHighlight style={styles.backIcon}
             onPress={() => this.props.navigation.goBack()}>
-            <IconIonicons name='ios-arrow-back' size={25} />
+            <IconIonicons name='ios-arrow-back' size={25} color="#000" />
           </TouchableHighlight>
           <View style={styles.titleStyle}>
             <Text style={styles.headerTitleText}>{this.props.title}</Text>
           </View>
           <TouchableOpacity style={styles.editButton} 
             onPress={() => this._setModalVisible(true)}>
-            <IconIonicons name="ios-add-circle-outline" size={25} color="#222222" />
+            <IconIonicons name="ios-add-circle-outline" size={25} color="#000" />
           </TouchableOpacity>
         </View>
       </View>
@@ -128,7 +128,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderBottomWidth: 0.5, 
     borderBottomColor: '#c3c3c3',
-    backgroundColor: '#f8f8f8',
     elevation: 2,
   },
   backIcon: {
@@ -136,6 +135,7 @@ const styles = StyleSheet.create({
     width:50,
     justifyContent:'center',
     alignItems:'center',
+    color:'#000',
   },
   
   titleStyle: {

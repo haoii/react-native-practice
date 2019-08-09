@@ -141,9 +141,9 @@ export default createAppContainer(createStackNavigator(
     },
     MaterialOrderDetail: {
       screen: MaterialOrderDetail,
-      // navigationOptions: {
-      //   header: null
-      // },
+      navigationOptions: {
+        header: null
+      },
     },
     CustomerDetail: {
       screen: CustomerDetail,

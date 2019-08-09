@@ -48,6 +48,7 @@ export default class OrderReceiptsGenerator  extends Component {
       cur_img_index: 0,
 
       from_purchase_sum_url:{},
+      
     };
   }
 
@@ -85,7 +86,7 @@ export default class OrderReceiptsGenerator  extends Component {
     .then((response) => response.json())
     .then((responseJson)=>{
       if (responseJson.msg === 'success') {
-        // this.props.navigation.navigate('MainBottomTab');
+        this.props.navigation.navigate('MainBottomTab');
       }  else if (responseJson.msg === 'not_logged_in') {
         alert('您还没有登录~');
         this.props.navigation.navigate('MainBottomTab');
@@ -333,13 +334,15 @@ export default class OrderReceiptsGenerator  extends Component {
           visible={this.state.imageModalVisible}
           onRequestClose={() => this._setModalVisible(false)}
         >
-          <ImageViewer imageUrls={this.state.images} index={this.state.cur_img_index}/>
+          <ImageViewer imageUrls={this.state.images} 
+            index={this.state.cur_img_index}
+            menuContext={{}}/>
         </Modal>
 
         <View style={styles.headerContainer}>
           <TouchableHighlight style={styles.cancelBtn}
             onPress={() => this.props.navigation.navigate('PlaceOrderForm', {waiting_render_img:false})}>
-            <Text style={styles.cancelText}>取消</Text>
+            <Text style={styles.cancelText}>后退</Text>
           </TouchableHighlight>
 
           <TouchableHighlight style={styles.activeBtn} onPress={this._submitPost}>

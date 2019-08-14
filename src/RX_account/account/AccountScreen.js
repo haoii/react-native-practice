@@ -10,6 +10,7 @@ import SupplierList from './display_list/SupplierList';
 import MaterialList from './display_list/MaterialList';
 import MaterialOrderList from './display_list/MaterialOrderList';
 import WarehouseList from './display_list/WarehouseList';
+import MaterialClassesList from './display_list/MaterialClassesList';
 
 export default class AccountScreen extends Component {
 
@@ -49,6 +50,9 @@ export default class AccountScreen extends Component {
           </View>
           <View tabLabel='仓库' style={{backgroundColor:'#f4f4f4'}}>
             <WarehouseList navigation={this.props.navigation} />
+          </View>
+          <View tabLabel='材料类别' style={{backgroundColor:'#f4f4f4'}}>
+            <MaterialClassesList navigation={this.props.navigation} />
           </View>
         </ScrollableTabView>
 

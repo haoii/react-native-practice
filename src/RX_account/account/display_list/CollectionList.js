@@ -31,7 +31,7 @@ export default class CollectionList extends Component {
 
       got_no_data: false,
       no_data_hint: '',
-    }
+    };
   }
 
   componentDidMount() {

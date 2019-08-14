@@ -82,15 +82,26 @@ export default class AddCustomerForm extends Component {
     fetch(URL.submit_add_customer,{
       method:'POST',
       body:formData,
+      credentials: 'same-origin',
     })
-    .then((response) => response.text())
-    .then((ret)=>{
-      if (ret !== 'success')
-        alert(ret);
-      else
-        this.props.navigation.goBack();
-    })
-    .catch((error)=>{alert(error)});
+    .then((response) => response.json())
+    .then((responseJson)=>{
+      if (responseJson.msg === 'success') {
+        this.props.navigation.navigate('MainBottomTab');
+      }  else if (responseJson.msg === 'not_logged_in') {
+        alert('您还没有登录~');
+        this.props.navigation.navigate('MainBottomTab');
+      } else if (responseJson.msg === 'customer_address_already_exist') {
+        alert(responseJson.data);
+      } else {
+        alert('出现未知错误');
+        this.props.navigation.navigate('MainBottomTab');
+      }
+
+    }).catch((error) => {
+      alert('服务器出错了');
+      // this.props.navigation.navigate('MainBottomTab');
+    });
   }
 
   _checkComplete = () => {
@@ -153,7 +164,7 @@ export default class AddCustomerForm extends Component {
               <GeneralInput 
                 value={this.form_data.name_value}
                 label='客户名' max_length={64} 
-                exclude_str=')('
+                exclude_str=')(#'
                 onEndEditing={(isValid, value) => {
                   this.form_data.name_comFlag = isValid;
                   this.form_data.name_value = value;

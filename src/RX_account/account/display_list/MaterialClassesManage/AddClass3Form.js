@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight, CameraRoll, 
     Image, KeyboardAvoidingView, ScrollView } from 'react-native';
@@ -6,9 +5,12 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import ImagePicker from 'react-native-image-crop-picker';
 import { Input } from 'react-native-elements';
 
-import URL from '../../Config';
-import GeneralInput from '../../forms/GeneralInput';
-import DateInput from '../../forms/DateInput';
+import URL from '../../../Config';
+import GeneralInput from '../../../forms/GeneralInput';
+import DateInput from '../../../forms/DateInput';
+import ParagraphInput from '../../../forms/ParagraphInput';
+import Label from '../../../forms/Label';
+
 
 import Dimensions from 'Dimensions';
 
@@ -17,19 +19,20 @@ const size = {
   height: Dimensions.get('window').height
 };
 
-export default class AddSupplierForm extends Component {
+export default class AddClass3Form extends Component {
   constructor(props) {
     super(props);
 
+    this.class1_name = this.props.navigation.getParam('class1_name');
+    this.class2_name = this.props.navigation.getParam('class2_name');
+     
     this.form_data = { 
       name_value: '',
       name_comFlag: false,
 
-      address_value: '',
-      address_comFlag: false,
+      description_value: '',
+      description_comFlag: true,
 
-      phone_value: '',
-      phone_comFlag: true,
     };
 
     this.state = { 
@@ -44,10 +47,11 @@ export default class AddSupplierForm extends Component {
 
     let formData = new FormData();
     formData.append("name", this.form_data.name_value);
-    formData.append("address", this.form_data.address_value);
-    formData.append("phone", this.form_data.phone_value);
+    formData.append("class1_name", this.class1_name);
+    formData.append("class2_name", this.class2_name);
+    formData.append("description", this.form_data.description_value);
     
-    fetch(URL.submit_add_supplier,{
+    fetch(URL.add_material_class3,{
       method:'POST',
       body:formData,
       credentials: 'same-origin',
@@ -59,7 +63,7 @@ export default class AddSupplierForm extends Component {
       }  else if (responseJson.msg === 'not_logged_in') {
         alert('您还没有登录~');
         this.props.navigation.navigate('MainBottomTab');
-      } else if (responseJson.msg === 'supplier_name_already_exist') {
+      } else if (responseJson.msg === 'class_already_exist') {
         alert(responseJson.data);
       } else {
         alert('出现未知错误');
@@ -70,7 +74,6 @@ export default class AddSupplierForm extends Component {
       alert('服务器出错了');
       // this.props.navigation.navigate('MainBottomTab');
     });
-    
   }
 
   _checkComplete = () => {
@@ -107,28 +110,23 @@ export default class AddSupplierForm extends Component {
           <ScrollView contentContainerStyle={styles.ScrollViewStyle}>
 
             <View style={styles.Canvas}>
+
+              <Label label={this.class1_name + ' - ' + this.class2_name} />
+
               <GeneralInput 
-                label='材料商名' max_length={64} 
+                label='三级类别名' max_length={64} 
                 exclude_str=')(#'
                 onEndEditing={(isValid, value) => {
                   this.form_data.name_comFlag = isValid;
                   this.form_data.name_value = value;
                   this._checkComplete();
                 }} />
-              <GeneralInput 
-                label='地址' max_length={256} 
+
+              <ParagraphInput 
+                label='描述' allow_empty={true}
                 onEndEditing={(isValid, value) => {
-                  this.form_data.address_comFlag = isValid;
-                  this.form_data.address_value = value;
-                  this._checkComplete();
-                }} />
-              <GeneralInput 
-                label='电话' max_length={16} 
-                allow_empty={true} 
-                content_type='phone'
-                onEndEditing={(isValid, value) => {
-                  this.form_data.phone_comFlag = isValid;
-                  this.form_data.phone_value = value;
+                  this.form_data.description_comFlag = isValid;
+                  this.form_data.description_value = value;
                   this._checkComplete();
                 }} />
              

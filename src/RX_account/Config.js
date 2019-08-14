@@ -1,7 +1,7 @@
 
 import Dimensions from 'Dimensions';
 
-const host_url = 'http://192.168.1.103:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
+const host_url = 'http://192.168.0.100:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
 const account_url = host_url + 'account/';
 const static_url = host_url + 'static/';
 const user_url = host_url + 'user/';
@@ -13,6 +13,9 @@ const submit_add_supplier_url = account_url + 'add_supplier/';
 const submit_collect_from_customer_url = account_url + 'collect_from_customer/';
 const collections_from_customer_url = account_url + 'collections_from_customer/';
 const material_classes_url = account_url + 'material_classes/';
+const add_material_class1_url = account_url + 'add_material_class1/';
+const add_material_class2_url = account_url + 'add_material_class2/';
+const add_material_class3_url = account_url + 'add_material_class3/';
 const materials_url = account_url + 'materials/';
 const supplier_detail_url = account_url + 'supplier_detail/';
 const material_orders_url = account_url + 'material_orders/';
@@ -37,6 +40,9 @@ export default URL = {
   submit_collect_from_customer: submit_collect_from_customer_url,
   collections_from_customer: collections_from_customer_url,
   material_classes: material_classes_url,
+  add_material_class1: add_material_class1_url,
+  add_material_class2: add_material_class2_url,
+  add_material_class3: add_material_class3_url,
   materials: materials_url,
   supplier_detail: supplier_detail_url,
   material_orders: material_orders_url,

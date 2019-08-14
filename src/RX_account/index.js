@@ -25,6 +25,10 @@ import CustomerDetail from './account/detail_modals/CustomerDetail';
 import OrderReceiptsGenerator from './record/record_modals/OrderReceiptsGenerator';
 import MaterialOrderReceiptsDetail from './account/detail_modals/MaterialOrderReceiptsDetail';
 
+import AddClass1Form from './account/display_list/MaterialClassesManage/AddClass1Form';
+import AddClass2Form from './account/display_list/MaterialClassesManage/AddClass2Form';
+import AddClass3Form from './account/display_list/MaterialClassesManage/AddClass3Form';
+
 import LoginScreen from './me/LoginScreen';
 
 const MainBottomTab = createBottomTabNavigator(
@@ -165,6 +169,24 @@ export default createAppContainer(createStackNavigator(
     },
     MaterialOrderReceiptsDetail: {
       screen: MaterialOrderReceiptsDetail,
+      navigationOptions: {
+        header: null
+      },
+    },
+    AddClass1Form: {
+      screen: AddClass1Form,
+      navigationOptions: {
+        header: null
+      },
+    },
+    AddClass2Form: {
+      screen: AddClass2Form,
+      navigationOptions: {
+        header: null
+      },
+    },
+    AddClass3Form: {
+      screen: AddClass3Form,
       navigationOptions: {
         header: null
       },

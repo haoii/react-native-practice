@@ -8,10 +8,13 @@ import {
   TouchableHighlight,
   Image,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import IconEvilIcons from 'react-native-vector-icons/EvilIcons';
+import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import RetryComponent from '../../baseComponent/RetryComponent';
 
@@ -44,7 +47,7 @@ export default class MaterialClassesList extends Component {
   }
 
   _fetchData = () => {
-    fetch(URL.material_classes, {credentials: 'same-origin'})
+    fetch(URL.material_classes_no_empty, {credentials: 'same-origin'})
       .then(response => response.json())
       .then(responseJson => {
         if (responseJson.msg === 'success') {
@@ -98,8 +101,124 @@ export default class MaterialClassesList extends Component {
     this.setState({class3_show_flag:class3_show_flag});
   }
 
-  add_material_class_1 = () => {
+  _deleteClass1 = (class1_name) => {
+    let formData = new FormData();
+    formData.append("class1_name", class1_name);
+    
+    fetch(URL.delete_material_class1,{
+      method:'POST',
+      body:formData,
+      credentials: 'same-origin',
+    })
+    .then((response) => response.json())
+    .then((responseJson)=>{
+      if (responseJson.msg === 'success') {
+        this._refreshDate();
+      } else if (responseJson.msg === 'not_logged_in') {
+        this.props.navigation.navigate('LoginScreen');
+      } else if (responseJson.msg === 'has_linked_data') {
+        alert('存在与此类别关联的其他数据，无法删除！')
+      } else {
+        alert('出现未知错误');
+      }
 
+    })
+    .catch((error)=>{
+      alert('服务器出错了');
+    });
+  }
+
+  _confirmDeleteClass1 = (class1_name) => {
+    Alert.alert(
+      null,
+      '删除材料类别后不可恢复，确认删除：' + class1_name + '？',
+      [
+        {text: '放弃删除', onPress: () => {}, style: 'cancel'},
+        {text: '确认删除', onPress: () => {this._deleteClass1(class1_name);}},
+      ],
+      { cancelable: false }
+    );
+  }
+
+  _deleteClass2 = (class1_name, class2_name) => {
+    let formData = new FormData();
+    formData.append("class1_name", class1_name);
+    formData.append("class2_name", class2_name);
+    
+    fetch(URL.delete_material_class2,{
+      method:'POST',
+      body:formData,
+      credentials: 'same-origin',
+    })
+    .then((response) => response.json())
+    .then((responseJson)=>{
+      if (responseJson.msg === 'success') {
+        this._refreshDate();
+      } else if (responseJson.msg === 'not_logged_in') {
+        this.props.navigation.navigate('LoginScreen');
+      } else if (responseJson.msg === 'has_linked_data') {
+        alert('存在与此类别关联的其他数据，无法删除！')
+      } else {
+        alert('出现未知错误');
+      }
+
+    })
+    .catch((error)=>{
+      alert('服务器出错了');
+    });
+  }
+
+  _confirmDeleteClass2 = (class1_name, class2_name) => {
+    Alert.alert(
+      null,
+      '删除材料类别后不可恢复，确认删除：' + class1_name + ' - ' + class2_name + '？',
+      [
+        {text: '放弃删除', onPress: () => {}, style: 'cancel'},
+        {text: '确认删除', onPress: () => {this._deleteClass2(class1_name, class2_name);}},
+      ],
+      { cancelable: false }
+    );
+  }
+
+  _deleteClass3 = (class1_name, class2_name, class3_name) => {
+    let formData = new FormData();
+    formData.append("class1_name", class1_name);
+    formData.append("class2_name", class2_name);
+    formData.append("class3_name", class3_name);
+    
+    fetch(URL.delete_material_class3,{
+      method:'POST',
+      body:formData,
+      credentials: 'same-origin',
+    })
+    .then((response) => response.json())
+    .then((responseJson)=>{
+      if (responseJson.msg === 'success') {
+        this._refreshDate();
+      } else if (responseJson.msg === 'not_logged_in') {
+        this.props.navigation.navigate('LoginScreen');
+      } else if (responseJson.msg === 'has_linked_data') {
+        alert('存在与此类别关联的其他数据，无法删除！')
+      } else {
+        alert('出现未知错误');
+      }
+
+    })
+    .catch((error)=>{
+      alert('服务器出错了');
+    });
+  }
+
+  _confirmDeleteClass3 = (class1_name, class2_name, class3_name) => {
+    Alert.alert(
+      null,
+      '删除材料类别后不可恢复，确认删除：' + class1_name + ' - ' + class2_name + ' - ' + class3_name + '？',
+      [
+        {text: '放弃删除', onPress: () => {}, style: 'cancel'},
+        {text: '确认删除', onPress: () => {this._deleteClass3(class1_name, class2_name, class3_name);}},
+      ],
+      { cancelable: false }
+    );
   }
 
   _renderItem = ({item}) => {
@@ -130,10 +249,24 @@ export default class MaterialClassesList extends Component {
 
           <View style={styles.class1Container}>
             <Text>{class1_name}</Text>
+
+            <View style={styles.rightOperateView}>
+              <TouchableHighlight style={styles.deleteOpView}
+                onPress={() => {this.props.navigation.navigate('AddClass1Form', {
+                  class1ToUpdate: class1_name,
+                })}}>
+                <IconMaterialIcons name="edit" size={20} />
+              </TouchableHighlight>
+
+              <TouchableHighlight style={styles.deleteOpView}
+                onPress={() => {this._confirmDeleteClass1(class1_name)}}>
+                <IconMaterialCommunityIcons name="delete" size={20} />
+              </TouchableHighlight>
             
-            {this.state.class2_show_flag[class1_name]
-              ? <IconEvilIcons name="chevron-up" size={25}/>
-              : <IconEvilIcons name="chevron-down" size={25}/>}
+              {this.state.class2_show_flag[class1_name]
+                ? <IconEvilIcons name="chevron-up" size={25}/>
+                : <IconEvilIcons name="chevron-down" size={25}/>}
+            </View>
           </View>
 
         </TouchableHighlight>
@@ -152,9 +285,25 @@ export default class MaterialClassesList extends Component {
 
                       <View style={styles.class2Container}>
                         <Text>{class2_name}</Text>
-                        {this.state.class3_show_flag[class12_name]
-                          ? <IconEvilIcons name="chevron-up" size={25}/>
-                          : <IconEvilIcons name="chevron-down" size={25}/>}
+
+                        <View style={styles.rightOperateView}>
+                          <TouchableHighlight style={styles.deleteOpView}
+                            onPress={() => {this.props.navigation.navigate('AddClass2Form', {
+                              class1_name: class1_name,
+                              class2ToUpdate: class2_name,
+                            })}}>
+                            <IconMaterialIcons name="edit" size={20} />
+                          </TouchableHighlight>
+
+                          <TouchableHighlight style={styles.deleteOpView}
+                            onPress={() => {this._confirmDeleteClass2(class1_name, class2_name)}}>
+                            <IconMaterialCommunityIcons name="delete" size={20} />
+                          </TouchableHighlight>
+
+                          {this.state.class3_show_flag[class12_name]
+                            ? <IconEvilIcons name="chevron-up" size={25}/>
+                            : <IconEvilIcons name="chevron-down" size={25}/>}
+                        </View>
                       </View>
                     </TouchableHighlight>
 
@@ -167,6 +316,22 @@ export default class MaterialClassesList extends Component {
                             <View style={{backgroundColor:'#f0fff0'}}>
                               <View style={styles.class3Container}>
                                 <Text>{class3_name}</Text>
+
+                                <View style={styles.rightOperateView}>
+                                  <TouchableHighlight style={styles.deleteOpView}
+                                    onPress={() => {this.props.navigation.navigate('AddClass3Form', {
+                                      class1_name: class1_name,
+                                      class2_name: class2_name,
+                                      class3ToUpdate: class3_name,
+                                    })}}>
+                                    <IconMaterialIcons name="edit" size={20} />
+                                  </TouchableHighlight>
+
+                                  <TouchableHighlight style={[styles.deleteOpView, {marginRight:25}]}
+                                    onPress={() => {this._confirmDeleteClass3(class1_name, class2_name, class3_name)}}>
+                                    <IconMaterialCommunityIcons name="delete" size={20} />
+                                  </TouchableHighlight>
+                                </View>
                               </View>
                             </View>
                           );
@@ -181,7 +346,7 @@ export default class MaterialClassesList extends Component {
                               })}}
                               style={{backgroundColor:'#f0fff0'}}>
 
-                              <View style={[styles.class3Container]}>
+                              <View style={[styles.class3Container, {justifyContent:'flex-start'}]}>
                                 <IconIonicons name="ios-add" size={35} color="#E4572E" />
                                 <Text style={{paddingLeft:10}}>添加三级分类</Text>
                               </View>
@@ -222,6 +387,7 @@ export default class MaterialClassesList extends Component {
   }
 
   render() {
+
     return (
       <View>
         {this.state.got_no_data
@@ -256,6 +422,16 @@ const styles = StyleSheet.create({
     alignItems:'center',
     justifyContent:'space-between',
   },
+  rightOperateView: {
+    flexDirection:'row',
+    alignItems:'center'
+  },
+  deleteOpView: {
+    height:48,
+    width:48,
+    alignItems:'center',
+    justifyContent:'center',
+  },
   class2Container: {
     paddingHorizontal:10, 
     marginLeft:26,
@@ -275,6 +451,7 @@ const styles = StyleSheet.create({
     height:50, 
     alignItems:'center',
     backgroundColor:'#f0fff0',
+    justifyContent:'space-between',
   },
 
   itemTitleView: {

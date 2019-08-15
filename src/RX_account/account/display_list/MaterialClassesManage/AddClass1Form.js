@@ -31,11 +31,20 @@ export default class AddClass1Form extends Component {
 
     };
 
+    this.operation_type = 'add';
+    this.class1_name_src = this.props.navigation.getParam('class1ToUpdate', '');
+    if (this.class1_name_src) {
+      this.operation_type = 'edit';
+
+      this.form_data.name_value = this.class1_name_src;
+      this.form_data.name_comFlag = true;
+    }
+
     this.state = { 
       ready_to_commit: false,
     };
   }
-
+  
   _submitPost = () => {
 
     if (!this.state.ready_to_commit)
@@ -44,6 +53,8 @@ export default class AddClass1Form extends Component {
     let formData = new FormData();
     formData.append("name", this.form_data.name_value);
     formData.append("description", this.form_data.description_value);
+    formData.append("operation_type", this.operation_type);
+    formData.append("class1_name_src", this.class1_name_src);
     
     fetch(URL.add_material_class1,{
       method:'POST',
@@ -86,6 +97,7 @@ export default class AddClass1Form extends Component {
   }
 
   render() {
+
     return (
       <View style={styles.container}>
 
@@ -105,6 +117,7 @@ export default class AddClass1Form extends Component {
 
             <View style={styles.Canvas}>
               <GeneralInput 
+                value={this.form_data.name_value}
                 label='一级类别名' max_length={64} 
                 exclude_str=')(#'
                 onEndEditing={(isValid, value) => {
@@ -114,7 +127,9 @@ export default class AddClass1Form extends Component {
                 }} />
 
               <ParagraphInput 
+                value={this.form_data.description_value}
                 label='描述' allow_empty={true}
+                hint='暂时没用'
                 onEndEditing={(isValid, value) => {
                   this.form_data.description_comFlag = isValid;
                   this.form_data.description_value = value;

@@ -20,41 +20,51 @@ export default class MaterialScopeSelector extends Component {
   constructor(props) {
     super(props);
 
+    this.material_class = null;
+
     this.state = { 
     };
   }
 
+  _onEndChooseClass = (data) => {
+    this.material_class = data;
+    this.props.onEndEditing(data);
+  }
+
   render() {
     return (
-      <View style={styles.container}>
-        <ChooseOneForm label='类别' 
-          onEndEditing={this.props.onEndEditing}
-          gettingDataUrl={URL.material_classes}
-          navigation={this.props.navigation} />
+      <View style={{paddingHorizontal:10}}>
+        <View style={styles.Line1View}>
+          <ChooseOneForm label='类别' 
+            onEndEditing={this._onEndChooseClass}
+            gettingDataUrl={URL.material_classes}
+            navigation={this.props.navigation} />
+
+          <TouchableHighlight>
+            <Text>add</Text>
+          </TouchableHighlight>
+          
+        </View>
 
         <View style={styles.timeSelectView}>
           <Text style={styles.mainFont}>2019年2月1日 - 至今 </Text>
         </View>
+
       </View>);
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    height:50,
-    paddingHorizontal:10,
+  Line1View: {
     flexDirection:'row',
     alignItems:'center',
     justifyContent:"space-between",
   },
   timeSelectView:{
-    paddingLeft:20, 
-    height:25,
+    paddingTop:5, 
     flexDirection:'row',
     alignItems:'center',
-    justifyContent:'flex-end',
-    borderLeftWidth: 0.5, 
-    borderLeftColor: '#888888',
+
   },
   mainFont: {
     fontSize:14,

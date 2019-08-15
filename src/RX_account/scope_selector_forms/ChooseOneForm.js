@@ -91,7 +91,6 @@ const styles = StyleSheet.create({
   },
   touchableView: {
     minWidth:100,
-    height:50,
     flexDirection:'row',
     alignItems:'center',
   },

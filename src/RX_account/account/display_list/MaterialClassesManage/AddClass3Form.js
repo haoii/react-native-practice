@@ -35,6 +35,15 @@ export default class AddClass3Form extends Component {
 
     };
 
+    this.operation_type = 'add';
+    this.class3_name_src = this.props.navigation.getParam('class3ToUpdate', '');
+    if (this.class3_name_src) {
+      this.operation_type = 'edit';
+
+      this.form_data.name_value = this.class3_name_src;
+      this.form_data.name_comFlag = true;
+    }
+
     this.state = { 
       ready_to_commit: false,
     };
@@ -50,6 +59,8 @@ export default class AddClass3Form extends Component {
     formData.append("class1_name", this.class1_name);
     formData.append("class2_name", this.class2_name);
     formData.append("description", this.form_data.description_value);
+    formData.append("operation_type", this.operation_type);
+    formData.append("class3_name_src", this.class3_name_src);
     
     fetch(URL.add_material_class3,{
       method:'POST',
@@ -114,6 +125,7 @@ export default class AddClass3Form extends Component {
               <Label label={this.class1_name + ' - ' + this.class2_name} />
 
               <GeneralInput 
+                value={this.form_data.name_value}
                 label='三级类别名' max_length={64} 
                 exclude_str=')(#'
                 onEndEditing={(isValid, value) => {
@@ -123,7 +135,9 @@ export default class AddClass3Form extends Component {
                 }} />
 
               <ParagraphInput 
+                value={this.form_data.description_value}
                 label='描述' allow_empty={true}
+                hint='暂时没用'
                 onEndEditing={(isValid, value) => {
                   this.form_data.description_comFlag = isValid;
                   this.form_data.description_value = value;

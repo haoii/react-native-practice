@@ -12,6 +12,7 @@ import DateInput from '../../forms/DateInput';
 import ChooseOneInput from '../../forms/ChooseOneInput';
 import InputPlaceholder from '../../forms/InputPlaceholder';
 import ParagraphInput from '../../forms/ParagraphInput';
+import Label from '../../forms/Label';
 
 import Dimensions from 'Dimensions';
 
@@ -25,13 +26,20 @@ export default class CollectionFromCustomerForm extends Component {
     super(props);
 
     this.ready_to_commit = false;
-    this.customers_data = [];
-    this._initCustomerNameData();
+    
+    this.specified_customer = this.props.navigation.getParam('specified_customer', '');
+    let customer_name_comFlag = true;
+    if (!this.specified_customer) {
+      customer_name_comFlag = false;
+      
+      this.customers_data = [];
+      this._initCustomerNameData();
+    }
 
     this.state = { 
 
-      customer_name_value: '',
-      customer_name_comFlag: false,
+      customer_name_value: this.specified_customer,
+      customer_name_comFlag: customer_name_comFlag,
 
       amount_value: '',
       amount_comFlag: false,
@@ -50,15 +58,28 @@ export default class CollectionFromCustomerForm extends Component {
   }
 
   _initCustomerNameData = () => {
-    fetch(URL.customers)
+    fetch(URL.customers_table_by_date, {credentials: 'same-origin'})
       .then(response => response.json())
       .then(responseJson => {
-        let arrData = responseJson.data;
-        this.customers_data = arrData.map(item => item.name + '(' + item.address + ')')
-        this.setState({customers_data_ready:true});
+        if (responseJson.msg === 'success') {
+          if (responseJson.data.length === 0) {
+            alert('还没有客户数据~');
+            this.props.navigation.goBack();
+          } else {
+            this.customers_data = responseJson.data;
+            this.setState({customers_data_ready:true});
+          }
+        } else if (responseJson.msg === 'not_logged_in') {
+          alert('您还没有登录~');
+          this.props.navigation.goBack();
+        } else {
+          alert('出现未知错误');
+          this.props.navigation.goBack();
+        }
 
       }).catch(error => {
-        alert(error);
+        alert('服务器出错了');
+        this.props.navigation.goBack();
       });
   }
 
@@ -76,15 +97,24 @@ export default class CollectionFromCustomerForm extends Component {
     fetch(URL.submit_collect_from_customer,{
       method:'POST',
       body:formData,
+      credentials: 'same-origin',
     })
-    .then((response) => response.text())
-    .then((ret)=>{
-      if (ret !== 'success')
-        alert(ret);
-      else
-        this.props.navigation.goBack();
-    })
-    .catch((error)=>{alert(error)});
+    .then((response) => response.json())
+    .then((responseJson)=>{
+      if (responseJson.msg === 'success') {
+        this.props.navigation.navigate('MainBottomTab');
+      }  else if (responseJson.msg === 'not_logged_in') {
+        alert('您还没有登录~');
+        this.props.navigation.navigate('MainBottomTab');
+      } else {
+        alert('出现未知错误');
+        this.props.navigation.navigate('MainBottomTab');
+      }
+
+    }).catch((error) => {
+      alert('服务器出错了');
+      // this.props.navigation.navigate('MainBottomTab');
+    });
   }
 
   _checkComplete = () => {
@@ -105,7 +135,7 @@ export default class CollectionFromCustomerForm extends Component {
 
         <View style={styles.headerContainer}>
           <TouchableHighlight style={styles.cancelBtn}
-            onPress={() => this.props.navigation.navigate('MainBottomTab')}>
+            onPress={() => this.props.navigation.goBack()}>
             <Text style={styles.cancelText}>取消</Text>
           </TouchableHighlight>
 
@@ -118,16 +148,45 @@ export default class CollectionFromCustomerForm extends Component {
           <ScrollView contentContainerStyle={styles.ScrollViewStyle}>
             <View style={styles.Canvas}>
 
-            {!this.state.customers_data_ready
-              ? <InputPlaceholder label='客户名' message='正在获取客户列表...' />
-              : <ChooseOneInput 
-                  label='客户名' 
-                  data={this.customers_data}
-                  onEndEditing={(num) => {
-                    this.setState({
-                      customer_name_comFlag: true,
-                      customer_name_value: num[0],
-                    });}}/>}
+              {/* {!this.state.customers_data_ready
+                ? <InputPlaceholder label='客户名' message='正在获取客户列表...' />
+                : <ChooseOneInput 
+                    label='客户名' 
+                    data={this.customers_data}
+                    wheelFlex={[2, 1, 8]}
+                    showLastData={true}
+                    onEndEditing={(num) => {
+                      this.setState({
+                        customer_name_comFlag: true,
+                        customer_name_value: num[2],
+                      });}}/>} */}
+
+              {(() => {
+                if (this.specified_customer) {
+                  return (
+                    <Label label={this.specified_customer} />
+                  );
+                } else {
+                  if (!this.state.customers_data_ready) {
+                    return (
+                      <InputPlaceholder label='客户名' message='正在获取客户列表...' />
+                    );
+                  } else {
+                    return (
+                      <ChooseOneInput 
+                        label='客户名' 
+                        data={this.customers_data}
+                        wheelFlex={[2, 1, 8]}
+                        showLastData={true}
+                        onEndEditing={(num) => {
+                          this.setState({
+                            customer_name_comFlag: true,
+                            customer_name_value: num[2],
+                          });}}/>
+                    );
+                  }
+                }
+              })()}
               
               <GeneralInput 
                 label='金额' placeholder='0.00' unit='元' 

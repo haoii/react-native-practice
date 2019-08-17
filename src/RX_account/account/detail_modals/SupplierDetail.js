@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TextInput, TouchableHighlight,
           } from 'react-native';
 
 import SupplierDetailMaterials from './SupplierDetailMaterials';
+import NavigationHeader from '../../baseComponent/NavigationHeader';
 
 import Dimensions from 'Dimensions';
 
@@ -13,12 +14,6 @@ const size = {
 };
 
 export default class SupplierDetail extends Component {
-  static navigationOptions = ({ navigation }) => {
-    return {
-      title: '                      材料商',
-    };
-  };
-
   static defaultProps = {
   }
 
@@ -37,36 +32,56 @@ export default class SupplierDetail extends Component {
     let expense_paid_pixel = (supplier.expense_paid / supplier.total_expense) * total_expense_pixel;
 
     return (
-      <View style={styles.container}>
-        <View style={styles.summarizeView}>
-          <Text style={styles.titleText}>{supplier.name}</Text>
-          <Text style={styles.infoText}>地址：{supplier.address}</Text>
-          <Text style={styles.infoText}>编号：{supplier.id}</Text>
-          <Text style={styles.infoText}>电话：{supplier.phone}</Text>
+      <View style={styles.mainContainer}>
+        <NavigationHeader navigation={this.props.navigation} 
+          title='材料商'
+          operations={{
+            '添加出售的材料': () => {
+              this.props.navigation.push('AddMaterialInSupplier', {
+                supplier: supplier,
+              });
+            },
+          }}
+        />
 
-        
-          <View style={styles.progressBarView}>
-            <View style={[styles.progressBarBase, {width:total_expense_pixel, backgroundColor:'red'}]}></View>
-            <View style={[styles.progressBar, {width:expense_paid_pixel, backgroundColor:'blue'}]}></View>
-          </View>
+        <View style={styles.container}>
+          
 
-          <View style={styles.detailView}>
-            <Text style={[styles.minorText, {color:'blue'}]}>已支付</Text>
-            <Text style={styles.minorText}>/</Text>
-            <Text style={[styles.minorText, {color:'red'}]}>开销</Text>
-            <Text style={styles.minorText}>：</Text>
-            <Text style={styles.minorText}>
-              {Math.floor(supplier.expense_paid)}/{Math.floor(supplier.total_expense)}
-            </Text>
+          <View style={styles.summarizeView}>
+            <Text style={styles.titleText}>{supplier.name}</Text>
+            <Text style={styles.infoText}>地址：{supplier.address}</Text>
+            <Text style={styles.infoText}>编号：{supplier.id}</Text>
+            <Text style={styles.infoText}>电话：{supplier.phone}</Text>
+
+          
+            <View style={styles.progressBarView}>
+              <View style={[styles.progressBarBase, {width:total_expense_pixel, backgroundColor:'red'}]}></View>
+              <View style={[styles.progressBar, {width:expense_paid_pixel, backgroundColor:'blue'}]}></View>
+            </View>
+
+            <View style={styles.detailView}>
+              <Text style={[styles.minorText, {color:'blue'}]}>已支付</Text>
+              <Text style={styles.minorText}>/</Text>
+              <Text style={[styles.minorText, {color:'red'}]}>开销</Text>
+              <Text style={styles.minorText}>：</Text>
+              <Text style={styles.minorText}>
+                {Math.floor(supplier.expense_paid)}/{Math.floor(supplier.total_expense)}
+              </Text>
+            </View>
           </View>
+          <Text style={styles.materialTitleText}>出售的材料</Text>
+          <SupplierDetailMaterials supplier_id={supplier.id} /> 
         </View>
-        <Text style={styles.materialTitleText}>出售的材料</Text>
-        <SupplierDetailMaterials supplier_id={supplier.id} /> 
       </View>);
   }
 }
 
 const styles = StyleSheet.create({
+  mainContainer:{
+    height:size.height,
+    backgroundColor: '#fff',
+    justifyContent:'flex-start'
+  },
   container: {
     paddingTop:15,
   },

@@ -79,6 +79,10 @@ const styles = StyleSheet.create({
   inputItemInnerView: {
     flexDirection:'row',
     alignItems:'center',
+    minWidth:50,
+    backgroundColor:'#e0e0e0',
+    borderRadius:5,
+    height:20,
   },
 
   fontMain: {
@@ -86,13 +90,13 @@ const styles = StyleSheet.create({
   },
   fontChosen: {
     fontSize:14,
-    backgroundColor:'#d3d3d3',
-    borderRadius:5,
+    
   },
   touchableView: {
-    minWidth:100,
+    paddingVertical:5,
     flexDirection:'row',
     alignItems:'center',
+    
   },
 
 });

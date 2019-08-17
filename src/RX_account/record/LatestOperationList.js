@@ -1,7 +1,10 @@
 
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, 
-        FlatList, Image } from 'react-native';
+        FlatList, Image, Modal } from 'react-native';
+import RNFetchBlob from "react-native-fetch-blob";
+import Share from 'react-native-share';
+import ImageViewer from 'react-native-image-zoom-viewer';
 
 import {ScreenSize} from '../Config';
 
@@ -59,6 +62,9 @@ export default class LatestOperationList extends Component {
     ];
 
     this.state = { 
+      imageModalVisible: false,
+      images: [],
+      cur_img_index: 0,
     };
   }
 
@@ -67,7 +73,9 @@ export default class LatestOperationList extends Component {
       return (
         <View style={{flexDirection:'row'}}> 
           <Text style={styles.operationText}>添加了新客户：</Text>
-          <Text style={[styles.operationText, {textDecorationLine:'underline', color:'#181880'}]}>{item.data.name}</Text>
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('CustomerDetail',{customer_id:2})}>
+            <Text style={[styles.operationText, {textDecorationLine:'underline', color:'#181880'}]}>{item.data.name}</Text>
+          </TouchableOpacity>
         </View> 
       );
     } else if (item.type == 'collect_from_customer') {
@@ -83,7 +91,10 @@ export default class LatestOperationList extends Component {
       return (
         <View style={{flexDirection:'row'}}> 
           <Text style={styles.operationText}>添加了材料订单：</Text>
-          <Text style={[styles.operationText, {textDecorationLine:'underline', color:'#181880'}]}>订单号{item.data.order_id}</Text>
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('MaterialOrderDetail',{order_id:103})}>
+            <Text style={[styles.operationText, {textDecorationLine:'underline', color:'#181880'}]}>订单号{item.data.order_id}</Text>
+          </TouchableOpacity>
+          
         </View> 
       );
     }
@@ -91,15 +102,30 @@ export default class LatestOperationList extends Component {
 
   _postImages = (urls) => {
     const urlList = urls.split(';');
-    var images = [];
-    urlList.map(v => {
+    var render_images = [];
+    let images = urlList.map(uri => ({
+      url:uri, 
+      props: {}
+    }));
+    urlList.map((v,i) => {
       v = v.trim();
       if (v) {
-        images.push(<Image source={{uri:v}} style={{width:120,height:120,borderRadius:0,marginRight:6}} />)
+        render_images.push(
+          <TouchableOpacity onPress={() => {
+            this.setState({
+              images: images,
+              cur_img_index: i,
+              imageModalVisible: true,
+            });
+          }}>
+            <Image source={{uri:v}} style={{width:120,height:120,borderRadius:0,marginRight:6}} />
+          </TouchableOpacity>
+          
+        );
       }
     })
 
-    return images;
+    return render_images;
   }
 
 
@@ -139,9 +165,54 @@ export default class LatestOperationList extends Component {
     )
   }
 
+  _share = (url) => {
+
+    const fs = RNFetchBlob.fs;
+    let imagePath = null;
+
+    RNFetchBlob.config({
+      fileCache: true,
+    })
+      .fetch("GET", url,{})
+      .then(resp => {
+        imagePath = resp.path();
+        return resp.readFile('base64');
+      })
+      .then(async base64data => {
+        base64data = `data:image/jpeg;base64,` + base64data;
+
+        await Share.open({
+          title: '分享',
+          type: 'image/jpeg',
+          url: base64data,
+        });
+        await fs.unlink(imagePath);
+      });
+      
+  }
+
   render() {
     return (
       <View>
+        <Modal
+          transparent={false}
+          visible={this.state.imageModalVisible}
+          onRequestClose={() => this.setState({imageModalVisible:false})}
+        >
+          <ImageViewer imageUrls={this.state.images} 
+            index={this.state.cur_img_index}
+            enableSwipeDown={true}
+            onSave={(url) => {
+              this._share(url);
+            }}
+            menuContext={{
+              saveToLocal: '分享', 
+              cancel: '取消'
+            }}
+          />
+        </Modal>
+
+
         <FlatList
           data={this.latestOperations}
           // onRefresh={this._refreshDate}

@@ -18,6 +18,7 @@ export default class ChooseOneInput extends Component {
     data: [0, 1, 2],
     pickerTitleText: '选择',
     wheelFlex: [1,1,1],
+    showLastData: false,
 
     onEndEditing: null,
   }
@@ -62,7 +63,12 @@ export default class ChooseOneInput extends Component {
           </View>
 
           <TouchableHighlight style={styles.touchableView} onPress={this._chosenPopup}>
-            <Text>{this.state.chosen_data.join(' - ')}</Text>
+            <Text>{(() => {
+              if (this.props.showLastData)
+                return this.state.chosen_data[2];
+              else
+                return this.state.chosen_data.join(' - ');
+            })()}</Text>
           </TouchableHighlight>
 
         </View>

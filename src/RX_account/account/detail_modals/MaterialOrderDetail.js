@@ -14,11 +14,6 @@ const size = {
 };
 
 export default class MaterialOrderDetail extends Component {
-  static navigationOptions = ({ navigation }) => {
-    return {
-      title: '                    订单详情',
-    };
-  };
 
   static defaultProps = {
   }
@@ -26,10 +21,43 @@ export default class MaterialOrderDetail extends Component {
   constructor(props) {
     super(props);
 
-    this.order = this.props.navigation.getParam('order'); 
+    this.order = this.props.navigation.getParam('order', null);
+    let data_ready = true; 
+    if (!this.order) {
+      data_ready = false;
+      let order_id = this.props.navigation.getParam('order_id', null);
+      this._getOrderData(order_id);
+    }
 
     this.state = { 
+      data_ready: data_ready,
     };
+  }
+
+  _getOrderData = (order_id) => {
+
+    let formData = new FormData();
+    formData.append("id", order_id);
+
+    fetch(URL.material_order_by_id, {
+      method:'POST',
+      body:formData,
+      credentials: 'same-origin',
+    }).then(response => response.json())
+      .then(responseJson => {
+        if (responseJson.msg === 'success') {
+          this.order = responseJson.data;
+          this.setState({data_ready:true});
+        } else if (responseJson.msg === 'not_logged_in') {
+          alert('您还没有登录~');
+          this.props.navigation.navigate('LoginScreen');
+        } else {
+          alert('出现未知错误');
+        }
+
+      }).catch((error) => {
+        alert('服务器出错了');
+      });
   }
 
   _renderDemandListEachCutomer = (material_in_customer_in_order) => {
@@ -88,10 +116,6 @@ export default class MaterialOrderDetail extends Component {
   }
 
   render() {
-    const order = this.order; 
-    const customer_in_order = order.customer_in_order;
-    const from_in_order = order.from_in_order;
-    const material_in_order = order.material_in_order;
 
     return (
       <View style={{height:size.height}}>
@@ -99,89 +123,104 @@ export default class MaterialOrderDetail extends Component {
           title='材料订单'
           operations={{
             '订单单据': () => {
-              this.props.navigation.push('MaterialOrderReceiptsDetail', {
-                order: this.order,
-              });
+              if (this.order)
+                this.props.navigation.push('MaterialOrderReceiptsDetail', {
+                  order: this.order,
+                });
             },
             '删除': () => {alert('此功能等待开发。')},
           }}
         />
           
-        <ScrollView contentContainerStyle={styles.container}>
-          <View style={styles.summarizeView}>
-            <Text style={styles.titleText}>订单号：{order.id}</Text>
-            <Text style={styles.infoText}>负责人：{order.clerk}</Text>
-            <Text style={styles.infoText}>日期：{order.order_datetime}</Text>
-            <Text style={styles.infoText}>备注：{order.remark}</Text>
-
-          </View>
-
-          <View style={styles.tableContainer}>
-            <Text style={styles.level2TitleText}>各工地材料需求单</Text>
-
-            <View style={styles.TableRowItemContainer}>
-              <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
-              <Text style={[styles.orderItemHeaderText, {flex: 1}]}>材料</Text>
-              <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
-            </View>
-
-            {Object.keys(customer_in_order).map(customer_address => {
+        {this.state.data_ready
+          ? (() => {
+              const order = this.order; 
+              const customer_in_order = order.customer_in_order;
+              const from_in_order = order.from_in_order;
+              const material_in_order = order.material_in_order;
               return (
-                <View>
-                  <Text style={styles.tableInnerTitleText}>{customer_address}</Text>
-                  {this._renderDemandListEachCutomer(customer_in_order[customer_address].material_in_customer_in_order)}
-                </View>
+                <ScrollView contentContainerStyle={styles.container}>
+                  <View style={styles.summarizeView}>
+                    <Text style={styles.titleText}>订单号：{order.id}</Text>
+                    <Text style={styles.infoText}>负责人：{order.clerk}</Text>
+                    <Text style={styles.infoText}>日期：{order.order_datetime}</Text>
+                    <Text style={styles.infoText}>备注：{order.remark}</Text>
+
+                  </View>
+
+                  <View style={styles.tableContainer}>
+                    <Text style={styles.level2TitleText}>各工地材料需求单</Text>
+
+                    <View style={styles.TableRowItemContainer}>
+                      <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
+                      <Text style={[styles.orderItemHeaderText, {flex: 1}]}>材料</Text>
+                      <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
+                    </View>
+
+                    {Object.keys(customer_in_order).map(customer_address => {
+                      return (
+                        <View>
+                          <Text style={styles.tableInnerTitleText}>{customer_address}</Text>
+                          {this._renderDemandListEachCutomer(customer_in_order[customer_address].material_in_customer_in_order)}
+                        </View>
+                      );
+                    })}
+
+                  </View>
+
+                  <View style={styles.tableContainer}>
+                    <Text style={styles.level2TitleText}>材料来源</Text>
+
+                    <View style={styles.TableRowItemContainer}>
+                      <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
+                      <Text style={[styles.orderItemHeaderText, {flex: 1}]}>来源</Text>
+                      <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>单价</Text>
+                      <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
+                      <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>价格</Text>
+                    </View>
+
+                    {Object.keys(material_in_order).map(material => {
+                      let m_info = material_in_order[material];
+                      return (
+                        <View>
+                          <Text style={styles.tableInnerTitleText}>{material} (合计 {m_info.quantity}{m_info.unit} {Math.floor(m_info.expense)}元)</Text>
+                          {this._renderMaterialInOrder(m_info.from_in_material_in_order, m_info.unit)}
+                        </View>
+                      );
+                    })}
+
+                  </View>
+
+                  <View style={styles.tableContainer}>
+                    <Text style={styles.level2TitleText}>各材料商材料采购单</Text>
+
+                    <View style={styles.TableRowItemContainer}>
+                      <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
+                      <Text style={[styles.orderItemHeaderText, {flex: 1}]}>材料</Text>
+                      <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>单价</Text>
+                      <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
+                      <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>价格</Text>
+                    </View>
+
+                    {Object.keys(from_in_order).map(from => {
+                      return (
+                        <View>
+                          <Text style={styles.tableInnerTitleText}>{from} (合计{Math.floor(from_in_order[from].expense)}元)</Text>
+                          {this._renderPurchaseListEachSupplier(from_in_order[from].material_in_from_in_order)}
+                        </View>
+                      );
+                    })}
+
+                  </View>
+
+                </ScrollView>
               );
-            })}
-
-          </View>
-
-          <View style={styles.tableContainer}>
-            <Text style={styles.level2TitleText}>材料来源</Text>
-
-            <View style={styles.TableRowItemContainer}>
-              <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
-              <Text style={[styles.orderItemHeaderText, {flex: 1}]}>来源</Text>
-              <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>单价</Text>
-              <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
-              <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>价格</Text>
-            </View>
-
-            {Object.keys(material_in_order).map(material => {
-              let m_info = material_in_order[material];
-              return (
-                <View>
-                  <Text style={styles.tableInnerTitleText}>{material} (合计 {m_info.quantity}{m_info.unit} {Math.floor(m_info.expense)}元)</Text>
-                  {this._renderMaterialInOrder(m_info.from_in_material_in_order, m_info.unit)}
-                </View>
-              );
-            })}
-
-          </View>
-
-          <View style={styles.tableContainer}>
-            <Text style={styles.level2TitleText}>各材料商材料采购单</Text>
-
-            <View style={styles.TableRowItemContainer}>
-              <Text style={[styles.orderItemHeaderText, {width: 35}]}>序号</Text>
-              <Text style={[styles.orderItemHeaderText, {flex: 1}]}>材料</Text>
-              <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>单价</Text>
-              <Text style={[styles.orderItemHeaderText, {width: 60, textAlign:'right'}]}>数量</Text>
-              <Text style={[styles.orderItemHeaderText, {width: 55, textAlign:'right'}]}>价格</Text>
-            </View>
-
-            {Object.keys(from_in_order).map(from => {
-              return (
-                <View>
-                  <Text style={styles.tableInnerTitleText}>{from} (合计{Math.floor(from_in_order[from].expense)}元)</Text>
-                  {this._renderPurchaseListEachSupplier(from_in_order[from].material_in_from_in_order)}
-                </View>
-              );
-            })}
-
-          </View>
-
-        </ScrollView>
+            })()
+            
+          : <View>
+              <Text>正在加载...</Text>
+            </View>}
+        
       </View>);
   }
 }

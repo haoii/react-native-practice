@@ -28,6 +28,8 @@ import MaterialOrderReceiptsDetail from './account/detail_modals/MaterialOrderRe
 import AddClass1Form from './account/display_list/MaterialClassesManage/AddClass1Form';
 import AddClass2Form from './account/display_list/MaterialClassesManage/AddClass2Form';
 import AddClass3Form from './account/display_list/MaterialClassesManage/AddClass3Form';
+import AddMaterial from './account/display_list/MaterialManage/AddMaterial';
+import AddMaterialInSupplier from './account/display_list/SuppierManage/AddMaterialInSupplier';
 
 import LoginScreen from './me/LoginScreen';
 
@@ -139,9 +141,9 @@ export default createAppContainer(createStackNavigator(
     
     SupplierDetail: {
       screen: SupplierDetail,
-      // navigationOptions: {
-      //   header: null
-      // },
+      navigationOptions: {
+        header: null
+      },
     },
     MaterialOrderDetail: {
       screen: MaterialOrderDetail,
@@ -187,6 +189,18 @@ export default createAppContainer(createStackNavigator(
     },
     AddClass3Form: {
       screen: AddClass3Form,
+      navigationOptions: {
+        header: null
+      },
+    },
+    AddMaterial: {
+      screen: AddMaterial,
+      navigationOptions: {
+        header: null
+      },
+    },
+    AddMaterialInSupplier: {
+      screen: AddMaterialInSupplier,
       navigationOptions: {
         header: null
       },

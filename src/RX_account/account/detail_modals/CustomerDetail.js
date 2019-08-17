@@ -17,8 +17,44 @@ export default class CustomerDetail extends Component {
 
   constructor(props) {
     super(props);
+
+    this.customer = this.props.navigation.getParam('customer', null);
+    let data_ready = true; 
+    if (!this.customer) {
+      data_ready = false;
+      let customer_id = this.props.navigation.getParam('customer_id', null);
+      this._getCustomerData(customer_id);
+    }
+
     this.state = { 
+      data_ready: data_ready,
     };
+  }
+
+  _getCustomerData = (customer_id) => {
+
+    let formData = new FormData();
+    formData.append("id", customer_id);
+
+    fetch(URL.customer_by_id, {
+      method:'POST',
+      body:formData,
+      credentials: 'same-origin',
+    }).then(response => response.json())
+      .then(responseJson => {
+        if (responseJson.msg === 'success') {
+          this.customer = responseJson.data;
+          this.setState({data_ready:true});
+        } else if (responseJson.msg === 'not_logged_in') {
+          alert('您还没有登录~');
+          this.props.navigation.navigate('LoginScreen');
+        } else {
+          alert('出现未知错误');
+        }
+
+      }).catch((error) => {
+        alert('服务器出错了');
+      });
   }
 
   _deleteCustomer = (id) => {
@@ -48,21 +84,19 @@ export default class CustomerDetail extends Component {
     });
   }
 
-  _confirmDeleteCustomer = (id) => {
+  _confirmDeleteCustomer = () => {
     Alert.alert(
       null,
       '删除客户后不可恢复，确认删除？',
       [
         {text: '放弃删除', onPress: () => {}, style: 'cancel'},
-        {text: '确认删除', onPress: () => {this._deleteCustomer(id);}},
+        {text: '确认删除', onPress: () => {this._deleteCustomer(this.customer.id);}},
       ],
       { cancelable: false }
     );
   }
 
   render() {
-    const { navigation } = this.props;
-    const customer = navigation.getParam('customer', null);
 
     return (
       <View style={styles.container}>
@@ -70,21 +104,42 @@ export default class CustomerDetail extends Component {
           title='客户'
           operations={{
             '编辑': () => {
-              this.props.navigation.push('AddCustomerForm', {
-                customerToUpdate: customer,
-              });
+              if (this.customer)
+                this.props.navigation.push('AddCustomerForm', {
+                  customerToUpdate: this.customer,
+                });
             },
-            '删除': () => this._confirmDeleteCustomer(customer.id),
+            '收工程款': () => {
+              if (this.customer)
+                this.props.navigation.push('CollectionFromCustomerForm', {
+                  specified_customer: this.customer.name + '(' + this.customer.address + ')',
+                });
+            },
+            '删除': () => {
+              if (this.customer)
+                this._confirmDeleteCustomer();
+            },
           }}
         />
 
-        <View style={styles.summarizeView}>
-          <Text style={styles.titleText}>{customer.name}</Text>
-          <Text style={styles.infoText}>地址：{customer.address}</Text>
-          <Text style={styles.infoText}>编号：{customer.id}</Text>
-          <Text style={styles.infoText}>电话：{customer.phone}</Text>
+        {this.state.data_ready
+          ? (() => {
+              let customer = this.customer;
+              return (
+                <View style={styles.summarizeView}>
+                  <Text style={styles.titleText}>{customer.name}</Text>
+                  <Text style={styles.infoText}>地址：{customer.address}</Text>
+                  <Text style={styles.infoText}>编号：{customer.id}</Text>
+                  <Text style={styles.infoText}>电话：{customer.phone}</Text>
 
-        </View>
+                </View>
+              );
+            })()
+          : <View>
+              <Text>正在加载...</Text>
+            </View>}
+
+        
       </View>
 
     );

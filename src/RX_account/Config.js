@@ -1,7 +1,7 @@
 
 import Dimensions from 'Dimensions';
 
-const host_url = 'http://192.168.0.102:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
+const host_url = 'http://192.168.0.104:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
 const account_url = host_url + 'account/';
 const static_url = host_url + 'static/';
 const user_url = host_url + 'user/';
@@ -21,8 +21,12 @@ const delete_material_class1_url = account_url + 'delete_material_class1/';
 const delete_material_class2_url = account_url + 'delete_material_class2/';
 const delete_material_class3_url = account_url + 'delete_material_class3/';
 const materials_url = account_url + 'materials/';
+const add_material_url = account_url + 'add_material/';
 const supplier_detail_url = account_url + 'supplier_detail/';
+const add_material_in_supplier_url = account_url + 'add_material_in_supplier/';
 const material_orders_url = account_url + 'material_orders/';
+const material_order_by_id_url = account_url + 'material_order_by_id/';
+const customer_by_id_url = account_url + 'customer_by_id/';
 const froms_by_material_url = account_url + 'froms_by_material/';
 const add_material_order_url = account_url + 'add_material_order/';
 const warehouses_url = account_url + 'warehouses/';
@@ -52,8 +56,12 @@ export default URL = {
   delete_material_class2: delete_material_class2_url,
   delete_material_class3: delete_material_class3_url,
   materials: materials_url,
+  add_material: add_material_url,
   supplier_detail: supplier_detail_url,
+  add_material_in_supplier: add_material_in_supplier_url,
   material_orders: material_orders_url,
+  material_order_by_id: material_order_by_id_url,
+  customer_by_id: customer_by_id_url,
   froms_by_material: froms_by_material_url,
   add_material_order: add_material_order_url,
   warehouses: warehouses_url,

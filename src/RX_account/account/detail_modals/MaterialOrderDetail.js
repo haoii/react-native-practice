@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight, 
-        ScrollView } from 'react-native';
+        ScrollView, Image } from 'react-native';
 
 import SupplierDetailMaterials from './SupplierDetailMaterials';
 import NavigationHeader from '../../baseComponent/NavigationHeader';
@@ -211,6 +211,37 @@ export default class MaterialOrderDetail extends Component {
                       );
                     })}
 
+                  </View>
+
+                  <Text style={[styles.level2TitleText, {backgroundColor:'white'}]}>图片</Text>
+                  <View style={{alignItems:'center', marginBottom:30}}>
+                    {(() => {
+                      let remark_images_urls = [];
+                      if (order.remark_images_str) {
+                        remark_images_urls = order.remark_images_str.slice(0,-1).split(';').map(url => {
+                          return URL.static_dir + url;
+                        });
+                      } 
+                  
+                      // let index = 0;
+                      // remark_images_urls.map((uri) => {
+                      //   let tmp_index = index;
+                      //   Image.getSize(uri,(width, height) => {
+                      //     let remark_images_heights = this.state.remark_images_heights;
+                      //     remark_images_heights[tmp_index] = Math.round(320 * height / width);
+                      //     this.setState({remark_images_heights:remark_images_heights});
+                      //   });
+                      //   index++
+                      // });
+
+                      let renderItems = [];
+                      remark_images_urls.map(url => {
+                        renderItems.push(
+                          <Image source={{uri:url}} style={{width:260,height:260,marginTop:5}} />
+                        );
+                      });
+                      return renderItems;
+                    })()}
                   </View>
 
                 </ScrollView>

@@ -26,7 +26,7 @@ export default class MeScreen extends Component {
   render() {
     return (
       <View style={{width:ScreenSize.width,height:ScreenSize.height-75,backgroundColor:'#f4f4f4'}}>
-        <AvatarListItem></AvatarListItem>
+        <AvatarListItem navigation={this.props.navigation} ></AvatarListItem>
 
         <View style={{height:10}}></View>
         <View style={styles.listGroupView}>

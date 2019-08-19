@@ -29,8 +29,10 @@ export default class LoginScreen extends Component {
     fetch(URL.logout,{credentials: 'same-origin'})
     .then((response) => response.json())
     .then((ret)=>{
-      if (ret.msg === 'success')
+      if (ret.msg === 'success') {
+        DeviceStorage.delete('user_info');
         alert('退出成功');
+      }
       else 
         alert('出现未知错误');
     })
@@ -55,9 +57,11 @@ export default class LoginScreen extends Component {
       if (ret.msg === 'success') {
         this.setState({hint:''});
 
-        DeviceStorage.save('user_info', {name:'高流'});
+        // DeviceStorage.save('user_info', {name:ret.data.name, avatar_url: ret.data.avatar_url});
+        DeviceStorage.save('user_info', ret.data);
 
         this.props.navigation.goBack();
+        // this.props.navigation.navigate('MainBottomTab', {refreshLoginStatus: true});
       } else if (ret.msg === 'wrong_name_or_password') {
         this.setState({hint:'用户名或密码错误'});
       } else {

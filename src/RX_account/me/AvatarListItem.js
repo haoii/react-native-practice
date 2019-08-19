@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, 
         Image } from 'react-native';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import DeviceStorage from '../DeviceStorage';
 
 export default class AvatarListItem extends Component {
   static defaultProps = {
@@ -10,33 +11,52 @@ export default class AvatarListItem extends Component {
 
   constructor(props) {
     super(props);
+
+    this.user_info = null;
+    DeviceStorage.get('user_info').then((info) => {
+      if (info) {
+        this.user_info = info;
+        this.setState({user_info_ready:true});
+      }
+    });
+
     this.state = { 
+      user_info_ready: false,
     };
   }
 
 
   render() {
+
     return (
-      <TouchableOpacity style={styles.container}>
-        {/*  http://pic.616pic.com/ys_img/00/26/21/E48DIK1mTU.jpg*/}
-        <View style={styles.iconView}>
-          <Image source={{uri:'http://img.wxcha.com/file/201807/13/9bbc369f6e.jpg'}} style={{width:80,height:80,borderRadius:10}} />
-        </View>
-
-        <View style={styles.itemContainer}>
-          <Text style={styles.textTitle}>程宁宁</Text>
-
-          <View style={styles.DataContainer}>
-            
-            <Text style={styles.textData}>查看或编辑个人信息</Text>
-            <View style={styles.iconArrowView}>
-              <IconMaterialCommunityIcons name="chevron-right" size={25}/>
-            </View>
-          </View>
-                      
-        </View>
-
-      </TouchableOpacity>);
+      <View>
+        {this.state.user_info_ready
+          ? <TouchableOpacity style={styles.container}>
+              <View style={styles.iconView}>
+                  <Image source={{uri:URL.static_dir + this.user_info.avatar_url}} style={{width:80,height:80,borderRadius:10}} />
+              </View>
+      
+              <View style={styles.itemContainer}>
+                <View style={{flexDirection:'row', alignItems:'flex-end'}}>
+                  <Text style={styles.textTitle}>{this.user_info.name}</Text>
+                  <Text style={styles.textData}>（{this.user_info.role_name}）</Text>
+                </View>
+                
+                <View style={styles.DataContainer}>
+                  
+                  <Text style={styles.textData}>查看或编辑个人信息</Text>
+                  
+                  <View style={styles.iconArrowView}>
+                    <IconMaterialCommunityIcons name="chevron-right" size={25}/>
+                  </View>
+                </View>
+                            
+              </View>
+      
+            </TouchableOpacity>
+          : <Text>请登录...</Text>}
+      </View>
+      );
   }
 }
 

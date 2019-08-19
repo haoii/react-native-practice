@@ -60,8 +60,9 @@ export default class PublishPostScreen extends Component {
 
     ImagePicker.openPicker({
       multiple: true,
-      waitAnimationEnd: false,
-      includeExif: true,
+      // waitAnimationEnd: false,
+      // includeExif: true,
+      compressImageMaxWidth:1080,
       forceJpg: true,
     }).then(images => {
       this.setState({

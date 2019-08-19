@@ -14,6 +14,7 @@ import DateTimeInput from '../../forms/DateTimeInput';
 import ChooseOneInput from '../../forms/ChooseOneInput';
 import InputPlaceholder from '../../forms/InputPlaceholder';
 import ParagraphInput from '../../forms/ParagraphInput';
+import ImageInput from '../../forms/ImageInput';
 import DeviceStorage from '../../DeviceStorage';
 
 import Dimensions from 'Dimensions';
@@ -48,6 +49,8 @@ export default class PlaceOrderForm extends Component {
     this.state = {   
       remark_value: '',
       remark_comFlag: true,
+
+      remark_imgs:[],
       
       order_datetime: this._getCurDate(),
 
@@ -150,6 +153,7 @@ export default class PlaceOrderForm extends Component {
       new_order_id: this.new_order_id,
       user_info: this.user_info,
       remark: this.state.remark_value,
+      remark_imgs:this.state.remark_imgs,
     });
     return;
 
@@ -670,6 +674,11 @@ export default class PlaceOrderForm extends Component {
                           remark_comFlag:isValid,
                           remark_value:num,
                         });}} />   
+
+                    <ImageInput 
+                      onEndEditing={(urls) => {
+                        this.setState({remark_imgs:urls})
+                      }}/>
 
                   </View>  
 

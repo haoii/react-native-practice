@@ -32,6 +32,7 @@ export default class OrderReceiptsGenerator  extends Component {
       new_order_id: this.props.navigation.getParam('new_order_id'),
       user_info: this.props.navigation.getParam('user_info'),
       remark: this.props.navigation.getParam('remark'),
+      remark_imgs: this.props.navigation.getParam('remark_imgs'),
     };
 
     this.order_serial = this._getOrderSerial();
@@ -76,6 +77,11 @@ export default class OrderReceiptsGenerator  extends Component {
     Object.keys(this.state.from_purchase_sum_url).map((from) => {
       let file = {uri: this.state.from_purchase_sum_url[from], type: 'image/jpeg', name: this.order_serial + '-' + (index++) + '.jpg'};   
       formData.append('from_purchase_images', file);
+    });
+
+    this.nav_data.remark_imgs.map((url) => {
+      let file = {uri: url, type: 'image/jpeg', name: this.order_serial + '-' + (index++) + '.jpg'};   
+      formData.append('remark_images', file);
     });
     
     fetch(URL.add_material_order,{

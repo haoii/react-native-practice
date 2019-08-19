@@ -1,7 +1,7 @@
 
 import Dimensions from 'Dimensions';
 
-const host_url = 'http://192.168.0.104:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
+const host_url = 'http://172.20.10.9:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
 const account_url = host_url + 'account/';
 const static_url = host_url + 'static/';
 const user_url = host_url + 'user/';
@@ -33,6 +33,7 @@ const warehouses_url = account_url + 'warehouses/';
 const warehouse_materials_url = account_url + 'warehouse_materials/';
 const delete_customer_url = account_url + 'delete_customer/';
 const get_material_order_id_url = account_url + 'get_material_order_id/';
+const user_operations_url = account_url + 'user_operations/';
 
 const login_url = user_url + 'login/';
 const logout_url = user_url + 'logout/';
@@ -68,6 +69,7 @@ export default URL = {
   warehouse_materials: warehouse_materials_url,
   delete_customer: delete_customer_url,
   get_material_order_id: get_material_order_id_url,
+  user_operations: user_operations_url,
 
   login:login_url,
   logout:logout_url,

@@ -33,7 +33,13 @@ const warehouses_url = account_url + 'warehouses/';
 const warehouse_materials_url = account_url + 'warehouse_materials/';
 const delete_customer_url = account_url + 'delete_customer/';
 const get_material_order_id_url = account_url + 'get_material_order_id/';
+const get_memo_id_url = account_url + 'get_memo_id/';
+const get_build_record_id_url = account_url + 'get_build_record_id/';
 const user_operations_url = account_url + 'user_operations/';
+const add_memo_url = account_url + 'add_memo/';
+const add_build_record_url = account_url + 'add_build_record/';
+const buil_records_in_customer_url = account_url + 'buil_records_in_customer/';
+const collections_from_customer_by_id_url = account_url + 'collections_from_customer_by_id/';
 
 const login_url = user_url + 'login/';
 const logout_url = user_url + 'logout/';
@@ -69,7 +75,13 @@ export default URL = {
   warehouse_materials: warehouse_materials_url,
   delete_customer: delete_customer_url,
   get_material_order_id: get_material_order_id_url,
+  get_memo_id:get_memo_id_url,
+  get_build_record_id:get_build_record_id_url,
   user_operations: user_operations_url,
+  add_memo:add_memo_url,
+  add_build_record:add_build_record_url,
+  buil_records_in_customer:buil_records_in_customer_url,
+  collections_from_customer_by_id:collections_from_customer_by_id_url,
 
   login:login_url,
   logout:logout_url,

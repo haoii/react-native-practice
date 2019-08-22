@@ -121,13 +121,25 @@ export default class CustomerList extends Component {
 
             <View style={styles.detailView}>
               <View style={styles.detailLeftView}>
-                <Text style={styles.minorText}>支/开：</Text>
+
+                {/* <Text style={styles.minorText}>支/开：</Text> */}
+                <Text style={[styles.minorText, {color:'#3F51B5'}]}>支</Text>
+                <Text style={styles.minorText}>/</Text>
+                <Text style={[styles.minorText, {color:'#F44336'}]}>开</Text>
+                <Text style={styles.minorText}>：</Text>
+
                 <Text style={styles.minorText}>
                   {Math.floor(item.value.expense_paid)}/{Math.floor(item.value.total_expense)}
                 </Text>
               </View>
               <View style={styles.detailRightView}>
-                <Text style={styles.minorText}>收/报：</Text>
+
+                {/* <Text style={styles.minorText}>收/报：</Text> */}
+                <Text style={[styles.minorText, {color:'#4CAF50'}]}>收</Text>
+                <Text style={styles.minorText}>/</Text>
+                <Text style={[styles.minorText, {color:'#9E9E9E'}]}>报</Text>
+                <Text style={styles.minorText}>：</Text>
+
                 <Text style={styles.minorText}>
                   {Math.floor(item.value.price_received)}/{Math.floor(actual_price)}
                 </Text>

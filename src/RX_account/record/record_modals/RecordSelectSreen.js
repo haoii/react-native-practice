@@ -5,6 +5,8 @@ import { View, Text, StyleSheet, TextInput, TouchableHighlight, CameraRoll,
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
+import IconSimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import ImagePicker from 'react-native-image-crop-picker';
 import { Input } from 'react-native-elements';
 
@@ -57,16 +59,11 @@ export default class RecordSelectSreen extends Component {
               
             </View>
             <View style={styles.classLineContainer}>
-              <TouchableHighlight >
+              <TouchableHighlight 
+                onPress={() => this.props.navigation.navigate('AddMemo')}>
                 <View style={styles.itemTouchable}>
-                  <IconIonicons name='ios-person-add' size={40} />
-                  <Text>添加客户</Text>
-                </View>
-              </TouchableHighlight>
-              <TouchableHighlight >
-                <View style={styles.itemTouchable}>
-                  <IconEntypo name='shop' size={40} />
-                  <Text>添加材料商</Text>
+                  <IconFontAwesome name='sticky-note-o' size={35} color='#2aa2ef' />
+                  <Text>添加备忘录</Text>
                 </View>
               </TouchableHighlight>
               
@@ -111,6 +108,7 @@ export default class RecordSelectSreen extends Component {
             </View>
           </View>
         </View>
+
           
       </View>
     );

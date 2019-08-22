@@ -31,6 +31,10 @@ import AddClass3Form from './account/display_list/MaterialClassesManage/AddClass
 import AddMaterial from './account/display_list/MaterialManage/AddMaterial';
 import AddMaterialInSupplier from './account/display_list/SuppierManage/AddMaterialInSupplier';
 
+import AddMemo from './record/record_modals/AddMemo';
+import AddBuildRecord from './account/display_list/CustomerManage/AddBuildRecord';
+
+
 import LoginScreen from './me/LoginScreen';
 
 const MainBottomTab = createBottomTabNavigator(
@@ -201,6 +205,18 @@ export default createAppContainer(createStackNavigator(
     },
     AddMaterialInSupplier: {
       screen: AddMaterialInSupplier,
+      navigationOptions: {
+        header: null
+      },
+    },
+    AddMemo: {
+      screen: AddMemo,
+      navigationOptions: {
+        header: null
+      },
+    },
+    AddBuildRecord: {
+      screen: AddBuildRecord,
       navigationOptions: {
         header: null
       },

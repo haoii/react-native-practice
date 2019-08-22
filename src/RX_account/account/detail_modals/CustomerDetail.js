@@ -4,6 +4,8 @@ import { View, Text, StyleSheet, TextInput, TouchableHighlight,
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 
 import NavigationHeader from '../../baseComponent/NavigationHeader';
+import BuildRecordInCustomerList from '../display_list/CustomerManage/BuildRecordInCustomerList';
+import CollectionFromCustomerList from '../display_list/CustomerManage/CollectionFromCustomerList';
 
 import Dimensions from 'Dimensions';
 const size = {
@@ -96,6 +98,14 @@ export default class CustomerDetail extends Component {
     );
   }
 
+  _renderProgressBar = (items) => {
+    items.sort((v1,v2) => v1[0] < v2[0]? 1:-1);
+    return items.map((item) => {
+      return (
+        <View style={[styles.progressBar, {width:item[0], backgroundColor:item[1]}]}></View>
+      )});
+  }
+
   render() {
 
     return (
@@ -107,6 +117,14 @@ export default class CustomerDetail extends Component {
               if (this.customer)
                 this.props.navigation.push('AddCustomerForm', {
                   customerToUpdate: this.customer,
+                });
+            },
+            '添加施工记录': () => {
+              if (this.customer)
+                this.props.navigation.push('AddBuildRecord', {
+                  specified_customer: this.customer.name + '(' + this.customer.address + ')',
+                  specified_customer_name: this.customer.name,
+                  specified_customer_id: this.customer.id,
                 });
             },
             '收工程款': () => {
@@ -125,12 +143,66 @@ export default class CustomerDetail extends Component {
         {this.state.data_ready
           ? (() => {
               let customer = this.customer;
+
+              let total_price_pixel = size.width - 30;
+              let actual_price = customer.total_price * customer.price_discount / 10;
+              let received_price_pixel = (customer.price_received / actual_price) * total_price_pixel;
+              let expense_pixel = (customer.total_expense / actual_price) * total_price_pixel;
+              let expense_paid_pixel = (customer.expense_paid / actual_price) * total_price_pixel;
+
               return (
-                <View style={styles.summarizeView}>
-                  <Text style={styles.titleText}>{customer.name}</Text>
-                  <Text style={styles.infoText}>地址：{customer.address}</Text>
-                  <Text style={styles.infoText}>编号：{customer.id}</Text>
-                  <Text style={styles.infoText}>电话：{customer.phone}</Text>
+                <View style={styles.mainContainer}>
+                  <View style={styles.summarizeView}>
+                    <Text style={styles.titleText}>{customer.name}</Text>
+                    <Text style={styles.infoText}>地址：{customer.address}</Text>
+                    <Text style={styles.infoText}>编号：{customer.id}</Text>
+                    <Text style={styles.infoText}>电话：{customer.phone}</Text>
+                    <Text style={styles.infoText}>签单日期：{customer.sign_date}</Text>
+                    <Text style={styles.infoText}>工期：{customer.duration}</Text>
+                    <Text style={styles.infoText}>面积：{customer.area}</Text>
+                  </View>
+
+                  <View style={styles.progressBarContainer}>
+                    <View style={[styles.progressBarBase, {width:total_price_pixel, backgroundColor:'#9E9E9E'}]}></View>
+
+                    {this._renderProgressBar([[received_price_pixel, '#4CAF50'],
+                                              [expense_pixel, '#F44336'],
+                                              [expense_paid_pixel, '#3F51B5']])}
+
+                  </View>
+
+                  <View style={styles.detailView}>
+                    <View style={styles.detailLeftView}>
+
+                      {/* <Text style={styles.minorText}>支/开：</Text> */}
+                      <Text style={[styles.minorText, {color:'#3F51B5'}]}>支</Text>
+                      <Text style={styles.minorText}>/</Text>
+                      <Text style={[styles.minorText, {color:'#F44336'}]}>开</Text>
+                      <Text style={styles.minorText}>：</Text>
+
+                      <Text style={styles.minorText}>
+                        {Math.floor(customer.expense_paid)}/{Math.floor(customer.total_expense)}
+                      </Text>
+                    </View>
+                    <View style={styles.detailRightView}>
+
+                      {/* <Text style={styles.minorText}>收/报：</Text> */}
+                      <Text style={[styles.minorText, {color:'#4CAF50'}]}>收</Text>
+                      <Text style={styles.minorText}>/</Text>
+                      <Text style={[styles.minorText, {color:'#9E9E9E'}]}>报</Text>
+                      <Text style={styles.minorText}>：</Text>
+
+                      <Text style={styles.minorText}>
+                        {Math.floor(customer.price_received)}/{Math.floor(actual_price)}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <Text style={styles.materialTitleText}>施工记录</Text>
+                  <BuildRecordInCustomerList customer_id={customer.id} />
+
+                  <Text style={styles.materialTitleText}>收款记录</Text>
+                  <CollectionFromCustomerList customer_id={customer.id} />
 
                 </View>
               );
@@ -148,6 +220,62 @@ export default class CustomerDetail extends Component {
 
 const styles = StyleSheet.create({
 
+  mainContainer:{
+    height:size.height,
+    backgroundColor: '#fff',
+    justifyContent:'flex-start',
+    paddingTop:15,
+  },
+  minorText: {
+    fontSize:14,
+  },
+  materialTitleText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    paddingHorizontal: 15,
+    paddingTop: 15,
+    paddingBottom:6,
+  },
+
+  progressBarContainer: {
+    height: 25,
+    marginHorizontal:15,
+  },
+  progressBarBase: {
+    height:10, 
+    borderRadius:5, 
+    position:'absolute', 
+    left:0, 
+    top:10,
+  },
+  progressBar: {
+    height:10, 
+    borderTopLeftRadius:5, 
+    borderBottomLeftRadius:5,
+    position:'absolute', 
+    left:0, 
+    top:10,
+  },
+
+  detailView: {
+    flexDirection:'row', 
+    alignItems:'flex-end', 
+    marginHorizontal:15,
+    paddingBottom:10,
+    borderBottomWidth:1,
+    borderBottomColor:'#efefef',
+  },
+  detailLeftView: {
+    flexDirection:'row', 
+    alignItems:'flex-end', 
+    width: size.width/2-18,
+
+  },
+  detailRightView: {
+    flexDirection:'row', 
+    alignItems:'flex-end', 
+    width: size.width/2-18,
+  },
 
   container:{
     height:size.height,

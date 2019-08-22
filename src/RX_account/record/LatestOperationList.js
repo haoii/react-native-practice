@@ -117,7 +117,9 @@ export default class LatestOperationList extends Component {
       return (
         <View style={{flexDirection:'row'}}> 
           <Text style={styles.operationText}>收到客户</Text>
-          <Text style={[styles.operationText, {textDecorationLine:'underline', color:'#181880'}]}> {item.str0} </Text>
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('CustomerDetail',{customer_id:item.fk0})}>
+            <Text style={[styles.operationText, {textDecorationLine:'underline', color:'#181880'}]}>{item.str0}</Text>
+          </TouchableOpacity>
           <Text style={styles.operationText}>装修款：</Text>
           <Text style={[styles.mainText]}>{item.double0}元</Text>
         </View> 
@@ -135,7 +137,22 @@ export default class LatestOperationList extends Component {
     } else if (item.type == 'edit_customer') {
       return (
         <View style={{flexDirection:'row'}}> 
-          <Text style={styles.operationText}>修改了新客户：</Text>
+          <Text style={styles.operationText}>修改了客户：</Text>
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('CustomerDetail',{customer_id:item.fk0})}>
+            <Text style={[styles.operationText, {textDecorationLine:'underline', color:'#181880'}]}>{item.str0}</Text>
+          </TouchableOpacity>
+        </View> 
+      );
+    } else if (item.type == 'add_memo') {
+      return (
+        <View style={{flexDirection:'row'}}> 
+          <Text style={styles.operationText}>添加了备忘录：</Text>
+        </View> 
+      );
+    } else if (item.type == 'add_build_record') {
+      return (
+        <View style={{flexDirection:'row'}}> 
+          <Text style={styles.operationText}>添加了施工记录：</Text>
           <TouchableOpacity onPress={() => this.props.navigation.navigate('CustomerDetail',{customer_id:item.fk0})}>
             <Text style={[styles.operationText, {textDecorationLine:'underline', color:'#181880'}]}>{item.str0}</Text>
           </TouchableOpacity>

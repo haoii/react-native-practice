@@ -32,12 +32,11 @@ export default class RecordHeader extends Component {
 }
 const styles = StyleSheet.create({
   header: {
-    height: 45,
+    height: 50,
     flexDirection:'row',
-    paddingLeft:10,
-    paddingRight:10,
-    paddingBottom:15,
-    borderBottomWidth: 6, 
+    alignItems:'center',
+    paddingHorizontal:10,
+    borderBottomWidth: 1, 
     borderBottomColor: '#F5F5F5'
   },
   search: {

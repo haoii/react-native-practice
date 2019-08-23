@@ -40,6 +40,7 @@ const add_memo_url = account_url + 'add_memo/';
 const add_build_record_url = account_url + 'add_build_record/';
 const buil_records_in_customer_url = account_url + 'buil_records_in_customer/';
 const collections_from_customer_by_id_url = account_url + 'collections_from_customer_by_id/';
+const orders_from_customer_by_id_url = account_url + 'orders_from_customer_by_id/';
 
 const login_url = user_url + 'login/';
 const logout_url = user_url + 'logout/';
@@ -82,6 +83,7 @@ export default URL = {
   add_build_record:add_build_record_url,
   buil_records_in_customer:buil_records_in_customer_url,
   collections_from_customer_by_id:collections_from_customer_by_id_url,
+  orders_from_customer_by_id:orders_from_customer_by_id_url,
 
   login:login_url,
   logout:logout_url,

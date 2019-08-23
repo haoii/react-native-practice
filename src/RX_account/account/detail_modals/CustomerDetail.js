@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight, 
-        Button, TouchableOpacity, Modal, Alert } from 'react-native';
+        Button, TouchableOpacity, Modal, Alert, ScrollView } from 'react-native';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 
 import NavigationHeader from '../../baseComponent/NavigationHeader';
 import BuildRecordInCustomerList from '../display_list/CustomerManage/BuildRecordInCustomerList';
 import CollectionFromCustomerList from '../display_list/CustomerManage/CollectionFromCustomerList';
+import MaterialOrderInCustomerList from '../display_list/CustomerManage/MaterialOrderInCustomerList';
 
 import Dimensions from 'Dimensions';
 const size = {
@@ -151,60 +152,67 @@ export default class CustomerDetail extends Component {
               let expense_paid_pixel = (customer.expense_paid / actual_price) * total_price_pixel;
 
               return (
-                <View style={styles.mainContainer}>
-                  <View style={styles.summarizeView}>
-                    <Text style={styles.titleText}>{customer.name}</Text>
-                    <Text style={styles.infoText}>地址：{customer.address}</Text>
-                    <Text style={styles.infoText}>编号：{customer.id}</Text>
-                    <Text style={styles.infoText}>电话：{customer.phone}</Text>
-                    <Text style={styles.infoText}>签单日期：{customer.sign_date}</Text>
-                    <Text style={styles.infoText}>工期：{customer.duration}</Text>
-                    <Text style={styles.infoText}>面积：{customer.area}</Text>
-                  </View>
+                <ScrollView style={{}}>
+                  <View style={styles.mainContainer}>
 
-                  <View style={styles.progressBarContainer}>
-                    <View style={[styles.progressBarBase, {width:total_price_pixel, backgroundColor:'#9E9E9E'}]}></View>
-
-                    {this._renderProgressBar([[received_price_pixel, '#4CAF50'],
-                                              [expense_pixel, '#F44336'],
-                                              [expense_paid_pixel, '#3F51B5']])}
-
-                  </View>
-
-                  <View style={styles.detailView}>
-                    <View style={styles.detailLeftView}>
-
-                      {/* <Text style={styles.minorText}>支/开：</Text> */}
-                      <Text style={[styles.minorText, {color:'#3F51B5'}]}>支</Text>
-                      <Text style={styles.minorText}>/</Text>
-                      <Text style={[styles.minorText, {color:'#F44336'}]}>开</Text>
-                      <Text style={styles.minorText}>：</Text>
-
-                      <Text style={styles.minorText}>
-                        {Math.floor(customer.expense_paid)}/{Math.floor(customer.total_expense)}
-                      </Text>
+                    <View style={styles.summarizeView}>
+                      <Text style={styles.titleText}>{customer.name}</Text>
+                      <Text style={styles.infoText}>地址：{customer.address}</Text>
+                      <Text style={styles.infoText}>编号：{customer.id}</Text>
+                      <Text style={styles.infoText}>电话：{customer.phone}</Text>
+                      <Text style={styles.infoText}>签单日期：{customer.sign_date}</Text>
+                      <Text style={styles.infoText}>工期：{customer.duration}</Text>
+                      <Text style={styles.infoText}>面积：{customer.area}</Text>
                     </View>
-                    <View style={styles.detailRightView}>
 
-                      {/* <Text style={styles.minorText}>收/报：</Text> */}
-                      <Text style={[styles.minorText, {color:'#4CAF50'}]}>收</Text>
-                      <Text style={styles.minorText}>/</Text>
-                      <Text style={[styles.minorText, {color:'#9E9E9E'}]}>报</Text>
-                      <Text style={styles.minorText}>：</Text>
+                    <View style={styles.progressBarContainer}>
+                      <View style={[styles.progressBarBase, {width:total_price_pixel, backgroundColor:'#9E9E9E'}]}></View>
 
-                      <Text style={styles.minorText}>
-                        {Math.floor(customer.price_received)}/{Math.floor(actual_price)}
-                      </Text>
+                      {this._renderProgressBar([[received_price_pixel, '#4CAF50'],
+                                                [expense_pixel, '#F44336'],
+                                                [expense_paid_pixel, '#3F51B5']])}
+
                     </View>
+
+                    <View style={styles.detailView}>
+                      <View style={styles.detailLeftView}>
+
+                        {/* <Text style={styles.minorText}>支/开：</Text> */}
+                        <Text style={[styles.minorText, {color:'#3F51B5'}]}>支</Text>
+                        <Text style={styles.minorText}>/</Text>
+                        <Text style={[styles.minorText, {color:'#F44336'}]}>开</Text>
+                        <Text style={styles.minorText}>：</Text>
+
+                        <Text style={styles.minorText}>
+                          {Math.floor(customer.expense_paid)}/{Math.floor(customer.total_expense)}
+                        </Text>
+                      </View>
+                      <View style={styles.detailRightView}>
+
+                        {/* <Text style={styles.minorText}>收/报：</Text> */}
+                        <Text style={[styles.minorText, {color:'#4CAF50'}]}>收</Text>
+                        <Text style={styles.minorText}>/</Text>
+                        <Text style={[styles.minorText, {color:'#9E9E9E'}]}>报</Text>
+                        <Text style={styles.minorText}>：</Text>
+
+                        <Text style={styles.minorText}>
+                          {Math.floor(customer.price_received)}/{Math.floor(actual_price)}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <Text style={styles.materialTitleText}>施工记录</Text>
+                    <BuildRecordInCustomerList customer_id={customer.id} />
+
+                    <Text style={styles.materialTitleText}>收款记录</Text>
+                    <CollectionFromCustomerList customer_id={customer.id} />
+
+                    <Text style={styles.materialTitleText}>材料订单</Text>
+                    <MaterialOrderInCustomerList customer_id={customer.id} 
+                      navigation={this.props.navigation}/>
+
                   </View>
-
-                  <Text style={styles.materialTitleText}>施工记录</Text>
-                  <BuildRecordInCustomerList customer_id={customer.id} />
-
-                  <Text style={styles.materialTitleText}>收款记录</Text>
-                  <CollectionFromCustomerList customer_id={customer.id} />
-
-                </View>
+                </ScrollView>
               );
             })()
           : <View>
@@ -224,7 +232,7 @@ const styles = StyleSheet.create({
     height:size.height,
     backgroundColor: '#fff',
     justifyContent:'flex-start',
-    paddingTop:15,
+    paddingVertical:15,
   },
   minorText: {
     fontSize:14,
@@ -278,7 +286,7 @@ const styles = StyleSheet.create({
   },
 
   container:{
-    height:size.height,
+    height:size.height-20,
     backgroundColor: '#fff',
     justifyContent:'flex-start'
   },

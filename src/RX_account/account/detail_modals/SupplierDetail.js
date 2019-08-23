@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableHighlight, 
-          } from 'react-native';
+        ScrollView } from 'react-native';
 
 import SupplierDetailMaterials from './SupplierDetailMaterials';
 import NavigationHeader from '../../baseComponent/NavigationHeader';
@@ -44,46 +44,48 @@ export default class SupplierDetail extends Component {
           }}
         />
 
-        <View style={styles.container}>
-          
+        <ScrollView style={{}}>
+          <View style={styles.container}>
+            
 
-          <View style={styles.summarizeView}>
-            <Text style={styles.titleText}>{supplier.name}</Text>
-            <Text style={styles.infoText}>地址：{supplier.address}</Text>
-            <Text style={styles.infoText}>编号：{supplier.id}</Text>
-            <Text style={styles.infoText}>电话：{supplier.phone}</Text>
+            <View style={styles.summarizeView}>
+              <Text style={styles.titleText}>{supplier.name}</Text>
+              <Text style={styles.infoText}>地址：{supplier.address}</Text>
+              <Text style={styles.infoText}>编号：{supplier.id}</Text>
+              <Text style={styles.infoText}>电话：{supplier.phone}</Text>
 
-          
-            <View style={styles.progressBarView}>
-              <View style={[styles.progressBarBase, {width:total_expense_pixel, backgroundColor:'red'}]}></View>
-              <View style={[styles.progressBar, {width:expense_paid_pixel, backgroundColor:'blue'}]}></View>
+            
+              <View style={styles.progressBarView}>
+                <View style={[styles.progressBarBase, {width:total_expense_pixel, backgroundColor:'red'}]}></View>
+                <View style={[styles.progressBar, {width:expense_paid_pixel, backgroundColor:'blue'}]}></View>
+              </View>
+
+              <View style={styles.detailView}>
+                <Text style={[styles.minorText, {color:'blue'}]}>已支付</Text>
+                <Text style={styles.minorText}>/</Text>
+                <Text style={[styles.minorText, {color:'red'}]}>开销</Text>
+                <Text style={styles.minorText}>：</Text>
+                <Text style={styles.minorText}>
+                  {Math.floor(supplier.expense_paid)}/{Math.floor(supplier.total_expense)}
+                </Text>
+              </View>
             </View>
-
-            <View style={styles.detailView}>
-              <Text style={[styles.minorText, {color:'blue'}]}>已支付</Text>
-              <Text style={styles.minorText}>/</Text>
-              <Text style={[styles.minorText, {color:'red'}]}>开销</Text>
-              <Text style={styles.minorText}>：</Text>
-              <Text style={styles.minorText}>
-                {Math.floor(supplier.expense_paid)}/{Math.floor(supplier.total_expense)}
-              </Text>
-            </View>
+            <Text style={styles.materialTitleText}>出售的材料</Text>
+            <SupplierDetailMaterials supplier_id={supplier.id} /> 
           </View>
-          <Text style={styles.materialTitleText}>出售的材料</Text>
-          <SupplierDetailMaterials supplier_id={supplier.id} /> 
-        </View>
+        </ScrollView>
       </View>);
   }
 }
 
 const styles = StyleSheet.create({
   mainContainer:{
-    height:size.height,
+    height:size.height-20,
     backgroundColor: '#fff',
     justifyContent:'flex-start'
   },
   container: {
-    paddingTop:15,
+    paddingVertical:15,
   },
   summarizeView: {
     paddingHorizontal:15,

@@ -9,6 +9,8 @@ export default class ListItem extends Component {
     last:false,
     title:'',
     data:'',
+
+    func: null,
   }
 
   constructor(props) {
@@ -17,10 +19,15 @@ export default class ListItem extends Component {
     };
   }
 
+  _onpress = () => {
+    if (this.props.func)
+      this.props.func();
+  }
+
 
   render() {
     return (
-      <TouchableOpacity style={styles.container}>
+      <TouchableOpacity style={styles.container} onPress={this._onpress}>
         <View style={styles.iconView}>
           {this.props.icon}
         </View>

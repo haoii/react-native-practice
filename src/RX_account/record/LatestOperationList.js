@@ -158,6 +158,33 @@ export default class LatestOperationList extends Component {
           </TouchableOpacity>
         </View> 
       );
+    } else if (item.type == 'add_supplier') {
+      return (
+        <View style={{flexDirection:'row'}}> 
+          <Text style={styles.operationText}>添加了新材料商：</Text>
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('SupplierDetail',{supplier_id:item.fk0})}>
+            <Text style={[styles.operationText, {textDecorationLine:'underline', color:'#181880'}]}>{item.str0}</Text>
+          </TouchableOpacity>
+        </View> 
+      );
+    } else if (item.type == 'add_material') {
+      return (
+        <View style={{flexDirection:'row'}}> 
+          <Text style={styles.operationText}>添加了材料：</Text>
+          <TouchableOpacity>
+            <Text style={[styles.mainText]}>{item.str0}</Text>
+          </TouchableOpacity>
+        </View> 
+      );
+    } else if (item.type == 'add_material_in_supplier') {
+      return (
+        <View style={{}}> 
+          <Text style={styles.operationText}>添加了材料商出售的材料：</Text>
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('SupplierDetail',{supplier_id:item.fk0})}>
+            <Text style={[styles.operationText, {textDecorationLine:'underline', color:'#181880'}]}>{item.str0}</Text>
+          </TouchableOpacity>
+        </View> 
+      );
     }
   }
 

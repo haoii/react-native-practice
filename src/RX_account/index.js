@@ -29,7 +29,7 @@ import AddClass1Form from './account/display_list/MaterialClassesManage/AddClass
 import AddClass2Form from './account/display_list/MaterialClassesManage/AddClass2Form';
 import AddClass3Form from './account/display_list/MaterialClassesManage/AddClass3Form';
 import AddMaterial from './account/display_list/MaterialManage/AddMaterial';
-import AddMaterialInSupplier from './account/display_list/SuppierManage/AddMaterialInSupplier';
+import AddMaterialInSupplier from './account/display_list/SupplierManage/AddMaterialInSupplier';
 
 import AddMemo from './record/record_modals/AddMemo';
 import AddBuildRecord from './account/display_list/CustomerManage/AddBuildRecord';

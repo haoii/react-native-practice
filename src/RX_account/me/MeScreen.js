@@ -45,6 +45,14 @@ export default class MeScreen extends Component {
             title='设置' 
             last={true}/>
         </View>
+
+        <View style={{height:10}}></View>
+        <View style={styles.listGroupView}>
+          <ListItem icon={<IconIonicons name="ios-settings" size={25} color="#222222"/>} 
+            title='登录/退出' 
+            last={true}
+            func={() => {this.props.navigation.navigate('LoginScreen')}} />
+        </View>
       </View>
     );
   }

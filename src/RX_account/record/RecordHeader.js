@@ -7,7 +7,8 @@ import IconIonicons from 'react-native-vector-icons/Ionicons';
 export default class RecordHeader extends Component {
 
   _test = () => {
-    this.props.navigation.navigate('LoginScreen');
+    // this.props.navigation.navigate('LoginScreen');
+    alert('待开发');
   }
 
   render() {

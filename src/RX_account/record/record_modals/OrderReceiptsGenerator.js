@@ -50,6 +50,7 @@ export default class OrderReceiptsGenerator  extends Component {
 
       from_purchase_sum_url:{},
       
+      waiting_submit: false,
     };
   }
 
@@ -67,6 +68,8 @@ export default class OrderReceiptsGenerator  extends Component {
     //   let file = {uri: this.state.images[i].url, type: 'image/jpeg', name: 'image'+i+'.jpg'};   
     //   formData.append('images', file);  
     // }
+
+    this.setState({waiting_submit:true});
 
     let index = 0;
     Object.keys(this.state.customer_demand_items_url).map((customer) => {
@@ -359,6 +362,10 @@ export default class OrderReceiptsGenerator  extends Component {
         <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={30} style={styles.keyboardAvoiding} enabled>
           <ScrollView contentContainerStyle={styles.ScrollViewStyle}>
             <View style={styles.Canvas}>
+
+              {this.state.waiting_submit
+                ? <Text style={{color:'red'}}>正在提交订单，请等待...</Text>
+                : null}
 
               <View style={{alignItems:'center'}}>
                 <Text style={{fontSize:16}}>客户材料需求单</Text>

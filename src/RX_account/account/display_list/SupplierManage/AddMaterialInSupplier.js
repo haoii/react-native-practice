@@ -132,6 +132,8 @@ export default class AddMaterialInSupplier extends Component {
 
     let formData = new FormData();
     formData.append("material_id", this.material_id_data[this.state.material_value]);
+    formData.append("material_name", this.state.material_value);
+    formData.append("supplier_name", this.supplier.name);
     formData.append("supplier_id", this.supplier.id);
     formData.append("price", this.state.price_value);
     formData.append("remark", this.state.remark_value);

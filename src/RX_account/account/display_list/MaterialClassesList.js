@@ -51,19 +51,15 @@ export default class MaterialClassesList extends Component {
       .then(response => response.json())
       .then(responseJson => {
         if (responseJson.msg === 'success') {
-          if (responseJson.data.length === 0) {
-            this.setState({refreshing: false, got_no_data:true, no_data_hint: '没有数据~'});
-          } else {
-            let arrData = responseJson.data;
-            let i = 0;
-            let arrList = [];
-            arrData.map(item => {
-              arrList.push({key: i, value: item});
-              i++;
-            });
-            arrList.push({key: i, value: 'add_material_class_1'});
-            this.setState({classes: arrList, refreshing: false, got_no_data:false});
-          }
+          let arrData = responseJson.data;
+          let i = 0;
+          let arrList = [];
+          arrData.map(item => {
+            arrList.push({key: i, value: item});
+            i++;
+          });
+          arrList.push({key: i, value: 'add_material_class_1'});
+          this.setState({classes: arrList, refreshing: false, got_no_data:false});
         } else if (responseJson.msg === 'not_logged_in') {
           this.setState({refreshing: false, got_no_data:true, no_data_hint: '您还没有登录~'});
           this.props.navigation.navigate('LoginScreen');
@@ -402,8 +398,7 @@ export default class MaterialClassesList extends Component {
               renderItem={this._renderItem}
               ListHeaderComponent={
                 <View style={{height:5}}></View>
-              }/>}
-        
+              }/>}        
 
       </View>
     );

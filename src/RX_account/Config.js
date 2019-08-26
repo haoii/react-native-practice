@@ -1,7 +1,7 @@
 
 import Dimensions from 'Dimensions';
 
-const host_url = 'http://172.20.10.9:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
+const host_url = 'http://139.224.10.99:8080/';  //'http://139.224.10.99:80/';  //'http://10.0.2.2:8000/';  //http:192.168.1.102:8000/;
 const account_url = host_url + 'account/';
 const static_url = host_url + 'static/';
 const user_url = host_url + 'user/';
@@ -41,6 +41,8 @@ const add_build_record_url = account_url + 'add_build_record/';
 const buil_records_in_customer_url = account_url + 'buil_records_in_customer/';
 const collections_from_customer_by_id_url = account_url + 'collections_from_customer_by_id/';
 const orders_from_customer_by_id_url = account_url + 'orders_from_customer_by_id/';
+const supplier_by_id_url = account_url + 'supplier_by_id/';
+const orders_from_supplier_by_id_url = account_url + 'orders_from_supplier_by_id/';
 
 const login_url = user_url + 'login/';
 const logout_url = user_url + 'logout/';
@@ -84,6 +86,8 @@ export default URL = {
   buil_records_in_customer:buil_records_in_customer_url,
   collections_from_customer_by_id:collections_from_customer_by_id_url,
   orders_from_customer_by_id:orders_from_customer_by_id_url,
+  supplier_by_id:supplier_by_id_url,
+  orders_from_supplier_by_id:orders_from_supplier_by_id_url,
 
   login:login_url,
   logout:logout_url,

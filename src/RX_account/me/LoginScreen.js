@@ -99,6 +99,23 @@ export default class LoginScreen extends Component {
     });
   }
 
+  _login_test2 = () => {
+
+    let formData = new FormData();
+    formData.append("username", 'hgf');
+    formData.append("password", '1');
+    
+    fetch('http://localhost:8080/login', {
+      method:'POST',
+      body:formData,
+    })
+    .then((response) => response.text())
+    .then((data) => alert(data))
+    .catch((error)=>{
+      alert('服务器出错了');
+    });
+  }
+
   _checkComplete = () => {
     return (this.state.user_name && this.state.password);
   }
